@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Platform">
+      <UniqueIdentifier>{2AC788B4-1694-E3BF-3FAD-D1672BD9184E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Platform\OpenGl">
+      <UniqueIdentifier>{3E7D2C1D-AA08-9AE1-B319-1DD61F24F6E1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Platform\Windows">
+      <UniqueIdentifier>{64FBD71A-50F4-F66C-7926-DCF1657ED678}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SpaceOptima">
+      <UniqueIdentifier>{1BD2E18C-8787-5A82-107C-54597C305186}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SpaceOptima\Events">
+      <UniqueIdentifier>{9FB1C8DC-8B95-8932-F4F5-8385E0F873B4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SpaceOptima\ImGui">
+      <UniqueIdentifier>{852FE4C8-F145-E25E-3ABD-6D80A612B3E6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Platform\OpenGl\ImGuiOpenGLRendrer.h">
+      <Filter>Platform\OpenGl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\Windows\WindowsWindow.h">
+      <Filter>Platform\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpaceOptima.h" />
+    <ClInclude Include="src\SpaceOptima\Application.h">
+      <Filter>SpaceOptima</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpaceOptima\Core.h">
+      <Filter>SpaceOptima</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpaceOptima\EntryPoint.h">
+      <Filter>SpaceOptima</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpaceOptima\Events\ApplicationEvent.h">
+      <Filter>SpaceOptima\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpaceOptima\Events\Event.h">
+      <Filter>SpaceOptima\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpaceOptima\Events\KeyEvent.h">
+      <Filter>SpaceOptima\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpaceOptima\Events\MouseEvent.h">
+      <Filter>SpaceOptima\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpaceOptima\ImGui\ImGuiLayer.h">
+      <Filter>SpaceOptima\ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpaceOptima\Layer.h">
+      <Filter>SpaceOptima</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpaceOptima\LayerStack.h">
+      <Filter>SpaceOptima</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpaceOptima\Log.h">
+      <Filter>SpaceOptima</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpaceOptima\Window.h">
+      <Filter>SpaceOptima</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sopch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Platform\OpenGl\ImGuiOpenGLRendrer.cpp">
+      <Filter>Platform\OpenGl</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp">
+      <Filter>Platform\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SpaceOptima\Application.cpp">
+      <Filter>SpaceOptima</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SpaceOptima\ImGui\ImGuiLayer.cpp">
+      <Filter>SpaceOptima\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SpaceOptima\Layer.cpp">
+      <Filter>SpaceOptima</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SpaceOptima\LayerStack.cpp">
+      <Filter>SpaceOptima</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SpaceOptima\Log.cpp">
+      <Filter>SpaceOptima</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sopch.cpp" />
+  </ItemGroup>
+</Project>
