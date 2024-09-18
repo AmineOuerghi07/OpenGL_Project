@@ -14,9 +14,11 @@ IncludeDir = {}
 IncludeDir["GLFW"] ="SpaceOptima/vendor/GLFW/include"
 IncludeDir["Glad"] ="SpaceOptima/vendor/Glad/include"
 IncludeDir["imgui"] ="SpaceOptima/vendor/imgui"
+IncludeDir["glm"] ="SpaceOptima/vendor/glm"
 include "SpaceOptima/vendor/GLFW"
 include "SpaceOptima/vendor/Glad"
 include "SpaceOptima/vendor/imgui"
+
 
 project "SpaceOptima"
 
@@ -31,7 +33,12 @@ project "SpaceOptima"
 	files 
 	{
 		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp"
+		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/vendor/glm/glm/**.hpp",
+		"%{prj.name}/vendor/glm/glm/**.inl",
+		"%{prj.name}/vendor/glm/glm/**.h",
+		"%{prj.name}/vendor/glm/glm/**.cppm",
+		"%{prj.name}/vendor/glm/glm/**.cpp"
 	}
 
 	includedirs
@@ -40,7 +47,8 @@ project "SpaceOptima"
 		"%{prj.name}/vendor/spdlog/include",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
-		"%{IncludeDir.imgui}"
+		"%{IncludeDir.imgui}",
+		"%{IncludeDir.glm}"
 
 	}
 	links 
@@ -97,8 +105,8 @@ project "Sandbox"
 	includedirs 
 	{
 		"SpaceOptima/vendor/spdlog/include",
-		"SpaceOptima/src/"
-
+		"SpaceOptima/src/",
+		"%{IncludeDir.glm}"
 	}
 
 	links 

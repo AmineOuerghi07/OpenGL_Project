@@ -7,3 +7,7 @@
 [submodule "SpaceOptima/vendor/imgui"]
 	path = SpaceOptima/vendor/imgui
 	url = https://github.com/youssefAbidUp/imgui
+
+[submodule "SpaceOptima/vendor/glm"]
+	path = SpaceOptima/vendor/glm
+	url = https://github.com/g-truc/glm.git
