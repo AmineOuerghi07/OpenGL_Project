@@ -4,7 +4,7 @@
 #include "Events/Event.h"
 #include "SpaceOptima/Window.h"
 #include "SpaceOptima/Events/ApplicationEvent.h"
-
+#include "SpaceOptima/ImGui/ImGuiLayer.h"
 namespace SpaceOptima
 {
 	class SO_API Application
@@ -22,6 +22,7 @@ namespace SpaceOptima
 		private:
 			bool OnWindowClose(WindowCloseEvent& e);
 			std::unique_ptr<Window> m_Window;
+			ImGuiLayer* m_ImGuiLayer;
 			bool m_Running = true;
 			LayerStack m_LayerStack;
 

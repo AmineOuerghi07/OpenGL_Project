@@ -44,7 +44,7 @@ class Sandbox : public SpaceOptima::Application
 		Sandbox()
 		{
 			PushLayer(new ExampleLayer());
-			PushOverlay(new SpaceOptima::ImGuiLayer());
+		
 		};
 		~Sandbox()
 		{

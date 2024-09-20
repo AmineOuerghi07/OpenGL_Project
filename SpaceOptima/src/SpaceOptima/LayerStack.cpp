@@ -3,7 +3,7 @@
 namespace SpaceOptima {
 	LayerStack::LayerStack()
 	{
-		m_LayersInsert = m_Layers.begin();
+	
 	}
 	LayerStack::~LayerStack()
 	{
@@ -11,7 +11,8 @@ namespace SpaceOptima {
 			delete layer;
 	}
 	void LayerStack::PushLayer(Layer* layer) {
-		m_LayersInsert = m_Layers.emplace(m_LayersInsert, layer);
+		m_Layers.emplace(m_Layers.begin() + m_LayerIndex, layer);
+		m_LayerIndex++;
 	}
 	void LayerStack::PushOverlay(Layer* overlay)
 	{
@@ -23,7 +24,7 @@ namespace SpaceOptima {
 			if (it != m_Layers.end())
 			{
 				m_Layers.erase(it);
-				m_LayersInsert--;
+				m_LayerIndex--;
 			}
 	}
 	void LayerStack::PopOverlay(Layer* overlay)

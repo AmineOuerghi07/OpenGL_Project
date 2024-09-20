@@ -6,7 +6,7 @@
 	url = https://github.com/youssefAbidUp/glfw.git
 [submodule "SpaceOptima/vendor/imgui"]
 	path = SpaceOptima/vendor/imgui
-	url = https://github.com/youssefAbidUp/imgui
+	url = https://github.com/youssefAbidUp/imgui.git
 
 [submodule "SpaceOptima/vendor/glm"]
 	path = SpaceOptima/vendor/glm

@@ -48,9 +48,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Platform\OpenGl\ImGuiOpenGLRendrer.h">
-      <Filter>src\Platform\OpenGl</Filter>
-    </ClInclude>
     <ClInclude Include="src\Platform\Windows\WindowsInput.h">
       <Filter>src\Platform\Windows</Filter>
     </ClInclude>
@@ -1388,9 +1385,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Platform\OpenGl\ImGuiOpenGLRendrer.cpp">
-      <Filter>src\Platform\OpenGl</Filter>
-    </ClCompile>
     <ClCompile Include="src\Platform\Windows\WindowsInput.cpp">
       <Filter>src\Platform\Windows</Filter>
     </ClCompile>
@@ -1421,5 +1415,6 @@
     <ClCompile Include="vendor\glm\glm\glm.cppm">
       <Filter>vendor\glm\glm</Filter>
     </ClCompile>
+    <ClCompile Include="src\SpaceOptima\ImGui\imGuiBuild.cpp" />
   </ItemGroup>
 </Project>
