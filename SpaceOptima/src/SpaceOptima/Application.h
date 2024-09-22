@@ -5,6 +5,7 @@
 #include "SpaceOptima/Window.h"
 #include "SpaceOptima/Events/ApplicationEvent.h"
 #include "SpaceOptima/ImGui/ImGuiLayer.h"
+#include "SpaceOptima/Renderer/Shader.h"
 namespace SpaceOptima
 {
 	class SO_API Application
@@ -27,6 +28,8 @@ namespace SpaceOptima
 			LayerStack m_LayerStack;
 
 			static Application* s_Instance;
+			unsigned int m_IndexBuffer, m_VertexArray, m_VertexBuffer;
+			std::unique_ptr<Shader> m_Shader;
 	};
 
 	Application* CreateApplication();

@@ -23,9 +23,10 @@ include "SpaceOptima/vendor/imgui"
 project "SpaceOptima"
 
 	location "SpaceOptima"
-	kind "SharedLib"
+	kind "StaticLib"
 	language "C++"
-	staticruntime "off"
+	cppdialect "C++20"
+	staticruntime "on"
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 	pchheader "sopch.h"
@@ -51,6 +52,13 @@ project "SpaceOptima"
 		"%{IncludeDir.glm}"
 
 	}
+
+	defines
+	{
+		"_CRT_SECURE_NO_WARNINGS"
+
+	}
+	
 	links 
 	{
 		"GLFW",
@@ -59,7 +67,6 @@ project "SpaceOptima"
 		"opengl32.lib"
 	}
 	filter "system:windows"
-		cppdialect "C++20"
 		systemversion "latest"
 		defines 
 		{
@@ -68,23 +75,20 @@ project "SpaceOptima"
 			"GLFW_INCLUDE_NONE"
 		}
 		
-		postbuildcommands
-		{
-			("{COPY} %{cfg.buildtarget.relpath} \"../bin/" .. outputdir .. "/Sandbox/\"")
-		}
+	
 	filter "configurations:Debug"
 		defines "SO_ENGINE_DEBUG"
 		runtime "Debug"
-		symbols "On"
+		symbols "on"
 	filter "configurations:Release"
 		defines "SO_ENGINE_RELEASE"
 		runtime "Release"
-		optimize "On"
+		optimize "on"
 
 	filter "configurations:Dist"
 		defines "SO_ENGINE_DIST"
 		runtime "Release"
-		optimize "On"
+		optimize "on"
 	
 
 
@@ -92,7 +96,8 @@ project "Sandbox"
 	location "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
-	staticruntime "off"
+	cppdialect "C++20"
+	staticruntime "on"
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
@@ -115,7 +120,6 @@ project "Sandbox"
 	}
 
 	filter "system:windows"
-		cppdialect "C++20"
 		systemversion "latest"
 		defines 
 		{
@@ -125,13 +129,13 @@ project "Sandbox"
 	filter "configurations:Debug"
 		defines "SO_ENGINE_DEBUG"
 		runtime "Debug"
-		symbols "On"
+		symbols "on"
 	filter "configurations:Release"
 		defines "SO_ENGINE_RELEASE"
 		runtime "Release"
-		optimize "On"
+		optimize "on"
 
 	filter "configurations:Dist"
 		defines "SO_ENGINE_DIST"
 		runtime "Release"
-		optimize "On"
+		optimize "on"

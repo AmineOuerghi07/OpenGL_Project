@@ -1,11 +1,16 @@
 #pragma once
 
 #ifdef SO_PLATFORM_WINDOWS
-	#ifdef SO_BUILD_DLL
-		#define SO_API _declspec(dllexport)
+	#if SO_DYNAMIC_LINK
+		#ifdef SO_BUILD_DLL
+			#define SO_API _declspec(dllexport)
+		#else
+			#define SO_API _declspec(dllimport)
+		#endif
 	#else
-		#define SO_API _declspec(dllimport)
-	#endif
+		#define SO_API
+
+#endif
 #else
 	#error SO ONLY SUPPORTS WINDOWS !
 #endif

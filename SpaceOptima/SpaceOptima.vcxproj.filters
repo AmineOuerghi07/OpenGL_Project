@@ -7,9 +7,6 @@
     <Filter Include="src\Platform">
       <UniqueIdentifier>{21CA02E5-0D2D-9289-B6B2-CA3FA2F45D0C}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Platform\OpenGl">
-      <UniqueIdentifier>{55A49437-C105-7245-4A73-B8F7B6D3A804}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Platform\Windows">
       <UniqueIdentifier>{5B054582-4794-CE4B-F0B2-E246DC20DFF1}</UniqueIdentifier>
     </Filter>
@@ -1383,6 +1380,9 @@
     <ClInclude Include="vendor\glm\glm\vector_relational.hpp">
       <Filter>vendor\glm\glm</Filter>
     </ClInclude>
+    <ClInclude Include="src\SpaceOptima\Renderer\GraphicsContext.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h" />
+    <ClInclude Include="src\SpaceOptima\Renderer\Shader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Platform\Windows\WindowsInput.cpp">
@@ -1395,6 +1395,9 @@
       <Filter>src\SpaceOptima</Filter>
     </ClCompile>
     <ClCompile Include="src\SpaceOptima\ImGui\ImGuiLayer.cpp">
+      <Filter>src\SpaceOptima\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SpaceOptima\ImGui\imGuiBuild.cpp">
       <Filter>src\SpaceOptima\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="src\SpaceOptima\Layer.cpp">
@@ -1415,6 +1418,7 @@
     <ClCompile Include="vendor\glm\glm\glm.cppm">
       <Filter>vendor\glm\glm</Filter>
     </ClCompile>
-    <ClCompile Include="src\SpaceOptima\ImGui\imGuiBuild.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp" />
+    <ClCompile Include="src\SpaceOptima\Renderer\Shader.cpp" />
   </ItemGroup>
 </Project>

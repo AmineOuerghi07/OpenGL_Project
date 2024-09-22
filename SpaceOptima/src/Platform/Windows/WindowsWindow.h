@@ -1,7 +1,11 @@
 #pragma once
 #include "SpaceOptima/Window.h"
+#include "SpaceOptima/Renderer/GraphicsContext.h"
 
 #include <GLFW/glfw3.h>
+
+
+
 
 namespace SpaceOptima
 {
@@ -32,6 +36,7 @@ namespace SpaceOptima
 
 	private:
 		GLFWwindow* m_Window;
+		GraphicsContext* m_context;
 		struct WindowData
 		{
 			std::string Title;
