@@ -143,8 +143,9 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\SpaceOptima\Renderer\Shader.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h" />
     <ClInclude Include="src\Platform\Windows\WindowsInput.h" />
     <ClInclude Include="src\Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="src\SpaceOptima.h" />
@@ -161,7 +162,11 @@
     <ClInclude Include="src\SpaceOptima\LayerStack.h" />
     <ClInclude Include="src\SpaceOptima\Log.h" />
     <ClInclude Include="src\SpaceOptima\MouseButtonCodes.h" />
+    <ClInclude Include="src\SpaceOptima\Renderer\Buffer.h" />
     <ClInclude Include="src\SpaceOptima\Renderer\GraphicsContext.h" />
+    <ClInclude Include="src\SpaceOptima\Renderer\Renderer.h" />
+    <ClInclude Include="src\SpaceOptima\Renderer\Shader.h" />
+    <ClInclude Include="src\SpaceOptima\Renderer\VertexArray.h" />
     <ClInclude Include="src\SpaceOptima\Window.h" />
     <ClInclude Include="src\SpaceOptima\input.h" />
     <ClInclude Include="src\sopch.h" />
@@ -593,8 +598,9 @@
     <ClInclude Include="vendor\glm\glm\vector_relational.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\SpaceOptima\Renderer\Shader.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp" />
     <ClCompile Include="src\Platform\Windows\WindowsInput.cpp" />
     <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp" />
     <ClCompile Include="src\SpaceOptima\Application.cpp" />
@@ -603,6 +609,10 @@
     <ClCompile Include="src\SpaceOptima\Layer.cpp" />
     <ClCompile Include="src\SpaceOptima\LayerStack.cpp" />
     <ClCompile Include="src\SpaceOptima\Log.cpp" />
+    <ClCompile Include="src\SpaceOptima\Renderer\Buffer.cpp" />
+    <ClCompile Include="src\SpaceOptima\Renderer\Renderer.cpp" />
+    <ClCompile Include="src\SpaceOptima\Renderer\Shader.cpp" />
+    <ClCompile Include="src\SpaceOptima\Renderer\VertexArray.cpp" />
     <ClCompile Include="src\sopch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>

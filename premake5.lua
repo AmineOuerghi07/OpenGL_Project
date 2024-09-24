@@ -66,6 +66,7 @@ project "SpaceOptima"
 		"imgui",
 		"opengl32.lib"
 	}
+	
 	filter "system:windows"
 		systemversion "latest"
 		defines 
@@ -74,8 +75,8 @@ project "SpaceOptima"
 			"SO_BUILD_DLL",
 			"GLFW_INCLUDE_NONE"
 		}
-		
-	
+
+
 	filter "configurations:Debug"
 		defines "SO_ENGINE_DEBUG"
 		runtime "Debug"
