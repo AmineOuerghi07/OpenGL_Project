@@ -6,3 +6,9 @@
 [submodule "SpaceOptima/vendor/glm"]
 	path = SpaceOptima/vendor/glm
 	url = https://github.com/g-truc/glm.git
+[submodule "SpaceOptima/vendor/GLFW"]
+	path = SpaceOptima/vendor/GLFW
+	url = https://github.com/youssefAbidUp/glfw.git
+[submodule "SpaceOptima/vendor/spdlog"]
+	path = SpaceOptima/vendor/spdlog
+	url = https://github.com/gabime/spdlog.git
