@@ -8,6 +8,11 @@
 #include "SpaceOptima/Renderer/Shader.h"
 #include "SpaceOptima/Renderer/Buffer.h"
 #include "SpaceOptima/Renderer/VertexArray.h"
+
+#include "SpaceOptima/Renderer/OrthographicCamera.h"
+
+#include "SpaceOptima/Core/TimeStep.h"
+
 namespace SpaceOptima
 {
 	class SO_API Application
@@ -24,17 +29,14 @@ namespace SpaceOptima
 			inline Window& GetWindow() { return *m_Window; }
 		private:
 			bool OnWindowClose(WindowCloseEvent& e);
+		private:
 			std::unique_ptr<Window> m_Window;
 			ImGuiLayer* m_ImGuiLayer;
 			bool m_Running = true;
 			LayerStack m_LayerStack;
-
+			float m_LastFrameTime;
 			static Application* s_Instance;
-			std::shared_ptr<Shader> m_Shader;
-			std::shared_ptr<Shader> m_BlueShader;
 			
-			std::shared_ptr<VertexArray> m_VertexArray;
-			std::shared_ptr<VertexArray> m_SquareVA;
 	};
 
 	Application* CreateApplication();

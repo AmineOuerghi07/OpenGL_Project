@@ -1,6 +1,8 @@
 #pragma once
 #include "SpaceOptima/Core.h"
 #include "SpaceOptima/Events/Event.h"
+#include "SpaceOptima/Core/TimeStep.h"
+
 namespace SpaceOptima{
 	class SO_API  Layer
 {
@@ -9,7 +11,7 @@ public:
 	virtual ~Layer();
 	virtual void  OnAttach() {}
 	virtual void  OnDetach() {}
-	virtual void  OnUpdate() {}
+	virtual void  OnUpdate(Timestep timestep) {}
 	virtual void OnImGuiRender() {}
 	virtual void  OnEvent(Event& e) {}
 

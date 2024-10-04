@@ -16,6 +16,9 @@
     <Filter Include="src\SpaceOptima">
       <UniqueIdentifier>{B205BCA4-1E91-2969-27A2-AC5D93AC8569}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\SpaceOptima\Core">
+      <UniqueIdentifier>{4A89B646-3618-4010-DF36-540BCBA450B6}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\SpaceOptima\Events">
       <UniqueIdentifier>{5615A0D3-420F-C925-2B7C-5F3617152F92}</UniqueIdentifier>
     </Filter>
@@ -49,12 +52,24 @@
     <Filter Include="vendor\glm\glm\simd">
       <UniqueIdentifier>{CDE1A2E0-3943-80EE-C2B0-C6A02E11B7AD}</UniqueIdentifier>
     </Filter>
+    <Filter Include="vendor\stb_image">
+      <UniqueIdentifier>{0DA0BA59-F998-D9AB-22CB-BE300E23B9B7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h">
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLRendererAPI.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLShader.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLTexture.h">
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h">
@@ -74,6 +89,9 @@
     </ClInclude>
     <ClInclude Include="src\SpaceOptima\Core.h">
       <Filter>src\SpaceOptima</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpaceOptima\Core\TimeStep.h">
+      <Filter>src\SpaceOptima\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\SpaceOptima\EntryPoint.h">
       <Filter>src\SpaceOptima</Filter>
@@ -114,10 +132,22 @@
     <ClInclude Include="src\SpaceOptima\Renderer\GraphicsContext.h">
       <Filter>src\SpaceOptima\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\SpaceOptima\Renderer\OrthographicCamera.h">
+      <Filter>src\SpaceOptima\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpaceOptima\Renderer\RenderCommand.h">
+      <Filter>src\SpaceOptima\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\SpaceOptima\Renderer\Renderer.h">
       <Filter>src\SpaceOptima\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\SpaceOptima\Renderer\RendererAPI.h">
+      <Filter>src\SpaceOptima\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\SpaceOptima\Renderer\Shader.h">
+      <Filter>src\SpaceOptima\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpaceOptima\Renderer\Texture.h">
       <Filter>src\SpaceOptima\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\SpaceOptima\Renderer\VertexArray.h">
@@ -1410,12 +1440,24 @@
     <ClInclude Include="vendor\glm\glm\vector_relational.hpp">
       <Filter>vendor\glm\glm</Filter>
     </ClInclude>
+    <ClInclude Include="vendor\stb_image\stb_image.h">
+      <Filter>vendor\stb_image</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLRendererAPI.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLShader.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLTexture.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp">
@@ -1448,10 +1490,22 @@
     <ClCompile Include="src\SpaceOptima\Renderer\Buffer.cpp">
       <Filter>src\SpaceOptima\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\SpaceOptima\Renderer\OrthographicCamera.cpp">
+      <Filter>src\SpaceOptima\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SpaceOptima\Renderer\RenderCommand.cpp">
+      <Filter>src\SpaceOptima\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\SpaceOptima\Renderer\Renderer.cpp">
       <Filter>src\SpaceOptima\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\SpaceOptima\Renderer\RendererAPI.cpp">
+      <Filter>src\SpaceOptima\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\SpaceOptima\Renderer\Shader.cpp">
+      <Filter>src\SpaceOptima\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SpaceOptima\Renderer\Texture.cpp">
       <Filter>src\SpaceOptima\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\SpaceOptima\Renderer\VertexArray.cpp">
@@ -1465,6 +1519,9 @@
     </ClCompile>
     <ClCompile Include="vendor\glm\glm\glm.cppm">
       <Filter>vendor\glm\glm</Filter>
+    </ClCompile>
+    <ClCompile Include="vendor\stb_image\stb_image.cpp">
+      <Filter>vendor\stb_image</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

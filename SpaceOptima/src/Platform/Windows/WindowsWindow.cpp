@@ -49,12 +49,12 @@ namespace SpaceOptima
 		
 		m_context = new OpenGLContext(m_Window);
 		m_context->Init();
-
+		
 		
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 
-		
 		SetVSync(true);
+		
 
 		//
 

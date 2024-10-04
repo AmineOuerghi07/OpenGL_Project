@@ -1,8 +1,11 @@
 #include "sopch.h"
 #include "Application.h"
 #include "SpaceOptima/Log.h"
-#include "glad/glad.h"
 #include "SpaceOptima/input.h"
+#include "SpaceOptima/Renderer/Renderer.h"
+
+#include <GLFW/glfw3.h>
+
 namespace SpaceOptima
 {
 #define BIND_EVENT_FN(x) std::bind(&x, this, std::placeholders::_1)
@@ -20,136 +23,10 @@ namespace SpaceOptima
 		m_Window = std::unique_ptr<Window>(Window::Create());
 		m_ImGuiLayer = new ImGuiLayer();
 		m_Window->SetEventCallBack(BIND_EVENT_FN(Application::OnEvent));
+		m_Window->SetVSync(true);
 		PushOverlay(m_ImGuiLayer);
 
-		//Vertex Array
-		m_VertexArray.reset(VertexArray::Create());
-		//Vertex Buffer
 	
-		float vertices[3 * 7] =
-		{
-			-0.5f, -0.5f, 0.0f, 0.6f, 0.2f, 0.2f, 1.0f,
-			0.5f, -0.5f, 0.0f, 0.2f, 0.6f, 0.2f, 1.0f,
-			0.0f, 0.5f, 0.0f, 0.2f, 0.2f, 0.6f, 1.0f
-		};
-		
-		std::shared_ptr<VertexBuffer> vertexBuffer;
-
-		vertexBuffer.reset(VertexBuffer::Create(vertices,sizeof(vertices)));
-		//m_VertexBuffer->Bind();
-		//glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-		
-		BufferLayout layout = {
-			{ShaderDataType::Float3, "a_Position"},
-			{ShaderDataType::Float4, "a_Color"}
-
-		};
-
-		vertexBuffer->SetLayout(layout);
-
-		m_VertexArray->AddVertexBuffer(vertexBuffer);
-		/*glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, nullptr);*/
-
-		unsigned int indices[3] = { 0, 1, 2 };
-		std::shared_ptr<IndexBuffer> indexBuffer;
-		indexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
-
-		m_VertexArray->SetIndexBuffer(indexBuffer);
-		//Index Buffer
-
-
-		float squareVertices[3 * 4] =
-		{
-			-0.7f, -0.6f, 0.0f,
-			0.7f, -0.6f, 0.0f, 
-			0.7f, 0.6f, 0.0f,
-			-0.7f, 0.6f, 0.0f
-		};
-
-		m_SquareVA.reset(VertexArray::Create());
-		std::shared_ptr<VertexBuffer> SquareVB; 
-		SquareVB.reset(VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
-
-		BufferLayout squareVBLayout = {
-			{ShaderDataType::Float3, "a_Position"}
-		};
-
-		SquareVB->SetLayout(squareVBLayout);
-
-		m_SquareVA->AddVertexBuffer(SquareVB);
-
-		unsigned int squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
-		std::shared_ptr<IndexBuffer> SquareIB; 
-		SquareIB.reset(IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
-
-		m_SquareVA->SetIndexBuffer(SquareIB);
-
-		std::string vertexSrc = R"(
-		#version 330 core
-
-		layout(location = 0) in vec3 a_Position;
-		layout(location = 1) in vec4 a_Color;
-		out vec3 v_Position;
-		out vec4 v_Color;
-		void main()
-		{
-			v_Position = a_Position;
-			v_Color = a_Color;
-			gl_Position = vec4(a_Position,1.0);
-		}
-
-		)";
-		
-		std::string fragmentSrc = R"(
-		#version 330 core
-		
-		layout(location = 0) out vec4 color;
-		in vec3 v_Position;
-		in vec4 v_Color;
-		void main()
-		{
-			color = vec4(v_Position * 0.5 + 0.5, 1.0);
-			color = v_Color;
-		}
-
-		)";
-
-
-		m_Shader.reset(new Shader(vertexSrc, fragmentSrc));
-
-
-		std::string blueShaderVertexSrc = R"(
-		#version 330 core
-
-		layout(location = 0) in vec3 a_Position;
-		layout(location = 1) in vec4 a_Color;
-		out vec3 v_Position;
-		out vec4 v_Color;
-		void main()
-		{
-			v_Position = a_Position;
-			v_Color = a_Color;
-			gl_Position = vec4(a_Position,1.0);
-		}
-
-		)";
-
-		std::string blueShaderFragmentSrc = R"(
-		#version 330 core
-		
-		layout(location = 0) out vec4 color;
-		in vec3 v_Position;
-		in vec4 v_Color;
-		void main()
-		{
-			color = vec4(0.2, 0.2, 0.8, 1.0);
-		}
-
-		)";
-
-
-		m_BlueShader.reset(new Shader(blueShaderVertexSrc, blueShaderFragmentSrc));
 	}
 
 	Application::~Application()
@@ -176,18 +53,13 @@ namespace SpaceOptima
 		
 		while (m_Running)
 		{
-			glClearColor(0.1f,0.1f,0.1f,0);
-			glClear(GL_COLOR_BUFFER_BIT);
-			m_BlueShader->Bind();
-			m_SquareVA->Bind();
-			glDrawElements(GL_TRIANGLES, m_SquareVA->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
-			m_Shader->Bind();
-			m_VertexArray->Bind();
-			glDrawElements(GL_TRIANGLES, m_VertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
-
+			float time = (float) glfwGetTime(); // Should be in platform Platform::GetTime()
+			Timestep timestep = time - m_LastFrameTime;
+			m_LastFrameTime = time;
+			
 			for (Layer* layer : m_LayerStack)
 			{
-				layer->OnUpdate();
+				layer->OnUpdate(timestep);
 			}
 
 			m_ImGuiLayer->Begin();

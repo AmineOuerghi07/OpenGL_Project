@@ -15,6 +15,7 @@ IncludeDir["GLFW"] ="SpaceOptima/vendor/GLFW/include"
 IncludeDir["Glad"] ="SpaceOptima/vendor/Glad/include"
 IncludeDir["imgui"] ="SpaceOptima/vendor/imgui"
 IncludeDir["glm"] ="SpaceOptima/vendor/glm"
+IncludeDir["stb_image"] ="SpaceOptima/vendor/stb_image"
 include "SpaceOptima/vendor/GLFW"
 include "SpaceOptima/vendor/Glad"
 include "SpaceOptima/vendor/imgui"
@@ -35,6 +36,10 @@ project "SpaceOptima"
 	{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
+		
+		"%{prj.name}/vendor/stb_image/**.cpp",
+		"%{prj.name}/vendor/stb_image/**.h",
+
 		"%{prj.name}/vendor/glm/glm/**.hpp",
 		"%{prj.name}/vendor/glm/glm/**.inl",
 		"%{prj.name}/vendor/glm/glm/**.h",
@@ -49,7 +54,8 @@ project "SpaceOptima"
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.imgui}",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.stb_image}"
 
 	}
 
@@ -112,7 +118,8 @@ project "Sandbox"
 	{
 		"SpaceOptima/vendor/spdlog/include",
 		"SpaceOptima/src/",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"SpaceOptima/vendor/imgui/"
 	}
 
 	links 
