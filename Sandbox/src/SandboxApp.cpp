@@ -112,7 +112,7 @@ public:
 		)";
 
 
-		m_Shader.reset(SpaceOptima::Shader::Create(vertexSrc, fragmentSrc));
+		m_Shader = SpaceOptima::Shader::Create("FirstShader",vertexSrc, fragmentSrc);
 
 
 		std::string blueShaderVertexSrc = R"(
@@ -152,61 +152,29 @@ public:
 		)";
 
 
-		m_BlueShader.reset(SpaceOptima::Shader::Create(blueShaderVertexSrc, blueShaderFragmentSrc));
+		m_BlueShader = SpaceOptima::Shader::Create("BlueShader",blueShaderVertexSrc, blueShaderFragmentSrc);
 
 
 
-		std::string textureVertexSrc = R"(
-		#version 330 core
-
-		layout(location = 0) in vec3 a_Position;
-		layout(location = 1) in vec2 a_TextCoord;
-
-		uniform mat4 u_ViewProjection;
-		uniform mat4 u_Transform;
-
-		out vec2 v_TextCoord;
-
-		void main()
-		{
-			v_TextCoord = a_TextCoord;
-			gl_Position = u_ViewProjection * u_Transform * vec4(a_Position,1.0);
-		}
-
-		)";
-
-		std::string textureFragmentSrc = R"(
-		#version 330 core
-		
-		layout(location = 0) out vec4 color;
-		
-		uniform sampler2D u_Texture;
-
-		in vec2 v_TextCoord;
-
-		void main()
-		{
-			color = texture(u_Texture, v_TextCoord);
-		}
-
-		)";
 
 
-		m_TextureShader.reset(SpaceOptima::Shader::Create(textureVertexSrc, textureFragmentSrc));
+		auto textureShader = m_ShaderLibrary.Load("assets/shaders/Texture.glsl");
 
 		m_Texture = SpaceOptima::Texture2D::Create("assets/textures/textureTest.jpg");
+		
+		m_TextureRGBA = SpaceOptima::Texture2D::Create("assets/textures/textureRGBA.png");
 
 		m_SquareColor = { 0.9f, 0.2f, 0.2f };
 
 
-		std::dynamic_pointer_cast<SpaceOptima::OpenGLShader>(m_TextureShader)->Bind();
-		std::dynamic_pointer_cast<SpaceOptima::OpenGLShader>(m_TextureShader)->UploadUniformInt("u_Texture", 0);
+		std::dynamic_pointer_cast<SpaceOptima::OpenGLShader>(textureShader)->Bind();
+		std::dynamic_pointer_cast<SpaceOptima::OpenGLShader>(textureShader)->UploadUniformInt("u_Texture", 0);
 
 	}
 	void OnUpdate(SpaceOptima::Timestep ts) override 
 	{
 		
-		SO_CLIENT_TRACE("Delta Time : {0}s  ({1}ms)", ts.GetSeconds(), ts.GetMilliSeconds());
+		//SO_CLIENT_TRACE("Delta Time : {0}s  ({1}ms)", ts.GetSeconds(), ts.GetMilliSeconds());
 
 
 		if (SpaceOptima::Input::IsKeyPressed(SO_KEY_LEFT))
@@ -293,8 +261,14 @@ public:
 		}
 		
 		m_Texture->Bind();
+		
+		auto textureShader = m_ShaderLibrary.Get("Texture");
 
-		SpaceOptima::Renderer::Submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+		SpaceOptima::Renderer::Submit(textureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+
+		m_TextureRGBA->Bind();
+
+		SpaceOptima::Renderer::Submit(textureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 
 
 		// Triangle 
@@ -354,13 +328,17 @@ public:
 
 	}
 	private:
+
+		SpaceOptima::ShaderLibrary m_ShaderLibrary;
+
 		SpaceOptima::Ref<SpaceOptima::Shader> m_Shader;
-		SpaceOptima::Ref<SpaceOptima::Shader> m_BlueShader, m_TextureShader;
+		SpaceOptima::Ref<SpaceOptima::Shader> m_BlueShader;
 
 		SpaceOptima::Ref<SpaceOptima::VertexArray> m_VertexArray;
 		SpaceOptima::Ref<SpaceOptima::VertexArray> m_SquareVA;
 
 		SpaceOptima::Ref<SpaceOptima::Texture2D> m_Texture;
+		SpaceOptima::Ref<SpaceOptima::Texture2D> m_TextureRGBA;
 
 		SpaceOptima::OrthographicCamera m_Camera;
 		glm::vec3 m_CameraPosition;
