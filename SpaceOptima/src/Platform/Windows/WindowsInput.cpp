@@ -1,7 +1,7 @@
 #include "sopch.h"
 #include "WindowsInput.h"
 
-#include "SpaceOptima/Application.h"
+#include "SpaceOptima/Core/Application.h"
 #include <GLFW/glfw3.h>
 
 namespace SpaceOptima

@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-#include "SpaceOptima/Core.h"
+#include "SpaceOptima/Core/Core.h"
 
 namespace SpaceOptima
 {

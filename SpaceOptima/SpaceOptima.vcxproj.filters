@@ -84,17 +84,38 @@
     <ClInclude Include="src\SpaceOptima.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\SpaceOptima\Application.h">
-      <Filter>src\SpaceOptima</Filter>
+    <ClInclude Include="src\SpaceOptima\Core\Application.h">
+      <Filter>src\SpaceOptima\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\SpaceOptima\Core.h">
-      <Filter>src\SpaceOptima</Filter>
+    <ClInclude Include="src\SpaceOptima\Core\Core.h">
+      <Filter>src\SpaceOptima\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpaceOptima\Core\EntryPoint.h">
+      <Filter>src\SpaceOptima\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpaceOptima\Core\KeyCodes.h">
+      <Filter>src\SpaceOptima\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpaceOptima\Core\Layer.h">
+      <Filter>src\SpaceOptima\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpaceOptima\Core\LayerStack.h">
+      <Filter>src\SpaceOptima\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpaceOptima\Core\Log.h">
+      <Filter>src\SpaceOptima\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpaceOptima\Core\MouseButtonCodes.h">
+      <Filter>src\SpaceOptima\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\SpaceOptima\Core\TimeStep.h">
       <Filter>src\SpaceOptima\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\SpaceOptima\EntryPoint.h">
-      <Filter>src\SpaceOptima</Filter>
+    <ClInclude Include="src\SpaceOptima\Core\Window.h">
+      <Filter>src\SpaceOptima\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpaceOptima\Core\Input.h">
+      <Filter>src\SpaceOptima\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\SpaceOptima\Events\ApplicationEvent.h">
       <Filter>src\SpaceOptima\Events</Filter>
@@ -111,21 +132,6 @@
     <ClInclude Include="src\SpaceOptima\ImGui\ImGuiLayer.h">
       <Filter>src\SpaceOptima\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="src\SpaceOptima\KeyCodes.h">
-      <Filter>src\SpaceOptima</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SpaceOptima\Layer.h">
-      <Filter>src\SpaceOptima</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SpaceOptima\LayerStack.h">
-      <Filter>src\SpaceOptima</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SpaceOptima\Log.h">
-      <Filter>src\SpaceOptima</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SpaceOptima\MouseButtonCodes.h">
-      <Filter>src\SpaceOptima</Filter>
-    </ClInclude>
     <ClInclude Include="src\SpaceOptima\Renderer\Buffer.h">
       <Filter>src\SpaceOptima\Renderer</Filter>
     </ClInclude>
@@ -133,6 +139,9 @@
       <Filter>src\SpaceOptima\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\SpaceOptima\Renderer\OrthographicCamera.h">
+      <Filter>src\SpaceOptima\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpaceOptima\Renderer\OrthographicCameraController.h">
       <Filter>src\SpaceOptima\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\SpaceOptima\Renderer\RenderCommand.h">
@@ -152,12 +161,6 @@
     </ClInclude>
     <ClInclude Include="src\SpaceOptima\Renderer\VertexArray.h">
       <Filter>src\SpaceOptima\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SpaceOptima\Window.h">
-      <Filter>src\SpaceOptima</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SpaceOptima\input.h">
-      <Filter>src\SpaceOptima</Filter>
     </ClInclude>
     <ClInclude Include="src\sopch.h">
       <Filter>src</Filter>
@@ -1443,6 +1446,7 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
+    <ClInclude Include="src\SpaceOptima\Renderer\Renderer2D.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
@@ -1469,8 +1473,17 @@
     <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp">
       <Filter>src\Platform\Windows</Filter>
     </ClCompile>
-    <ClCompile Include="src\SpaceOptima\Application.cpp">
-      <Filter>src\SpaceOptima</Filter>
+    <ClCompile Include="src\SpaceOptima\Core\Application.cpp">
+      <Filter>src\SpaceOptima\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SpaceOptima\Core\Layer.cpp">
+      <Filter>src\SpaceOptima\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SpaceOptima\Core\LayerStack.cpp">
+      <Filter>src\SpaceOptima\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SpaceOptima\Core\Log.cpp">
+      <Filter>src\SpaceOptima\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\SpaceOptima\ImGui\ImGuiLayer.cpp">
       <Filter>src\SpaceOptima\ImGui</Filter>
@@ -1478,19 +1491,13 @@
     <ClCompile Include="src\SpaceOptima\ImGui\imGuiBuild.cpp">
       <Filter>src\SpaceOptima\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="src\SpaceOptima\Layer.cpp">
-      <Filter>src\SpaceOptima</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SpaceOptima\LayerStack.cpp">
-      <Filter>src\SpaceOptima</Filter>
-    </ClCompile>
-    <ClCompile Include="src\SpaceOptima\Log.cpp">
-      <Filter>src\SpaceOptima</Filter>
-    </ClCompile>
     <ClCompile Include="src\SpaceOptima\Renderer\Buffer.cpp">
       <Filter>src\SpaceOptima\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\SpaceOptima\Renderer\OrthographicCamera.cpp">
+      <Filter>src\SpaceOptima\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SpaceOptima\Renderer\OrthographicCameraController.cpp">
       <Filter>src\SpaceOptima\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\SpaceOptima\Renderer\RenderCommand.cpp">
@@ -1523,5 +1530,6 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
+    <ClCompile Include="src\SpaceOptima\Renderer\Renderer2D.cpp" />
   </ItemGroup>
 </Project>

@@ -79,11 +79,12 @@ namespace SpaceOptima
 		const auto& layout = vertexBuffer->GetLayout();
 		for (const auto& element : layout)
 		{
+			size_t offset = (size_t)element.Offset;
 			glEnableVertexAttribArray(index);
 			glVertexAttribPointer(index, element.GetComponentCount(),
 				ShaderDataTypeToGLPrimitive(element.Type),
 				element.Normalized ? GL_TRUE : GL_FALSE,
-				layout.GetStride(), (void*)element.Offset);
+				layout.GetStride(), (void*)offset);
 			index++;
 		}
 

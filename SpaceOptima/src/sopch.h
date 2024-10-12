@@ -11,7 +11,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "SpaceOptima/Log.h"
+#include "SpaceOptima/Core/Log.h"
 
 #ifdef SO_PLATFORM_WINDOWS
 #include <Windows.h>

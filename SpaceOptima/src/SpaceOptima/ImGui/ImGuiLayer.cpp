@@ -2,7 +2,7 @@
 #include "ImGuiLayer.h"
 #include "imgui.h"
 
-#include "SpaceOptima/Application.h"
+#include "SpaceOptima/Core/Application.h"
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 

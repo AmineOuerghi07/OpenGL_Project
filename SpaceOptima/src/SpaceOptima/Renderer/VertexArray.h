@@ -24,6 +24,6 @@ namespace SpaceOptima
 
 
 
-		static VertexArray* Create();
+		static Ref<VertexArray> Create();
 	};
 }

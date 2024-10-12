@@ -1,5 +1,5 @@
 #pragma once
-#include "SpaceOptima/Window.h"
+#include "SpaceOptima/Core/Window.h"
 #include "SpaceOptima/Renderer/GraphicsContext.h"
 
 #include <GLFW/glfw3.h>

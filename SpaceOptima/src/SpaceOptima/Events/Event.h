@@ -1,5 +1,5 @@
 #pragma once
-#include "SpaceOptima/Core.h"
+#include "SpaceOptima/Core/Core.h"
 #include <iostream>
 #include <functional>
 #include <sstream>

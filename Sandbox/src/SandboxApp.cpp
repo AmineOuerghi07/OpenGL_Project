@@ -1,4 +1,6 @@
 #include <SpaceOptima.h>
+#include <SpaceOptima/Core/EntryPoint.h>
+
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -7,13 +9,15 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Sandbox2D.h"
+
 class ExampleLayer : public SpaceOptima::Layer
 {
 public:
-	ExampleLayer() :Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraPosition(0.0f)
+	ExampleLayer() :Layer("Example"), m_CameraController(1280.0f / 720.0f, true)
 	{
 		//Vertex Array
-		m_VertexArray.reset(SpaceOptima::VertexArray::Create());
+		m_VertexArray = SpaceOptima::VertexArray::Create();
 		//Vertex Buffer
 
 		float vertices[3 * 7] =
@@ -57,7 +61,7 @@ public:
 			-0.5f,  0.5f, 0.0f, 0.0f, 1.0f
 		};
 
-		m_SquareVA.reset(SpaceOptima::VertexArray::Create());
+		m_SquareVA = (SpaceOptima::VertexArray::Create());
 		SpaceOptima::Ref<SpaceOptima::VertexBuffer> SquareVB;
 		SquareVB.reset(SpaceOptima::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
 
@@ -177,32 +181,6 @@ public:
 		//SO_CLIENT_TRACE("Delta Time : {0}s  ({1}ms)", ts.GetSeconds(), ts.GetMilliSeconds());
 
 
-		if (SpaceOptima::Input::IsKeyPressed(SO_KEY_LEFT))
-		{
-			m_CameraPosition.x -= m_CameraSpeed * ts;
-		}
-		else if (SpaceOptima::Input::IsKeyPressed(SO_KEY_RIGHT))
-		{
-			m_CameraPosition.x += m_CameraSpeed * ts;
-		}
-		if (SpaceOptima::Input::IsKeyPressed(SO_KEY_DOWN))
-		{
-			m_CameraPosition.y -= m_CameraSpeed * ts;
-		}
-		else if (SpaceOptima::Input::IsKeyPressed(SO_KEY_UP))
-		{
-			m_CameraPosition.y += m_CameraSpeed * ts;
-		}
-
-		if (SpaceOptima::Input::IsKeyPressed(SO_KEY_Q))
-		{
-			m_CameraRotation += m_CameraRotationSpeed * ts;
-		}
-		if (SpaceOptima::Input::IsKeyPressed(SO_KEY_E))
-		{
-			m_CameraRotation -= m_CameraRotationSpeed * ts;
-		}
-
 
 
 		/*if (SpaceOptima::Input::IsKeyPressed(SO_KEY_J))
@@ -224,13 +202,17 @@ public:
 
 		//glClearColor(0.1f,0.1f,0.1f,0);
 			//glClear(GL_COLOR_BUFFER_BIT);
+
+		// Update
+		m_CameraController.OnUpdate(ts);
+
+		// Render
 		SpaceOptima::RenderCommand::SetClearColor({ 0.2f, 0.2f, 0.2f, 1 });
 		SpaceOptima::RenderCommand::Clear();
 
-		m_Camera.SetPosition(m_CameraPosition);
-		m_Camera.SetRotation(m_CameraRotation);
+	
 
-		SpaceOptima::Renderer::BeginScene(m_Camera);
+		SpaceOptima::Renderer::BeginScene(m_CameraController.GetCamera());
 
 		//m_BlueShader->Bind();
 		//m_BlueShader->UploadUniformMat4("u_ViewProjection", m_Camera.GetViewProjectionMatrix());
@@ -287,10 +269,11 @@ public:
 		//glDrawElements(GL_TRIANGLES, m_VertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 
 	}
-	void OnEvent(SpaceOptima::Event& event) override
+	void OnEvent(SpaceOptima::Event& e) override
 	{
 		/*SpaceOptima::EventDispatcher dispatcher(event);
 		dispatcher.Dispatch<SpaceOptima::KeyPressedEvent>(SO_BIND_EVENT_FN(ExampleLayer::OnKeyPressedEvent));*/
+		m_CameraController.OnEvent(e);
 
 	}
 
@@ -340,12 +323,8 @@ public:
 		SpaceOptima::Ref<SpaceOptima::Texture2D> m_Texture;
 		SpaceOptima::Ref<SpaceOptima::Texture2D> m_TextureRGBA;
 
-		SpaceOptima::OrthographicCamera m_Camera;
-		glm::vec3 m_CameraPosition;
-		float m_CameraSpeed = 5.0f;
-
-		float m_CameraRotationSpeed = 180.0f;
-		float m_CameraRotation = 0.0f;
+		SpaceOptima::OrthographicCameraController m_CameraController;
+		
 
 		glm::vec3 m_SquareColor;
 
@@ -356,7 +335,8 @@ class Sandbox : public SpaceOptima::Application
 		Sandbox()
 		{
 			//
-			PushLayer(new ExampleLayer());
+			// PushLayer(new ExampleLayer());
+			PushLayer(new Sandbox2D());
 		
 		};
 		~Sandbox()

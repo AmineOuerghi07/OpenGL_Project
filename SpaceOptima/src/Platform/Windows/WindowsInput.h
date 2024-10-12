@@ -1,5 +1,5 @@
 #pragma once
-#include "SpaceOptima/Input.h"
+#include "SpaceOptima/Core/Input.h"
 
 
 namespace SpaceOptima

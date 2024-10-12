@@ -9,9 +9,12 @@ namespace SpaceOptima
 	public:
 		OrthographicCamera(float left, float right, float bottom, float top);
 
+		void SetProjection(float left, float right, float bottom, float top);
 
 		const glm::vec3& GetPosition() const { return m_Position; }
 		float GetRotation() const { return m_Rotation; }
+
+
 
 		void SetPosition(const glm::vec3& position) { m_Position = position;  RecalculateViewMatrix(); }
 		void SetRotation(float rotation) { m_Rotation = rotation;  RecalculateViewMatrix(); }
@@ -30,4 +33,5 @@ namespace SpaceOptima
 		glm::vec3 m_Position{ 0.0f, 0.0f, 0.0f };
 		float m_Rotation = 0.0f;
 	};
+
 }

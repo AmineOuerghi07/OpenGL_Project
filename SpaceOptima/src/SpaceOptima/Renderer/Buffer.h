@@ -1,5 +1,5 @@
 #pragma once
-#include "SpaceOptima/Log.h"
+#include "SpaceOptima/Core/Log.h"
 
 namespace SpaceOptima
 {
@@ -96,7 +96,7 @@ namespace SpaceOptima
 	class BufferLayout
 	{
 	public:
-		BufferLayout() {}
+		BufferLayout(): m_Stride(0) {}
 
 		BufferLayout(const std::initializer_list<BufferElement> elements)
 			: m_Elements(elements)

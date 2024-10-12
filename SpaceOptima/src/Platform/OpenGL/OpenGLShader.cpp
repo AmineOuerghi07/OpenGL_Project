@@ -226,6 +226,26 @@ namespace SpaceOptima
 		glUseProgram(0);
 	}
 
+	void OpenGLShader::SetMat3(const std::string& name, const glm::mat3& mat)
+	{
+		UploadUniformMat3(name, mat);
+	}
+
+	void OpenGLShader::SetMat4(const std::string& name, const glm::mat4& mat)
+	{
+		UploadUniformMat4(name, mat);
+	}
+
+	void OpenGLShader::SetFloat3(const std::string& name, const glm::vec3& vec)
+	{
+		UploadUniformFloat3(name, vec);
+	}
+
+	void OpenGLShader::SetFloat4(const std::string& name, const glm::vec4& vec)
+	{
+		UploadUniformFloat4(name, vec);
+	}
+
 	
 	void OpenGLShader::UploadUniformMat3(const std::string& name, const glm::mat3& matrix)
 	{
