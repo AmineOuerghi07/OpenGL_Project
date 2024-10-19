@@ -163,6 +163,7 @@
     <ClInclude Include="src\SpaceOptima\Core\TimeStep.h" />
     <ClInclude Include="src\SpaceOptima\Core\Window.h" />
     <ClInclude Include="src\SpaceOptima\Core\Input.h" />
+    <ClInclude Include="src\SpaceOptima\Debug\Instrumentor.h" />
     <ClInclude Include="src\SpaceOptima\Events\ApplicationEvent.h" />
     <ClInclude Include="src\SpaceOptima\Events\Event.h" />
     <ClInclude Include="src\SpaceOptima\Events\KeyEvent.h" />

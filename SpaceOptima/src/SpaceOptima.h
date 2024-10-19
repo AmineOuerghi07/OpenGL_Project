@@ -3,7 +3,7 @@
 #include "SpaceOptima/Core/Application.h"
 #include "SpaceOptima/Core/Layer.h"
 #include "SpaceOptima/Core/Log.h"
-
+#include "SpaceOptima/Debug/Instrumentor.h"
 
 
 #include "SpaceOptima/Core/Input.h"

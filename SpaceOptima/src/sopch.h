@@ -13,6 +13,9 @@
 
 #include "SpaceOptima/Core/Log.h"
 
+#include "SpaceOptima/Debug/Instrumentor.h"
+
+
 #ifdef SO_PLATFORM_WINDOWS
 #include <Windows.h>
 #endif

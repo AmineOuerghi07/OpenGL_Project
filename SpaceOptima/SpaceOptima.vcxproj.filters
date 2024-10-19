@@ -1447,6 +1447,7 @@
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
     <ClInclude Include="src\SpaceOptima\Renderer\Renderer2D.h" />
+    <ClInclude Include="src\SpaceOptima\Debug\Instrumentor.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">

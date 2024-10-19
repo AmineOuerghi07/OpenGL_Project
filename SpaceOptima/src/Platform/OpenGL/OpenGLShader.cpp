@@ -226,6 +226,11 @@ namespace SpaceOptima
 		glUseProgram(0);
 	}
 
+	void OpenGLShader::SetInt(const std::string& name, int value)
+	{
+		UploadUniformInt(name, value);
+	}
+
 	void OpenGLShader::SetMat3(const std::string& name, const glm::mat3& mat)
 	{
 		UploadUniformMat3(name, mat);

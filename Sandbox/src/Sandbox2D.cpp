@@ -7,6 +7,9 @@
 #include <glm/gtc/type_ptr.hpp>
 
 
+
+
+
 Sandbox2D::Sandbox2D()
 	: Layer("Sandbox2D"), m_CameraController(1280.0f / 720.0f, false)
 {
@@ -15,7 +18,7 @@ Sandbox2D::Sandbox2D()
 void Sandbox2D::OnAttach()
 {
 
-
+	m_Texture = SpaceOptima::Texture2D::Create("assets/textures/textureTest.jpg");
 
 
 }
@@ -26,24 +29,37 @@ void Sandbox2D::OnDetach()
 
 void Sandbox2D::OnUpdate(SpaceOptima::Timestep ts)
 {
+	SO_PROFILE_FUNCTION();
 	// Update
-	m_CameraController.OnUpdate(ts);
-
+	{
+		SO_PROFILE_SCOPE("CameraOnUpdate");
+		m_CameraController.OnUpdate(ts);
+	}
 	// Render
+	{
 
-	SpaceOptima::RenderCommand::SetClearColor({ 0.2f, 0.2f, 0.2f, 1 });
-	SpaceOptima::RenderCommand::Clear();
-
-
-
-	SpaceOptima::Renderer2D::BeginScene(m_CameraController.GetCamera());
-
-	SpaceOptima::Renderer2D::DrawQuad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, { 0.2f, 0.2f, 0.8f, 1.0f });
-	SpaceOptima::Renderer2D::DrawQuad({ 0.5f, 0.5f }, { 0.5f, 0.75f }, { 0.8f, 0.2f, 0.2f, 1.0f });
+		SO_PROFILE_SCOPE("RenderCommand SetColor");
+		SpaceOptima::RenderCommand::SetClearColor({ 0.2f, 0.2f, 0.2f, 1 });
+		SpaceOptima::RenderCommand::Clear();
 
 
-	SpaceOptima::Renderer2D::EndScene();
+	}
+	
+	{
+		SO_PROFILE_SCOPE("Renderer RenderScene");
+		SpaceOptima::Renderer2D::BeginScene(m_CameraController.GetCamera());
 
+
+		SpaceOptima::Renderer2D::DrawQuad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, { 0.2f, 0.2f, 0.8f, 1.0f });
+		SpaceOptima::Renderer2D::DrawQuad({ 0.5f, 0.5f }, { 0.5f, 0.75f }, { 0.8f, 0.2f, 0.2f, 1.0f });
+
+		SpaceOptima::Renderer2D::DrawQuad({ 1.0f, 0.1f , -0.1f }, { 10.0f, 10.0f }, m_Texture);
+
+
+
+
+		SpaceOptima::Renderer2D::EndScene();
+	}
 
 	/*
 	std::dynamic_pointer_cast<SpaceOptima::OpenGLShader>(m_Shader)->Bind();
@@ -53,6 +69,8 @@ void Sandbox2D::OnUpdate(SpaceOptima::Timestep ts)
 
 void Sandbox2D::OnImGuiRender()
 {
+	SO_PROFILE_FUNCTION();
+
 	ImGui::Begin("Settings");
 	ImGui::ColorEdit4("SquareColor", glm::value_ptr(m_SquareColor));
 
