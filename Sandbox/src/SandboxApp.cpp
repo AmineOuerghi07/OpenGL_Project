@@ -29,7 +29,7 @@ public:
 
 		SpaceOptima::Ref<SpaceOptima::VertexBuffer> vertexBuffer;
 
-		vertexBuffer.reset(SpaceOptima::VertexBuffer::Create(vertices, sizeof(vertices)));
+		vertexBuffer = SpaceOptima::VertexBuffer::Create(vertices, sizeof(vertices));
 		//m_VertexBuffer->Bind();
 		//glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
@@ -47,7 +47,7 @@ public:
 
 		unsigned int indices[3] = { 0, 1, 2 };
 		SpaceOptima::Ref<SpaceOptima::IndexBuffer> indexBuffer;
-		indexBuffer.reset(SpaceOptima::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+		indexBuffer = SpaceOptima::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
 
 		m_VertexArray->SetIndexBuffer(indexBuffer);
 		//Index Buffer
@@ -63,7 +63,7 @@ public:
 
 		m_SquareVA = (SpaceOptima::VertexArray::Create());
 		SpaceOptima::Ref<SpaceOptima::VertexBuffer> SquareVB;
-		SquareVB.reset(SpaceOptima::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
+		SquareVB = SpaceOptima::VertexBuffer::Create(squareVertices, sizeof(squareVertices));
 
 		SpaceOptima::BufferLayout squareVBLayout = {
 			{SpaceOptima::ShaderDataType::Float3, "a_Position"},
@@ -76,7 +76,7 @@ public:
 
 		unsigned int squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
 		SpaceOptima::Ref < SpaceOptima::IndexBuffer > SquareIB;
-		SquareIB.reset(SpaceOptima::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
+		SquareIB = (SpaceOptima::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
 
 		m_SquareVA->SetIndexBuffer(SquareIB);
 
