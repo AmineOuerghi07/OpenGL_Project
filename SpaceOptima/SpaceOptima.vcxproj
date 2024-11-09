@@ -155,6 +155,7 @@
     <ClInclude Include="src\SpaceOptima\Core\Application.h" />
     <ClInclude Include="src\SpaceOptima\Core\Core.h" />
     <ClInclude Include="src\SpaceOptima\Core\EntryPoint.h" />
+    <ClInclude Include="src\SpaceOptima\Core\Input.h" />
     <ClInclude Include="src\SpaceOptima\Core\KeyCodes.h" />
     <ClInclude Include="src\SpaceOptima\Core\Layer.h" />
     <ClInclude Include="src\SpaceOptima\Core\LayerStack.h" />
@@ -162,7 +163,6 @@
     <ClInclude Include="src\SpaceOptima\Core\MouseButtonCodes.h" />
     <ClInclude Include="src\SpaceOptima\Core\TimeStep.h" />
     <ClInclude Include="src\SpaceOptima\Core\Window.h" />
-    <ClInclude Include="src\SpaceOptima\Core\Input.h" />
     <ClInclude Include="src\SpaceOptima\Debug\Instrumentor.h" />
     <ClInclude Include="src\SpaceOptima\Events\ApplicationEvent.h" />
     <ClInclude Include="src\SpaceOptima\Events\Event.h" />
@@ -637,16 +637,9 @@
     <ClCompile Include="src\sopch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="vendor\glm\glm\detail\glm.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
+    <ClCompile Include="vendor\glm\glm\detail\glm.cpp" />
     <ClCompile Include="vendor\glm\glm\glm.cppm">
       <ObjectFileName>$(IntDir)\glm1.obj</ObjectFileName>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="vendor\stb_image\stb_image.cpp" />
   </ItemGroup>

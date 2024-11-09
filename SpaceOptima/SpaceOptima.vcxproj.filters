@@ -19,6 +19,9 @@
     <Filter Include="src\SpaceOptima\Core">
       <UniqueIdentifier>{4A89B646-3618-4010-DF36-540BCBA450B6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\SpaceOptima\Debug">
+      <UniqueIdentifier>{A80D941D-147A-4F18-DD6D-E77549997180}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\SpaceOptima\Events">
       <UniqueIdentifier>{5615A0D3-420F-C925-2B7C-5F3617152F92}</UniqueIdentifier>
     </Filter>
@@ -93,6 +96,9 @@
     <ClInclude Include="src\SpaceOptima\Core\EntryPoint.h">
       <Filter>src\SpaceOptima\Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\SpaceOptima\Core\Input.h">
+      <Filter>src\SpaceOptima\Core</Filter>
+    </ClInclude>
     <ClInclude Include="src\SpaceOptima\Core\KeyCodes.h">
       <Filter>src\SpaceOptima\Core</Filter>
     </ClInclude>
@@ -114,8 +120,8 @@
     <ClInclude Include="src\SpaceOptima\Core\Window.h">
       <Filter>src\SpaceOptima\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\SpaceOptima\Core\Input.h">
-      <Filter>src\SpaceOptima\Core</Filter>
+    <ClInclude Include="src\SpaceOptima\Debug\Instrumentor.h">
+      <Filter>src\SpaceOptima\Debug</Filter>
     </ClInclude>
     <ClInclude Include="src\SpaceOptima\Events\ApplicationEvent.h">
       <Filter>src\SpaceOptima\Events</Filter>
@@ -148,6 +154,9 @@
       <Filter>src\SpaceOptima\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\SpaceOptima\Renderer\Renderer.h">
+      <Filter>src\SpaceOptima\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpaceOptima\Renderer\Renderer2D.h">
       <Filter>src\SpaceOptima\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\SpaceOptima\Renderer\RendererAPI.h">
@@ -1446,8 +1455,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\SpaceOptima\Renderer\Renderer2D.h" />
-    <ClInclude Include="src\SpaceOptima\Debug\Instrumentor.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
@@ -1507,6 +1514,9 @@
     <ClCompile Include="src\SpaceOptima\Renderer\Renderer.cpp">
       <Filter>src\SpaceOptima\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\SpaceOptima\Renderer\Renderer2D.cpp">
+      <Filter>src\SpaceOptima\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\SpaceOptima\Renderer\RendererAPI.cpp">
       <Filter>src\SpaceOptima\Renderer</Filter>
     </ClCompile>
@@ -1531,6 +1541,5 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\SpaceOptima\Renderer\Renderer2D.cpp" />
   </ItemGroup>
 </Project>
