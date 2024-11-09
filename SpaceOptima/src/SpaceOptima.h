@@ -26,6 +26,8 @@
 
 #include "SpaceOptima/Renderer/Shader.h"
 
+#include "SpaceOptima/Renderer/Framebuffer.h"
+
 #include "SpaceOptima/Renderer/Texture.h"
 
 #include "SpaceOptima/Renderer/VertexArray.h"

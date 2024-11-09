@@ -66,6 +66,9 @@
     <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h">
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLFramebuffer.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLRendererAPI.h">
       <Filter>src\Platform\OpenGL</Filter>
     </ClInclude>
@@ -77,9 +80,6 @@
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h">
       <Filter>src\Platform\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Platform\Windows\WindowsInput.h">
-      <Filter>src\Platform\Windows</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\Windows\WindowsWindow.h">
       <Filter>src\Platform\Windows</Filter>
@@ -139,6 +139,9 @@
       <Filter>src\SpaceOptima\ImGui</Filter>
     </ClInclude>
     <ClInclude Include="src\SpaceOptima\Renderer\Buffer.h">
+      <Filter>src\SpaceOptima\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpaceOptima\Renderer\Framebuffer.h">
       <Filter>src\SpaceOptima\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="src\SpaceOptima\Renderer\GraphicsContext.h">
@@ -1463,6 +1466,9 @@
     <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLFramebuffer.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLRendererAPI.cpp">
       <Filter>src\Platform\OpenGL</Filter>
     </ClCompile>
@@ -1500,6 +1506,9 @@
       <Filter>src\SpaceOptima\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="src\SpaceOptima\Renderer\Buffer.cpp">
+      <Filter>src\SpaceOptima\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SpaceOptima\Renderer\Framebuffer.cpp">
       <Filter>src\SpaceOptima\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\SpaceOptima\Renderer\OrthographicCamera.cpp">

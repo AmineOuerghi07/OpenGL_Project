@@ -20,9 +20,11 @@ private:
 
 	// Temporary
 	SpaceOptima::Ref<SpaceOptima::Texture2D> m_Texture;
+	SpaceOptima::Ref<SpaceOptima::Texture2D> m_TextureMilk;
 	SpaceOptima::Ref<SpaceOptima::VertexArray> m_VertexArray;
 	SpaceOptima::Ref<SpaceOptima::Shader> m_Shader;
 	SpaceOptima::Ref<SpaceOptima::VertexArray> m_SquareVA;
+	SpaceOptima::Ref<SpaceOptima::Framebuffer> m_Framebuffer;
 
 
 

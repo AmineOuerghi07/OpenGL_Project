@@ -145,11 +145,11 @@
   <ItemGroup>
     <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLFramebuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLRendererAPI.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLShader.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLTexture.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h" />
-    <ClInclude Include="src\Platform\Windows\WindowsInput.h" />
     <ClInclude Include="src\Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="src\SpaceOptima.h" />
     <ClInclude Include="src\SpaceOptima\Core\Application.h" />
@@ -170,6 +170,7 @@
     <ClInclude Include="src\SpaceOptima\Events\MouseEvent.h" />
     <ClInclude Include="src\SpaceOptima\ImGui\ImGuiLayer.h" />
     <ClInclude Include="src\SpaceOptima\Renderer\Buffer.h" />
+    <ClInclude Include="src\SpaceOptima\Renderer\Framebuffer.h" />
     <ClInclude Include="src\SpaceOptima\Renderer\GraphicsContext.h" />
     <ClInclude Include="src\SpaceOptima\Renderer\OrthographicCamera.h" />
     <ClInclude Include="src\SpaceOptima\Renderer\OrthographicCameraController.h" />
@@ -612,6 +613,7 @@
   <ItemGroup>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLFramebuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLRendererAPI.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLShader.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLTexture.cpp" />
@@ -625,6 +627,7 @@
     <ClCompile Include="src\SpaceOptima\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="src\SpaceOptima\ImGui\imGuiBuild.cpp" />
     <ClCompile Include="src\SpaceOptima\Renderer\Buffer.cpp" />
+    <ClCompile Include="src\SpaceOptima\Renderer\Framebuffer.cpp" />
     <ClCompile Include="src\SpaceOptima\Renderer\OrthographicCamera.cpp" />
     <ClCompile Include="src\SpaceOptima\Renderer\OrthographicCameraController.cpp" />
     <ClCompile Include="src\SpaceOptima\Renderer\RenderCommand.cpp" />

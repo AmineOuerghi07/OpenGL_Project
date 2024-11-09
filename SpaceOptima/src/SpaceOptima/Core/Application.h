@@ -18,7 +18,7 @@ namespace SpaceOptima
 	class SO_API Application
 	{
 		public:
-			Application();
+			Application(const std::string& name = "SpaceOptima Engine");
 			virtual ~Application();
 			void Run();
 			void OnEvent(Event& e);
@@ -27,6 +27,10 @@ namespace SpaceOptima
 
 			inline static Application& GetApplication() { return *s_Instance; }
 			inline Window& GetWindow() { return *m_Window; }
+
+			void Close();
+
+			ImGuiLayer* GetImGuiLayer() { return m_ImGuiLayer; }
 		private:
 			bool OnWindowClose(WindowCloseEvent& e);
 			bool OnWindowResize(WindowResizeEvent& e);
