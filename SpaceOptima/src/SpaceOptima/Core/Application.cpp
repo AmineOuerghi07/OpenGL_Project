@@ -16,13 +16,13 @@ namespace SpaceOptima
 
 	
 
-	Application::Application()
+	Application::Application(const std::string& name)
 	{
 		SO_CORE_ASSERT(!s_Instance, "Application already exists !!!");
 
 		s_Instance = this;
 
-		m_Window = std::unique_ptr<Window>(Window::Create());
+		m_Window = std::unique_ptr<Window>(Window::Create(WindowProps(name)));
 		m_ImGuiLayer = new ImGuiLayer();
 		m_Window->SetEventCallBack(BIND_EVENT_FN(Application::OnEvent));
 
@@ -45,12 +45,12 @@ namespace SpaceOptima
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(Application::OnWindowClose));
 		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(Application::OnWindowResize));
 		//SO_CORE_INFO("{0}", e);
-		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();) {
-			(*--it)->OnEvent(e);
-			if (e.Handled())
+		for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it) {
+			if (e.Handled)
 			{
 				break;
 			}
+			(*it)->OnEvent(e);
 		}
 	}
 
@@ -91,6 +91,11 @@ namespace SpaceOptima
 	{
 		m_LayerStack.PushOverlay(layer);
 		layer->OnAttach();
+	}
+
+	void Application::Close()
+	{
+		m_Running = false;
 	}
 
 	bool Application::OnWindowClose(WindowCloseEvent& e)

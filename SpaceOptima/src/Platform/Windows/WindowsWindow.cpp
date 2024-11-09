@@ -14,9 +14,9 @@ namespace SpaceOptima
 		SO_CORE_ERROR("GLFW ERROR ({0}): {1}", error, description);
 	}
 
-	Window* Window::Create(const WindowProps& windowProps)
+	Scope<Window> Window::Create(const WindowProps& windowProps)
 	{
-		return new WindowsWindow(windowProps);
+		return std::make_unique<WindowsWindow>(windowProps);
 	}
 
 	WindowsWindow::WindowsWindow(const WindowProps& windowProps)
@@ -53,7 +53,7 @@ namespace SpaceOptima
 		
 		glfwSetWindowUserPointer(m_Window, &m_Data);
 
-		SetVSync(true);
+		SetVSync(false);
 		
 
 		//
