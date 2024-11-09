@@ -87,7 +87,6 @@ void Sandbox2D::OnUpdate(SpaceOptima::Timestep ts)
 
 			//SpaceOptima::Renderer2D::EndScene();
 
-			SpaceOptima::Renderer2D::BeginScene(m_CameraController.GetCamera());
 
 			//SpaceOptima::Renderer2D::BeginScene(m_CameraController.GetCamera());
 
