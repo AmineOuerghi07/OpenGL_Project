@@ -14,6 +14,10 @@
 
 #include "SpaceOptima/ImGui/ImGuiLayer.h"
 
+#include "SpaceOptima/Scene/Scene.h"
+#include "SpaceOptima/Scene/Components.h"
+#include "SpaceOptima/Scene/Entity.h"
+
 // Renderer 
 
 #include "SpaceOptima/Renderer/RenderCommand.h"

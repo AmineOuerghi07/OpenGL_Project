@@ -28,7 +28,11 @@ namespace SpaceOptima
 		Ref<VertexArray> m_SquareVA;
 		Ref<Framebuffer> m_Framebuffer;
 
-		glm::vec2 m_ViewportSize;
+		Ref<Scene> m_ActiveScene;
+
+		Entity m_Square;
+
+		glm::vec2 m_ViewportSize = {1280.0, 720.0};
 
 		bool m_ViewportFocused = false;
 		bool m_ViewportHovered = false;

@@ -27,6 +27,15 @@ namespace SpaceOptima
 
 		m_Framebuffer = Framebuffer::Create(fbSpecs);
 
+		m_ActiveScene = std::make_shared<Scene>();
+
+		auto square = m_ActiveScene->CreateEntity("Square");
+
+
+		square.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.0f,1.0f,0.0f,1.0f });
+
+		m_Square = square;
+
 
 	}
 
@@ -36,78 +45,41 @@ namespace SpaceOptima
 
 	void EditorLayer::OnUpdate(Timestep ts)
 	{
-		SO_PROFILE_FUNCTION();
 		// Update
 		// Reset here
 
 
 		Renderer2D::ResetStats();
-		{
-			SO_PROFILE_SCOPE("CameraOnUpdate");
-			if(m_ViewportFocused && m_ViewportHovered)
-				m_CameraController.OnUpdate(ts);
-		}
+		
+		if(m_ViewportFocused && m_ViewportHovered)
+			m_CameraController.OnUpdate(ts);
+		
+
+		// Update Scene
+		
+	
+
 		// Render
 		m_Framebuffer->Bind();
-		{
+		RenderCommand::SetClearColor({ 0.2f, 0.2f, 0.2f, 1 });
+		RenderCommand::Clear();
 
-			SO_PROFILE_SCOPE("RenderCommand SetColor");
-			RenderCommand::SetClearColor({ 0.2f, 0.2f, 0.2f, 1 });
-			RenderCommand::Clear();
-
-
-		}
-
+		static float rotation = 0.0f;
+		rotation += ts * 50.0f;
+			//SO_CORE_INFO("rotation = {0}", rotation);
+		SO_CLIENT_INFO("Delta Time : {0}s  ({1}ms)", ts.GetSeconds(), 1000 / ts.GetMilliSeconds());
 
 
-		{
+		Renderer2D::BeginScene(m_CameraController.GetCamera());
 
-			{
+		m_ActiveScene->OnUpdate(ts);
 
-				static float rotation = 0.0f;
-				rotation += ts * 50.0f;
-				//SO_CORE_INFO("rotation = {0}", rotation);
-				SO_CLIENT_INFO("Delta Time : {0}s  ({1}ms)", ts.GetSeconds(), 1000 / ts.GetMilliSeconds());
-				SO_PROFILE_SCOPE("Renderer RenderScene");
-				Renderer2D::BeginScene(m_CameraController.GetCamera());
-
-				//Renderer2D::DrawRotatedQuad({ -1.0f, 1.0f }, { 0.8f, 0.8f }, { 0.2f, 0.2f, 0.8f, 1.0f }, rotation);
-				//Renderer2D::DrawRotatedQuad({ 1.0f, -1.0f }, { 0.8f, 0.8f }, { 0.2f, 0.2f, 0.8f, 1.0f }, rotation);
-				for (float i = -4.5f; i < 5.0f; i += 1.2f)
-				{
-					for (float y = -9.5f; y < 9.5f; y += 0.55f)
-					{
-						Renderer2D::DrawRotatedQuad({ y, i }, { 0.45f, 0.9f }, m_TextureMilk, 0.0f);
-					}
-				}
-				//Renderer2D::DrawQuad({ 5.0f, 5.0f }, { 0.45f, 0.45f }, { 0.8f, 0.2f, 0.2f, 1.0f });
-				//Renderer2D::DrawQuad({ -0.5f, -0.5f }, { 0.45f, 0.45f }, { 0.2f, 0.8f, 0.2f, 1.0f });
-
-				Renderer2D::DrawQuad({ 0.0f, 0.0f , -0.1f }, { 20.0f, 10.0f }, m_Texture, 1.0f, { 0.6f, 0.2f, 0.2f, 1.0f });
-				//Renderer2D::DrawRotatedQuad({ 0.0f, 0.0f , 0.0f }, { 1.0f, 1.0f }, m_Texture, rotation, 1.0f, { 0.5f, 0.2f, 0.2f, 1.0f });
+		Renderer2D::EndScene();
 
 
-				//Renderer2D::EndScene();
-
-
-				//Renderer2D::BeginScene(m_CameraController.GetCamera());
-
-
-
-				/*for (float y = -10.0f; y < 10.0f; y += 0.5f)
-				{
-					for (float x = -10.f; x < 10.f; x += 0.5f)
-					{
-						glm::vec4 color = {(x + 10.0f) / 10.0f, 0.4f, (y + 10.0f) / 10.0f, 1.0f};
-						Renderer2D::DrawQuad({ x, y }, { 0.45f, 0.45f }, color);
-					}
-				}*/
-				Renderer2D::EndScene();
-
-
-			}
-			m_Framebuffer->Unbind();
-		}
+		
+		m_Framebuffer->Unbind();
+		
 
 		/*
 		std::dynamic_pointer_cast<OpenGLShader>(m_Shader)->Bind();
@@ -197,8 +169,18 @@ namespace SpaceOptima
 		ImGui::Text("Vertices : %d", stats.GetTotalVertexCount());
 		ImGui::Text("Indices : %d", stats.GetTotalIndexCount());
 
+		auto& squareColor = m_Square.GetComponent<SpriteRendererComponent>();
 
-		ImGui::ColorEdit4("SquareColor", glm::value_ptr(m_SquareColor));
+
+		ImGui::Spacing();
+
+		ImGui::Separator();
+
+		ImGui::Text(m_Square.GetComponent<TagComponent>().Tag.c_str());
+
+
+
+		ImGui::ColorEdit4("SquareColor", glm::value_ptr(squareColor.Color));
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0, 0.0 });
 
