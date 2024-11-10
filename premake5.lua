@@ -16,6 +16,7 @@ IncludeDir["Glad"] ="SpaceOptima/vendor/Glad/include"
 IncludeDir["imgui"] ="SpaceOptima/vendor/imgui"
 IncludeDir["glm"] ="SpaceOptima/vendor/glm"
 IncludeDir["stb_image"] ="SpaceOptima/vendor/stb_image"
+IncludeDir["entt"] ="SpaceOptima/vendor/entt/include"
 
 group "Dependencies"
 	include "SpaceOptima/vendor/GLFW"
@@ -57,7 +58,8 @@ project "SpaceOptima"
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.imgui}",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.stb_image}"
+		"%{IncludeDir.stb_image}",
+		"%{IncludeDir.entt}"
 
 	}
 
@@ -121,6 +123,7 @@ project "SpaceOptima_Editor"
 		"SpaceOptima/vendor/spdlog/include",
 		"SpaceOptima/src/",
 		"%{IncludeDir.glm}",
+		"%{IncludeDir.entt}",
 		"SpaceOptima/vendor/imgui/"
 	}
 
@@ -172,7 +175,8 @@ project "SpaceOptima_Editor"
 			"SpaceOptima/vendor/spdlog/include",
 			"SpaceOptima/src/",
 			"%{IncludeDir.glm}",
-			"SpaceOptima/vendor/imgui/"
+			"SpaceOptima/vendor/imgui/",
+			"%{IncludeDir.entt}"
 		}
 	
 		links 
