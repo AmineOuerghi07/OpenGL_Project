@@ -200,7 +200,7 @@ void Sandbox2D::OnImGuiRender()
 
 	uint32_t framebufferTexture = m_Framebuffer->GetColorAttachementRendererID();
 
-	ImGui::Image((void*)m_Framebuffer->GetColorAttachementRendererID(), ImVec2{1280.0, 720.0}, ImVec2{ 0,1 }, ImVec2{ 1,0 });
+	ImGui::Image((void*)(uint64_t)m_Framebuffer->GetColorAttachementRendererID(), ImVec2{1280.0, 720.0}, ImVec2{ 0,1 }, ImVec2{ 1,0 });
 
 	ImGui::End();
 

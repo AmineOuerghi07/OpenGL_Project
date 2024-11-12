@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SpaceOptima.h>
+#include "Panels/SceneHierarchyPanel.h"
 
 namespace SpaceOptima
 {
@@ -42,6 +43,8 @@ namespace SpaceOptima
 
 		bool m_IsPrimaryCamera = true;
 
+		SceneHierarchyPanel m_SceneHierarchyPanel;
+		
 		glm::vec4 m_SquareColor = { 0.8f, 0.0f, 0.1f, 1.0f };
 
 	};
