@@ -46,6 +46,8 @@ namespace SpaceOptima
 
 		cc.Primary = false;
 
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+
 
 	}
 
@@ -183,6 +185,8 @@ namespace SpaceOptima
 			ImGui::EndMenuBar();
 		}
 
+		m_SceneHierarchyPanel.OnImGuiRender();
+
 		ImGui::Begin("Settings");
 		ImGui::Text("Renderer2D Stats");
 		ImGui::Text("Draw Calls : %d", stats.DrawCalls);
@@ -234,7 +238,7 @@ namespace SpaceOptima
 		
 		uint32_t framebufferTexture = m_Framebuffer->GetColorAttachementRendererID();
 
-		ImGui::Image((void*)m_Framebuffer->GetColorAttachementRendererID(), ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0,1 }, ImVec2{ 1,0 });
+		ImGui::Image((void*)(uint64_t)m_Framebuffer->GetColorAttachementRendererID(), ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0,1 }, ImVec2{ 1,0 });
 
 		ImGui::End();
 

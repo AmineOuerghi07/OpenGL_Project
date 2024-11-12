@@ -12,7 +12,7 @@ namespace SpaceOptima
 
 	Scene::Scene()
 	{
-		entt::entity entity = m_Registry.create();
+		//entt::entity entity = m_Registry.create();
 	}
 	
 	
@@ -43,7 +43,7 @@ namespace SpaceOptima
 		auto view = m_Registry.view<CameraComponent, TransformComponent>();
 		for (auto entity : view)
 		{
-			const auto& [camera, transform] = view.get<CameraComponent, TransformComponent>(entity);
+			auto [camera, transform] = view.get<CameraComponent, TransformComponent>(entity);
 
 			if (camera.Primary)
 			{
@@ -60,7 +60,7 @@ namespace SpaceOptima
 			auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
 			for (auto entity : group)
 			{
-				const auto& [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
+				auto [transform, sprite] = group.get<TransformComponent, SpriteRendererComponent>(entity);
 
 				Renderer2D::DrawQuad(transform, sprite.Color);
 			}
