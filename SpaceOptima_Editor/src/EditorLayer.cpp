@@ -33,8 +33,18 @@ namespace SpaceOptima
 
 
 		square.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.0f,1.0f,0.0f,1.0f });
-
+		
 		m_Square = square;
+
+		m_PrimaryCamera = m_ActiveScene->CreateEntity("Primary Camera");
+
+		m_PrimaryCamera.AddComponent<CameraComponent>();
+
+		m_SecondCamera = m_ActiveScene->CreateEntity("Second Camera");
+
+		auto& cc = m_SecondCamera.AddComponent<CameraComponent>();
+
+		cc.Primary = false;
 
 
 	}
@@ -48,6 +58,17 @@ namespace SpaceOptima
 		// Update
 		// Reset here
 
+
+		// Resize
+
+		if (FramebufferSpecification spec = m_Framebuffer->GetSpecification();
+			m_ViewportSize.x > 0.0f && m_ViewportSize.y > 0.0f &&
+			(spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
+		{
+			m_Framebuffer->Resize(uint32_t(m_ViewportSize.x), uint32_t(m_ViewportSize.y));
+
+			m_ActiveScene->OnViewportResize(uint32_t(m_ViewportSize.x), uint32_t(m_ViewportSize.y));
+		}
 
 		Renderer2D::ResetStats();
 		
@@ -70,11 +91,11 @@ namespace SpaceOptima
 		SO_CLIENT_INFO("Delta Time : {0}s  ({1}ms)", ts.GetSeconds(), 1000 / ts.GetMilliSeconds());
 
 
-		Renderer2D::BeginScene(m_CameraController.GetCamera());
+		//Renderer2D::BeginScene(m_CameraController.GetCamera());
 
 		m_ActiveScene->OnUpdate(ts);
 
-		Renderer2D::EndScene();
+		//Renderer2D::EndScene();
 
 
 		
@@ -184,18 +205,31 @@ namespace SpaceOptima
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0, 0.0 });
 
+
+		ImGui::DragFloat3("Camera Transform",
+			glm::value_ptr(m_PrimaryCamera.GetComponent<TransformComponent>().Transform[3]));
+
+		auto& camera = m_SecondCamera.GetComponent<CameraComponent>().Camera;
+		float orthoSize = camera.GetOrthographicSize();
+		if (ImGui::DragFloat("Second Camera Size", &orthoSize))
+		{
+			camera.SetOrthographicSize(orthoSize);
+		}
+
+		if (ImGui::Checkbox("Primary", &m_IsPrimaryCamera))
+		{
+			m_PrimaryCamera.GetComponent<CameraComponent>().Primary = m_IsPrimaryCamera;
+			m_SecondCamera.GetComponent<CameraComponent>().Primary = !m_IsPrimaryCamera;
+		}
+		
+
 		ImGui::Begin("viewport");
 		m_ViewportFocused = ImGui::IsWindowFocused();
 		m_ViewportHovered = ImGui::IsWindowHovered();
 		Application::GetApplication().GetImGuiLayer()->BlockEvents(!m_ViewportFocused || !m_ViewportHovered);
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-		if (m_ViewportSize != *(glm::vec2*)&viewportPanelSize)
-		{
-			m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
-			m_Framebuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
 
-			m_CameraController.OnResize(viewportPanelSize.x, viewportPanelSize.y);
-		}
 		SO_CLIENT_WARN("viewport size : {0}  {1}", viewportPanelSize.x, viewportPanelSize.y);
 		
 		uint32_t framebufferTexture = m_Framebuffer->GetColorAttachementRendererID();

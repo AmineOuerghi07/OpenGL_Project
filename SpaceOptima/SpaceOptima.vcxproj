@@ -170,6 +170,7 @@
     <ClInclude Include="src\SpaceOptima\Events\MouseEvent.h" />
     <ClInclude Include="src\SpaceOptima\ImGui\ImGuiLayer.h" />
     <ClInclude Include="src\SpaceOptima\Renderer\Buffer.h" />
+    <ClInclude Include="src\SpaceOptima\Renderer\Camera.h" />
     <ClInclude Include="src\SpaceOptima\Renderer\Framebuffer.h" />
     <ClInclude Include="src\SpaceOptima\Renderer\GraphicsContext.h" />
     <ClInclude Include="src\SpaceOptima\Renderer\OrthographicCamera.h" />
@@ -185,6 +186,7 @@
     <ClInclude Include="src\SpaceOptima\Scene\Components.h" />
     <ClInclude Include="src\SpaceOptima\Scene\Entity.h" />
     <ClInclude Include="src\SpaceOptima\Scene\Scene.h" />
+    <ClInclude Include="src\SpaceOptima\Scene\SceneCamera.h" />
     <ClInclude Include="vendor\glm\glm\common.hpp" />
     <ClInclude Include="vendor\glm\glm\detail\_features.hpp" />
     <ClInclude Include="vendor\glm\glm\detail\_fixes.hpp" />
@@ -630,6 +632,7 @@
     <ClCompile Include="src\SpaceOptima\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="src\SpaceOptima\ImGui\imGuiBuild.cpp" />
     <ClCompile Include="src\SpaceOptima\Renderer\Buffer.cpp" />
+    <ClCompile Include="src\SpaceOptima\Renderer\Camera.cpp" />
     <ClCompile Include="src\SpaceOptima\Renderer\Framebuffer.cpp" />
     <ClCompile Include="src\SpaceOptima\Renderer\OrthographicCamera.cpp" />
     <ClCompile Include="src\SpaceOptima\Renderer\OrthographicCameraController.cpp" />
@@ -645,6 +648,7 @@
     </ClCompile>
     <ClCompile Include="src\SpaceOptima\Scene\Entity.cpp" />
     <ClCompile Include="src\SpaceOptima\Scene\Scene.cpp" />
+    <ClCompile Include="src\SpaceOptima\Scene\SceneCamera.cpp" />
     <ClCompile Include="vendor\glm\glm\detail\glm.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">NotUsing</PrecompiledHeader>

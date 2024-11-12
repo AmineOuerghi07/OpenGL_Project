@@ -2,6 +2,9 @@
 
 #include <glm/glm.hpp>
 
+
+#include "SceneCamera.h"
+
 namespace SpaceOptima
 {
 	struct TransformComponent
@@ -42,6 +45,21 @@ namespace SpaceOptima
 		TagComponent(const std::string& tag)
 			:Tag(tag)
 		{};
+	};
+
+
+	struct CameraComponent
+	{
+		SceneCamera Camera;
+
+		bool Primary = true;
+
+		bool FixedAspectRatio = false;
+
+		CameraComponent() = default;
+
+		CameraComponent(const CameraComponent& other) = default;
+
 	};
 
 
