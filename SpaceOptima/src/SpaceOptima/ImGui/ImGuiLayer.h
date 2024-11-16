@@ -16,7 +16,7 @@ namespace SpaceOptima
 		void Begin();
 		void End();
 		void BlockEvents(bool blockEvents) { m_BlockEvents = blockEvents; }
-
+		void SetDarkThemeColor();
 	private:
 		bool m_BlockEvents;
 		float m_Time;
