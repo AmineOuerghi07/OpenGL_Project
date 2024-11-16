@@ -33,9 +33,14 @@ namespace SpaceOptima
 
 
 		square.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.0f,1.0f,0.0f,1.0f });
+
+		auto blueSquare = m_ActiveScene->CreateEntity("Square");
+
+
+		blueSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.0f,0.0f,1.0f,1.0f });
 		
 		m_Square = square;
-
+		
 		m_PrimaryCamera = m_ActiveScene->CreateEntity("Primary Camera");
 
 		m_PrimaryCamera.AddComponent<CameraComponent>();
@@ -163,15 +168,20 @@ namespace SpaceOptima
 
 		// Submit the DockSpace
 		ImGuiIO& io = ImGui::GetIO();
+		ImGuiStyle& style = ImGui::GetStyle();
+		float minimumWindowSizeX = style.WindowMinSize.x;
+		style.WindowMinSize.x = 350.0f;
 		if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
 		{
 			ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
 			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
 		}
 
+		style.WindowMinSize.x = minimumWindowSizeX;
+
 		if (ImGui::BeginMenuBar())
 		{
-			if (ImGui::BeginMenu("Docking"))
+			if (ImGui::BeginMenu("File"))
 			{
 				// Disabling fullscreen would allow the window to be moved to the front of other windows,
 				// which we can't undo at the moment without finer window depth/z control.
@@ -194,40 +204,10 @@ namespace SpaceOptima
 		ImGui::Text("Vertices : %d", stats.GetTotalVertexCount());
 		ImGui::Text("Indices : %d", stats.GetTotalIndexCount());
 
-		auto& squareColor = m_Square.GetComponent<SpriteRendererComponent>();
-
-
-		ImGui::Spacing();
-
-		ImGui::Separator();
-
-		ImGui::Text(m_Square.GetComponent<TagComponent>().Tag.c_str());
-
-
-
-		ImGui::ColorEdit4("SquareColor", glm::value_ptr(squareColor.Color));
-
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0.0, 0.0 });
-
-
-		ImGui::DragFloat3("Camera Transform",
-			glm::value_ptr(m_PrimaryCamera.GetComponent<TransformComponent>().Transform[3]));
-
-		auto& camera = m_SecondCamera.GetComponent<CameraComponent>().Camera;
-		float orthoSize = camera.GetOrthographicSize();
-		if (ImGui::DragFloat("Second Camera Size", &orthoSize))
-		{
-			camera.SetOrthographicSize(orthoSize);
-		}
-
-		if (ImGui::Checkbox("Primary", &m_IsPrimaryCamera))
-		{
-			m_PrimaryCamera.GetComponent<CameraComponent>().Primary = m_IsPrimaryCamera;
-			m_SecondCamera.GetComponent<CameraComponent>().Primary = !m_IsPrimaryCamera;
-		}
-		
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
 		ImGui::Begin("viewport");
+	
 		m_ViewportFocused = ImGui::IsWindowFocused();
 		m_ViewportHovered = ImGui::IsWindowHovered();
 		Application::GetApplication().GetImGuiLayer()->BlockEvents(!m_ViewportFocused || !m_ViewportHovered);
@@ -240,12 +220,15 @@ namespace SpaceOptima
 
 		ImGui::Image((void*)(uint64_t)m_Framebuffer->GetColorAttachementRendererID(), ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0,1 }, ImVec2{ 1,0 });
 
+	
+
 		ImGui::End();
 
 		ImGui::PopStyleVar();
 
-
 		ImGui::End();
+
+
 
 		ImGui::End();
 	}
