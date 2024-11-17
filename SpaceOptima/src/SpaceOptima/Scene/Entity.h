@@ -48,6 +48,9 @@ namespace SpaceOptima
 		bool operator!=(const Entity& other) const { return !(*this == other); }
 		operator entt::entity() const { return m_EntityHandle; }
 
+		// This is for testing only
+		uint32_t GetID() const { uint32_t id = (uint32_t)m_EntityHandle; return id; }
+
 	private:
 		entt::entity m_EntityHandle = entt::null;
 		Scene* m_Scene = nullptr;

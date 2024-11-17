@@ -6,6 +6,8 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
+#include "SpaceOptima/Scene/SceneSerializer.h"
+
 namespace SpaceOptima
 {
 
@@ -28,7 +30,7 @@ namespace SpaceOptima
 		m_Framebuffer = Framebuffer::Create(fbSpecs);
 
 		m_ActiveScene = std::make_shared<Scene>();
-
+#if 0
 		auto square = m_ActiveScene->CreateEntity("Square");
 
 
@@ -50,8 +52,12 @@ namespace SpaceOptima
 		auto& cc = m_SecondCamera.AddComponent<CameraComponent>();
 
 		cc.Primary = false;
-
+#endif
 		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+
+		//SceneSerializer sceneSerializer = SceneSerializer(m_ActiveScene);
+		//sceneSerializer.Serialize("assets/scenes/exampleScene.so");
+		//sceneSerializer.Deserialize("assets/scenes/exampleScene.so");
 
 
 	}
@@ -183,6 +189,22 @@ namespace SpaceOptima
 		{
 			if (ImGui::BeginMenu("File"))
 			{
+				if (ImGui::MenuItem("Open File"))
+				{
+					m_ActiveScene = std::make_shared<Scene>();
+					m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+					m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+					SceneSerializer sceneSerializer(m_ActiveScene);
+					sceneSerializer.Deserialize("assets/scenes/exampleScene.so");
+				}
+
+				if (ImGui::MenuItem("Save"))
+				{
+					SceneSerializer sceneSerializer(m_ActiveScene);
+					sceneSerializer.Serialize("assets/scenes/exampleScene.so");
+				}
+
+				
 				// Disabling fullscreen would allow the window to be moved to the front of other windows,
 				// which we can't undo at the moment without finer window depth/z control.
 				if (ImGui::MenuItem("Exit")) Application::GetApplication().Close();

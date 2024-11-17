@@ -31,6 +31,9 @@
     <Filter Include="src\SpaceOptima\Renderer">
       <UniqueIdentifier>{98D1F532-84F6-44B3-AD41-2A4399C543D1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\SpaceOptima\Scene">
+      <UniqueIdentifier>{4F70A21E-BBDC-5D19-84D0-F576F0FB7F81}</UniqueIdentifier>
+    </Filter>
     <Filter Include="vendor">
       <UniqueIdentifier>{B3738122-9F15-ACF8-88D0-BF4C74113349}</UniqueIdentifier>
     </Filter>
@@ -141,6 +144,9 @@
     <ClInclude Include="src\SpaceOptima\Renderer\Buffer.h">
       <Filter>src\SpaceOptima\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\SpaceOptima\Renderer\Camera.h">
+      <Filter>src\SpaceOptima\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\SpaceOptima\Renderer\Framebuffer.h">
       <Filter>src\SpaceOptima\Renderer</Filter>
     </ClInclude>
@@ -173,6 +179,21 @@
     </ClInclude>
     <ClInclude Include="src\SpaceOptima\Renderer\VertexArray.h">
       <Filter>src\SpaceOptima\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpaceOptima\Scene\Components.h">
+      <Filter>src\SpaceOptima\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpaceOptima\Scene\Entity.h">
+      <Filter>src\SpaceOptima\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpaceOptima\Scene\Scene.h">
+      <Filter>src\SpaceOptima\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpaceOptima\Scene\SceneCamera.h">
+      <Filter>src\SpaceOptima\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SpaceOptima\Scene\SceneSerializer.h">
+      <Filter>src\SpaceOptima\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\sopch.h">
       <Filter>src</Filter>
@@ -1458,11 +1479,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\SpaceOptima\Scene\Scene.h" />
-    <ClInclude Include="src\SpaceOptima\Scene\Components.h" />
-    <ClInclude Include="src\SpaceOptima\Scene\Entity.h" />
-    <ClInclude Include="src\SpaceOptima\Renderer\Camera.h" />
-    <ClInclude Include="src\SpaceOptima\Scene\SceneCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
@@ -1513,6 +1529,9 @@
     <ClCompile Include="src\SpaceOptima\Renderer\Buffer.cpp">
       <Filter>src\SpaceOptima\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\SpaceOptima\Renderer\Camera.cpp">
+      <Filter>src\SpaceOptima\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\SpaceOptima\Renderer\Framebuffer.cpp">
       <Filter>src\SpaceOptima\Renderer</Filter>
     </ClCompile>
@@ -1543,6 +1562,18 @@
     <ClCompile Include="src\SpaceOptima\Renderer\VertexArray.cpp">
       <Filter>src\SpaceOptima\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\SpaceOptima\Scene\Entity.cpp">
+      <Filter>src\SpaceOptima\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SpaceOptima\Scene\Scene.cpp">
+      <Filter>src\SpaceOptima\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SpaceOptima\Scene\SceneCamera.cpp">
+      <Filter>src\SpaceOptima\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SpaceOptima\Scene\SceneSerializer.cpp">
+      <Filter>src\SpaceOptima\Scene</Filter>
+    </ClCompile>
     <ClCompile Include="src\sopch.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -1555,9 +1586,5 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\SpaceOptima\Scene\Scene.cpp" />
-    <ClCompile Include="src\SpaceOptima\Scene\Entity.cpp" />
-    <ClCompile Include="src\SpaceOptima\Renderer\Camera.cpp" />
-    <ClCompile Include="src\SpaceOptima\Scene\SceneCamera.cpp" />
   </ItemGroup>
 </Project>

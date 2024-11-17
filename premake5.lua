@@ -17,12 +17,14 @@ IncludeDir["imgui"] ="SpaceOptima/vendor/imgui"
 IncludeDir["glm"] ="SpaceOptima/vendor/glm"
 IncludeDir["stb_image"] ="SpaceOptima/vendor/stb_image"
 IncludeDir["entt"] ="SpaceOptima/vendor/entt/include"
+IncludeDir["yaml_cpp"] ="SpaceOptima/vendor/yaml-cpp/include"
 
 group "Dependencies"
 	include "SpaceOptima/vendor/GLFW"
 	include "SpaceOptima/vendor/Glad"
 	include "SpaceOptima/vendor/imgui"
-group ""
+	include "SpaceOptima/vendor/yaml-cpp"
+	group ""
 
 project "SpaceOptima"
 
@@ -59,14 +61,15 @@ project "SpaceOptima"
 		"%{IncludeDir.imgui}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
-		"%{IncludeDir.entt}"
+		"%{IncludeDir.entt}",
+		"%{IncludeDir.yaml_cpp}"
 
 	}
 
 	defines
 	{
-		"_CRT_SECURE_NO_WARNINGS"
-
+		"_CRT_SECURE_NO_WARNINGS",
+		"YAML_CPP_STATIC_DEFINE"
 	}
 	
 	links 
@@ -74,9 +77,11 @@ project "SpaceOptima"
 		"GLFW",
 		"Glad",
 		"imgui",
-		"opengl32.lib"
+		"opengl32.lib",
+		"yaml-cpp"
 	}
 	
+
 	filter "system:windows"
 		systemversion "latest"
 		defines 
