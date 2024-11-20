@@ -1,0 +1,47 @@
+Scene: Untitled
+Entities:
+  - Entity: 3
+    TagComponent:
+      Tag: Empty Product
+    TransformComponent:
+      Translation: [2.8, 0, 0]
+      Rotation: [0, 0.7853982, 0]
+      Scale: [4, 4, 1]
+    SpriteRendererComponent:
+      Color: [1, 0, 0, 1]
+  - Entity: 2
+    TagComponent:
+      Tag: Pink Square
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, -0.7853982, 0]
+      Scale: [4, 4, 1]
+    SpriteRendererComponent:
+      Color: [0.90574074, 0.6082199, 0.9266409, 1]
+  - Entity: 1
+    TagComponent:
+      Tag: Primary Camera
+    TransformComponent:
+      Translation: [-1.3, 4.3, 14.1]
+      Rotation: [-0.16406094, -0.1850049, -0.0034906585]
+      Scale: [1, 1, 1]
+    CameraComponent:
+      Camera:
+        ProjectionType: 0
+        PerspectiveFOV: 0.7853982
+        PerspectiveNear: 0.01
+        PerspectiveFar: 1000
+        OrthographicSize: 10
+        OrthographicNear: -1
+        OrthographicFar: 1
+      Primary: true
+      FixedAspectRatio: false
+  - Entity: 0
+    TagComponent:
+      Tag: Square
+    TransformComponent:
+      Translation: [1.3, 2, -1]
+      Rotation: [1.5707964, 0, 0.7853982]
+      Scale: [4, 4, 1]
+    SpriteRendererComponent:
+      Color: [0, 0, 1, 1]
