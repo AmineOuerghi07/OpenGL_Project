@@ -1,24 +1,24 @@
 Scene: Untitled
 Entities:
-  - Entity: 2
+  - Entity: 3
     TagComponent:
-      Tag: Square
+      Tag: Top
     TransformComponent:
-      Translation: [0, 0, 0]
-      Rotation: [0, 0, 0]
+      Translation: [0, 0.5, 0]
+      Rotation: [1.5707964, 0, 0.7853982]
       Scale: [1, 1, 1]
     SpriteRendererComponent:
-      Color: [0, 0, 1, 1]
-  - Entity: 1
+      Color: [0, 0.6627451, 1, 1]
+  - Entity: 2
     TagComponent:
       Tag: Primary Camera
     TransformComponent:
-      Translation: [0, 0, 0]
-      Rotation: [0, 0, 0]
+      Translation: [0, 1.2, 5.8]
+      Rotation: [-0.17802358, -0.04537856, 0]
       Scale: [1, 1, 1]
     CameraComponent:
       Camera:
-        ProjectionType: 1
+        ProjectionType: 0
         PerspectiveFOV: 0.7853982
         PerspectiveNear: 0.01
         PerspectiveFar: 1000
@@ -27,12 +27,21 @@ Entities:
         OrthographicFar: 1
       Primary: true
       FixedAspectRatio: false
-  - Entity: 3
+  - Entity: 1
     TagComponent:
-      Tag: Pink Square
+      Tag: Left
     TransformComponent:
-      Translation: [3.8, 0, 0]
-      Rotation: [0, 0, 0]
+      Translation: [-0.35, 0, 0.35]
+      Rotation: [0, -0.7853982, 0]
       Scale: [1, 1, 1]
     SpriteRendererComponent:
-      Color: [0.90574074, 0.6082199, 0.9266409, 1]
+      Color: [0, 0.6640928, 1, 1]
+  - Entity: 0
+    TagComponent:
+      Tag: Right
+    TransformComponent:
+      Translation: [0.35, 0, 0.35]
+      Rotation: [0, 0.7853982, 0]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [0, 0.6627451, 1, 1]

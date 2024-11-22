@@ -188,6 +188,7 @@
     <ClInclude Include="src\SpaceOptima\Scene\SceneCamera.h" />
     <ClInclude Include="src\SpaceOptima\Scene\SceneSerializer.h" />
     <ClInclude Include="src\sopch.h" />
+    <ClInclude Include="src\SpaceOptima\Utils\PlatformUtils.h" />
     <ClInclude Include="vendor\glm\glm\common.hpp" />
     <ClInclude Include="vendor\glm\glm\detail\_features.hpp" />
     <ClInclude Include="vendor\glm\glm\detail\_fixes.hpp" />
@@ -625,6 +626,7 @@
     <ClCompile Include="src\Platform\OpenGL\OpenGLTexture.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp" />
     <ClCompile Include="src\Platform\Windows\WindowsInput.cpp" />
+    <ClCompile Include="src\Platform\Windows\WindowsPlatformUtils.cpp" />
     <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp" />
     <ClCompile Include="src\SpaceOptima\Core\Application.cpp" />
     <ClCompile Include="src\SpaceOptima\Core\Layer.cpp" />

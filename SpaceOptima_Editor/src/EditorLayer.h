@@ -17,6 +17,12 @@ namespace SpaceOptima
 		void OnEvent(SpaceOptima::Event& e) override;
 
 	private:
+		bool OnKeyPressed(KeyPressedEvent& e);
+		void NewScene();
+		void SaveSceneAs();
+		void OpenScene();
+
+	private:
 
 		SpaceOptima::OrthographicCameraController m_CameraController;
 

@@ -8,6 +8,8 @@
 
 #include "SpaceOptima/Scene/SceneSerializer.h"
 
+#include "SpaceOptima/Utils/PlatformUtils.h"
+
 namespace SpaceOptima
 {
 
@@ -189,19 +191,18 @@ namespace SpaceOptima
 		{
 			if (ImGui::BeginMenu("File"))
 			{
-				if (ImGui::MenuItem("Open File"))
+				if (ImGui::MenuItem("New", "Crtl+N"))
 				{
-					m_ActiveScene = std::make_shared<Scene>();
-					m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-					m_SceneHierarchyPanel.SetContext(m_ActiveScene);
-					SceneSerializer sceneSerializer(m_ActiveScene);
-					sceneSerializer.Deserialize("assets/scenes/exampleScene.so");
+					NewScene();
+				}
+				if (ImGui::MenuItem("Open File ...", "Ctrl+O"))
+				{
+					OpenScene();
 				}
 
-				if (ImGui::MenuItem("Save"))
+				if (ImGui::MenuItem("Save As...", "Ctrl+Shift+S"))
 				{
-					SceneSerializer sceneSerializer(m_ActiveScene);
-					sceneSerializer.Serialize("assets/scenes/exampleScene.so");
+					SaveSceneAs();
 				}
 
 				
@@ -258,6 +259,72 @@ namespace SpaceOptima
 	void EditorLayer::OnEvent(Event& e)
 	{
 		m_CameraController.OnEvent(e);
+		EventDispatcher dispatcher(e);
+		dispatcher.Dispatch<KeyPressedEvent>(SO_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
+	}
+
+	bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
+	{
+		if (e.GetRepeatCount() > 0)
+			return false;
+			
+		bool control = Input::IsKeyPressed(SO_KEY_LEFT_CONTROL) || Input::IsKeyPressed(SO_KEY_RIGHT_CONTROL);
+		bool shift = Input::IsKeyPressed(SO_KEY_LEFT_SHIFT) || Input::IsKeyPressed(SO_KEY_RIGHT_SHIFT);
+		switch (e.GetKeyCode())
+		{
+		case SO_KEY_O:
+			if (control)
+			{
+				OpenScene();
+			}
+			break;
+		case SO_KEY_N:
+			if (control)
+			{
+				NewScene();
+			}
+			break;
+		case SO_KEY_S:
+			if (control && shift)
+			{
+				SaveSceneAs();
+			}
+			break;
+
+		default:
+			break;
+		}
+		return false;
+	}
+
+	void EditorLayer::NewScene()
+	{
+		m_ActiveScene = std::make_shared<Scene>();
+		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+	}
+
+	void EditorLayer::SaveSceneAs()
+	{
+		std::string filePath = FileDialogs::OpenFile("SpaceOptima Planogram (*.so)\0*.so\0");
+		if (!filePath.empty())
+		{
+			SceneSerializer sceneSerializer(m_ActiveScene);
+			sceneSerializer.Serialize(filePath);
+		}
+	}
+
+	void EditorLayer::OpenScene()
+	{
+		std::string filePath = FileDialogs::OpenFile("SpaceOptima Planogram (*.so)\0*.so\0");
+		if (!filePath.empty())
+		{
+			m_ActiveScene = std::make_shared<Scene>();
+			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+			SceneSerializer sceneSerializer(m_ActiveScene);
+			sceneSerializer.Deserialize(filePath);
+		}
 	}
 
 }
