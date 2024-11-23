@@ -15,3 +15,6 @@
 [submodule "SpaceOptima/vendor/yaml-cpp"]
 	path = SpaceOptima/vendor/yaml-cpp
 	url = https://github.com/youssefAbidUp/yaml-cpp.git
+[submodule "SpaceOptima/vendor/ImGuizmo"]
+	path = SpaceOptima/vendor/ImGuizmo
+	url = https://github.com/youssefAbidUp/ImGuizmo.git

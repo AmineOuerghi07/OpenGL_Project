@@ -4,6 +4,8 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <glm/gtc/quaternion.hpp>
+
 #include "SceneCamera.h"
 
 namespace SpaceOptima
@@ -22,9 +24,7 @@ namespace SpaceOptima
 
 		glm::mat4 GetTransform() const
 		{
-			glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), Rotation.x, { 1.0f , 0.0f, 0.0f })
-				* glm::rotate(glm::mat4(1.0f), Rotation.y, { 0.0f, 1.0f, 0.0f })
-				* glm::rotate(glm::mat4(1.0f), Rotation.z, { 0.0f, 0.0f, 1.0f });
+			glm::mat4 rotation = glm::mat4_cast(glm::quat(Rotation));
 
 			return glm::translate(glm::mat4(1.0f), Translation)
 				* rotation

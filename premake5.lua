@@ -18,6 +18,7 @@ IncludeDir["glm"] ="SpaceOptima/vendor/glm"
 IncludeDir["stb_image"] ="SpaceOptima/vendor/stb_image"
 IncludeDir["entt"] ="SpaceOptima/vendor/entt/include"
 IncludeDir["yaml_cpp"] ="SpaceOptima/vendor/yaml-cpp/include"
+IncludeDir["ImGuizmo"] ="SpaceOptima/vendor/ImGuizmo"
 
 group "Dependencies"
 	include "SpaceOptima/vendor/GLFW"
@@ -49,7 +50,10 @@ project "SpaceOptima"
 		"%{prj.name}/vendor/glm/glm/**.inl",
 		"%{prj.name}/vendor/glm/glm/**.h",
 		"%{prj.name}/vendor/glm/glm/**.cppm",
-		"%{prj.name}/vendor/glm/glm/**.cpp"
+		"%{prj.name}/vendor/glm/glm/**.cpp",
+
+		"%{prj.name}/vendor/ImGuizmo/ImGuizmo.h",
+		"%{prj.name}/vendor/ImGuizmo/ImGuizmo.cpp"
 	}
 
 	includedirs
@@ -62,7 +66,8 @@ project "SpaceOptima"
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb_image}",
 		"%{IncludeDir.entt}",
-		"%{IncludeDir.yaml_cpp}"
+		"%{IncludeDir.yaml_cpp}",
+		"%{IncludeDir.ImGuizmo}"
 
 	}
 
@@ -81,6 +86,14 @@ project "SpaceOptima"
 		"yaml-cpp"
 	}
 	
+	filter "files:SpaceOptima/vendor/ImGuizmo/**.cpp"
+	flags { "NoPCH" }
+
+	filter "files:SpaceOptima/vendor/glm/glm/**.cppm"
+	flags { "NoPCH" }
+
+	filter "files:SpaceOptima/vendor/glm/glm/detail/**.cpp"
+	flags { "NoPCH" }
 
 	filter "system:windows"
 		systemversion "latest"
@@ -129,7 +142,8 @@ project "SpaceOptima_Editor"
 		"SpaceOptima/src/",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.entt}",
-		"SpaceOptima/vendor/imgui/"
+		"SpaceOptima/vendor/imgui/",
+		"%{IncludeDir.ImGuizmo}"
 	}
 
 	links 

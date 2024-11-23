@@ -10,6 +10,10 @@
 
 #include "SpaceOptima/Utils/PlatformUtils.h"
 
+#include "SpaceOptima/Math/Math.h"
+
+#include "ImGuizmo.h"
+
 namespace SpaceOptima
 {
 
@@ -244,6 +248,57 @@ namespace SpaceOptima
 		ImGui::Image((void*)(uint64_t)m_Framebuffer->GetColorAttachementRendererID(), ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0,1 }, ImVec2{ 1,0 });
 
 	
+		// Gizmos
+		
+		bool snap = Input::IsKeyPressed(SO_KEY_LEFT_CONTROL);
+
+		float snapValue = 0.50f; // Snap value for translation/scale
+
+		if (m_GizmoType == ImGuizmo::OPERATION::ROTATE)
+		{
+			snapValue = 45.0f; // snap value for rotation
+		}
+
+		float snapValues[3] = {snapValue, snapValue, snapValue};
+
+		Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
+		if (selectedEntity && m_GizmoType != -1)
+		{
+			ImGuizmo::SetOrthographic(false);
+			ImGuizmo::SetDrawlist();
+			float width = (float)ImGui::GetWindowWidth();
+			float height = (float)ImGui::GetWindowHeight();
+			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, width, height);
+
+			// Camera
+			auto cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
+			const auto& camera = cameraEntity.GetComponent<CameraComponent>().Camera;
+			const glm::mat4& cameraProjection = camera.GetProjectionMatrix();
+			glm::mat4 cameraView = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
+
+
+			// Entity Transform
+
+			auto& tc = selectedEntity.GetComponent<TransformComponent>();
+
+			glm::mat4 transform = tc.GetTransform();
+
+			ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
+				(ImGuizmo::OPERATION) m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform), 
+				nullptr, snap ? snapValues : nullptr);
+
+			if (ImGuizmo::IsUsing())
+			{
+				glm::vec3 translation, rotation, scale;
+				Math::DecomposeTransform(transform, translation, rotation, scale);
+				
+				glm::vec3 deltaRotation = rotation - tc.Rotation;
+				tc.Translation = translation;
+				tc.Rotation += deltaRotation;
+				tc.Scale = scale;
+			}
+		}
+
 
 		ImGui::End();
 
@@ -291,8 +346,24 @@ namespace SpaceOptima
 			}
 			break;
 
-		default:
+		// Gizmo
+		case SO_KEY_A:
+			m_GizmoType = -1;
 			break;
+
+		case SO_KEY_Z:
+			m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
+			break;
+
+
+		case SO_KEY_E:
+			m_GizmoType = ImGuizmo::OPERATION::ROTATE;
+			break;
+
+		case SO_KEY_R:
+			m_GizmoType = ImGuizmo::OPERATION::SCALE;
+			break;
+
 		}
 		return false;
 	}

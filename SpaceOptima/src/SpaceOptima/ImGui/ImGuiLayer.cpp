@@ -3,11 +3,17 @@
 #include "imgui.h"
 
 #include "SpaceOptima/Core/Application.h"
-#include <GLFW/glfw3.h>
-#include <glad/glad.h>
 
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_glfw.h"
+
+// TEMP
+#include <GLFW/glfw3.h>
+#include <glad/glad.h>
+
+
+#include "ImGuizmo.h"
+
 namespace SpaceOptima {
 
 	
@@ -68,6 +74,7 @@ namespace SpaceOptima {
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
+		ImGuizmo::BeginFrame();
 	}
 
 	void ImGuiLayer::End()

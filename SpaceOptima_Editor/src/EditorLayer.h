@@ -49,6 +49,9 @@ namespace SpaceOptima
 
 		bool m_IsPrimaryCamera = true;
 
+		int m_GizmoType = -1;
+
+		// Panels
 		SceneHierarchyPanel m_SceneHierarchyPanel;
 		
 		glm::vec4 m_SquareColor = { 0.8f, 0.0f, 0.1f, 1.0f };

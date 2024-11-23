@@ -28,14 +28,23 @@
     <Filter Include="src\SpaceOptima\ImGui">
       <UniqueIdentifier>{5C78F21D-C8E4-AD18-91D8-4576FD03D080}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\SpaceOptima\Math">
+      <UniqueIdentifier>{CBC9BB46-B758-4510-6077-590B4CE555B6}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\SpaceOptima\Renderer">
       <UniqueIdentifier>{98D1F532-84F6-44B3-AD41-2A4399C543D1}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\SpaceOptima\Scene">
       <UniqueIdentifier>{4F70A21E-BBDC-5D19-84D0-F576F0FB7F81}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\SpaceOptima\Utils">
+      <UniqueIdentifier>{9204D01E-FE70-8B19-C764-23773390AD81}</UniqueIdentifier>
+    </Filter>
     <Filter Include="vendor">
       <UniqueIdentifier>{B3738122-9F15-ACF8-88D0-BF4C74113349}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vendor\ImGuizmo">
+      <UniqueIdentifier>{73BF7F4C-DF4A-ED10-E85B-700554664911}</UniqueIdentifier>
     </Filter>
     <Filter Include="vendor\glm">
       <UniqueIdentifier>{829FC5A8-6E57-07F6-D75E-E051C335A2E6}</UniqueIdentifier>
@@ -141,6 +150,9 @@
     <ClInclude Include="src\SpaceOptima\ImGui\ImGuiLayer.h">
       <Filter>src\SpaceOptima\ImGui</Filter>
     </ClInclude>
+    <ClInclude Include="src\SpaceOptima\Math\Math.h">
+      <Filter>src\SpaceOptima\Math</Filter>
+    </ClInclude>
     <ClInclude Include="src\SpaceOptima\Renderer\Buffer.h">
       <Filter>src\SpaceOptima\Renderer</Filter>
     </ClInclude>
@@ -195,8 +207,14 @@
     <ClInclude Include="src\SpaceOptima\Scene\SceneSerializer.h">
       <Filter>src\SpaceOptima\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="src\SpaceOptima\Utils\PlatformUtils.h">
+      <Filter>src\SpaceOptima\Utils</Filter>
+    </ClInclude>
     <ClInclude Include="src\sopch.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\ImGuizmo\ImGuizmo.h">
+      <Filter>vendor\ImGuizmo</Filter>
     </ClInclude>
     <ClInclude Include="vendor\glm\glm\common.hpp">
       <Filter>vendor\glm\glm</Filter>
@@ -1479,7 +1497,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\SpaceOptima\Utils\PlatformUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
@@ -1506,6 +1523,9 @@
     <ClCompile Include="src\Platform\Windows\WindowsInput.cpp">
       <Filter>src\Platform\Windows</Filter>
     </ClCompile>
+    <ClCompile Include="src\Platform\Windows\WindowsPlatformUtils.cpp">
+      <Filter>src\Platform\Windows</Filter>
+    </ClCompile>
     <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp">
       <Filter>src\Platform\Windows</Filter>
     </ClCompile>
@@ -1526,6 +1546,9 @@
     </ClCompile>
     <ClCompile Include="src\SpaceOptima\ImGui\imGuiBuild.cpp">
       <Filter>src\SpaceOptima\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SpaceOptima\Math\Math.cpp">
+      <Filter>src\SpaceOptima\Math</Filter>
     </ClCompile>
     <ClCompile Include="src\SpaceOptima\Renderer\Buffer.cpp">
       <Filter>src\SpaceOptima\Renderer</Filter>
@@ -1578,6 +1601,9 @@
     <ClCompile Include="src\sopch.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="vendor\ImGuizmo\ImGuizmo.cpp">
+      <Filter>vendor\ImGuizmo</Filter>
+    </ClCompile>
     <ClCompile Include="vendor\glm\glm\detail\glm.cpp">
       <Filter>vendor\glm\glm\detail</Filter>
     </ClCompile>
@@ -1587,6 +1613,5 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Platform\Windows\WindowsPlatformUtils.cpp" />
   </ItemGroup>
 </Project>
