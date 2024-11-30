@@ -3,6 +3,8 @@
 #include <SpaceOptima.h>
 #include "Panels/SceneHierarchyPanel.h"
 
+#include "SpaceOptima/Renderer/EditorCamera.h"
+
 namespace SpaceOptima
 {
 	class EditorLayer : public SpaceOptima::Layer
@@ -46,6 +48,8 @@ namespace SpaceOptima
 
 		Entity m_PrimaryCamera;
 		Entity m_SecondCamera;
+
+		EditorCamera m_EditorCamera;
 
 		bool m_IsPrimaryCamera = true;
 

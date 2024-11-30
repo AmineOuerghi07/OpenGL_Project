@@ -2,6 +2,7 @@
 #include "OrthographicCamera.h"
 #include "Texture.h"
 #include "Camera.h"
+#include "EditorCamera.h"
 
 namespace SpaceOptima
 {
@@ -11,7 +12,11 @@ namespace SpaceOptima
 
 		static void Init();
 		static void Shutdown();
+
+		// TODO : Remove Ortho Camera as it became kind of useless to use when we have the editor camera
+
 		static void BeginScene(const Camera& camera, const glm::mat4& transform);
+		static void BeginScene(const EditorCamera& camera);
 		static void BeginScene(const OrthographicCamera& camera);
 
 		static void Flush();

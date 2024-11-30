@@ -36,6 +36,8 @@ namespace SpaceOptima
 		m_Framebuffer = Framebuffer::Create(fbSpecs);
 
 		m_ActiveScene = std::make_shared<Scene>();
+
+		m_EditorCamera = EditorCamera(45.0f, 1.778f, 0.1f, 1000.0f);
 #if 0
 		auto square = m_ActiveScene->CreateEntity("Square");
 
@@ -46,9 +48,9 @@ namespace SpaceOptima
 
 
 		blueSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.0f,0.0f,1.0f,1.0f });
-		
+
 		m_Square = square;
-		
+
 		m_PrimaryCamera = m_ActiveScene->CreateEntity("Primary Camera");
 
 		m_PrimaryCamera.AddComponent<CameraComponent>();
@@ -85,19 +87,24 @@ namespace SpaceOptima
 			(spec.Width != m_ViewportSize.x || spec.Height != m_ViewportSize.y))
 		{
 			m_Framebuffer->Resize(uint32_t(m_ViewportSize.x), uint32_t(m_ViewportSize.y));
+			
+			m_EditorCamera.SetViewportSize(m_ViewportSize.x, m_ViewportSize.y);
 
 			m_ActiveScene->OnViewportResize(uint32_t(m_ViewportSize.x), uint32_t(m_ViewportSize.y));
+
 		}
 
 		Renderer2D::ResetStats();
-		
-		if(m_ViewportFocused && m_ViewportHovered)
+
+		if (m_ViewportFocused && m_ViewportHovered)
+		{
 			m_CameraController.OnUpdate(ts);
-		
+			m_EditorCamera.OnUpdate(ts);
+		}
 
 		// Update Scene
-		
-	
+
+
 
 		// Render
 		m_Framebuffer->Bind();
@@ -106,20 +113,20 @@ namespace SpaceOptima
 
 		static float rotation = 0.0f;
 		rotation += ts * 50.0f;
-			//SO_CORE_INFO("rotation = {0}", rotation);
+		//SO_CORE_INFO("rotation = {0}", rotation);
 		SO_CLIENT_INFO("Delta Time : {0}s  ({1}ms)", ts.GetSeconds(), 1000 / ts.GetMilliSeconds());
 
 
 		//Renderer2D::BeginScene(m_CameraController.GetCamera());
 
-		m_ActiveScene->OnUpdate(ts);
+		m_ActiveScene->OnUpdateEditor(ts, m_EditorCamera);
 
 		//Renderer2D::EndScene();
 
 
-		
+
 		m_Framebuffer->Unbind();
-		
+
 
 		/*
 		std::dynamic_pointer_cast<OpenGLShader>(m_Shader)->Bind();
@@ -209,7 +216,7 @@ namespace SpaceOptima
 					SaveSceneAs();
 				}
 
-				
+
 				// Disabling fullscreen would allow the window to be moved to the front of other windows,
 				// which we can't undo at the moment without finer window depth/z control.
 				if (ImGui::MenuItem("Exit")) Application::GetApplication().Close();
@@ -234,7 +241,7 @@ namespace SpaceOptima
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 
 		ImGui::Begin("viewport");
-	
+
 		m_ViewportFocused = ImGui::IsWindowFocused();
 		m_ViewportHovered = ImGui::IsWindowHovered();
 		Application::GetApplication().GetImGuiLayer()->BlockEvents(!m_ViewportFocused || !m_ViewportHovered);
@@ -242,14 +249,14 @@ namespace SpaceOptima
 		m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
 
 		SO_CLIENT_WARN("viewport size : {0}  {1}", viewportPanelSize.x, viewportPanelSize.y);
-		
+
 		uint32_t framebufferTexture = m_Framebuffer->GetColorAttachementRendererID();
 
 		ImGui::Image((void*)(uint64_t)m_Framebuffer->GetColorAttachementRendererID(), ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0,1 }, ImVec2{ 1,0 });
 
-	
+
 		// Gizmos
-		
+
 		bool snap = Input::IsKeyPressed(SO_KEY_LEFT_CONTROL);
 
 		float snapValue = 0.50f; // Snap value for translation/scale
@@ -259,7 +266,7 @@ namespace SpaceOptima
 			snapValue = 45.0f; // snap value for rotation
 		}
 
-		float snapValues[3] = {snapValue, snapValue, snapValue};
+		float snapValues[3] = { snapValue, snapValue, snapValue };
 
 		Entity selectedEntity = m_SceneHierarchyPanel.GetSelectedEntity();
 		if (selectedEntity && m_GizmoType != -1)
@@ -270,12 +277,16 @@ namespace SpaceOptima
 			float height = (float)ImGui::GetWindowHeight();
 			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, width, height);
 
-			// Camera
-			auto cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
-			const auto& camera = cameraEntity.GetComponent<CameraComponent>().Camera;
-			const glm::mat4& cameraProjection = camera.GetProjectionMatrix();
-			glm::mat4 cameraView = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
+			// Can be used for runtime camera in the future
+			//	auto cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
+			//	const auto& camera = cameraEntity.GetComponent<CameraComponent>().Camera;
+			//	const glm::mat4& cameraProjection = camera.GetProjectionMatrix();
+			//	glm::mat4 cameraView = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
 
+
+			// Editor Camera
+			const glm::mat4& cameraProjection = m_EditorCamera.GetProjectionMatrix();
+			glm::mat4 cameraView = m_EditorCamera.GetViewMatrix();
 
 			// Entity Transform
 
@@ -284,14 +295,14 @@ namespace SpaceOptima
 			glm::mat4 transform = tc.GetTransform();
 
 			ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection),
-				(ImGuizmo::OPERATION) m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform), 
+				(ImGuizmo::OPERATION)m_GizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform),
 				nullptr, snap ? snapValues : nullptr);
 
 			if (ImGuizmo::IsUsing())
 			{
 				glm::vec3 translation, rotation, scale;
 				Math::DecomposeTransform(transform, translation, rotation, scale);
-				
+
 				glm::vec3 deltaRotation = rotation - tc.Rotation;
 				tc.Translation = translation;
 				tc.Rotation += deltaRotation;
@@ -314,6 +325,7 @@ namespace SpaceOptima
 	void EditorLayer::OnEvent(Event& e)
 	{
 		m_CameraController.OnEvent(e);
+		m_EditorCamera.OnEvent(e);
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<KeyPressedEvent>(SO_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
 	}
@@ -322,7 +334,7 @@ namespace SpaceOptima
 	{
 		if (e.GetRepeatCount() > 0)
 			return false;
-			
+
 		bool control = Input::IsKeyPressed(SO_KEY_LEFT_CONTROL) || Input::IsKeyPressed(SO_KEY_RIGHT_CONTROL);
 		bool shift = Input::IsKeyPressed(SO_KEY_LEFT_SHIFT) || Input::IsKeyPressed(SO_KEY_RIGHT_SHIFT);
 		switch (e.GetKeyCode())
@@ -346,7 +358,7 @@ namespace SpaceOptima
 			}
 			break;
 
-		// Gizmo
+			// Gizmo
 		case SO_KEY_A:
 			m_GizmoType = -1;
 			break;
