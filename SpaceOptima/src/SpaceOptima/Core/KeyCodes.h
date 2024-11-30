@@ -1,4 +1,7 @@
 #pragma once
+
+// TODO: This file to be refactored for enum types without defines
+
 //this is taken from glfw3.h
 #define SO_KEY_SPACE              32
 #define SO_KEY_APOSTROPHE         39  /* ' */
@@ -124,3 +127,4 @@
 #define SO_KEY_MENU               348
 
 #define SO_KEY_LAST               SO_KEY_MENU
+

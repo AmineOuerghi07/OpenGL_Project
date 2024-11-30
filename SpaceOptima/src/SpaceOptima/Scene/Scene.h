@@ -1,7 +1,10 @@
 #pragma once
 
-#include "entt.hpp"
+
 #include "SpaceOptima/Core/TimeStep.h"
+#include "SpaceOptima/Renderer/EditorCamera.h"
+
+#include "entt.hpp"
 
 namespace SpaceOptima
 {
@@ -18,7 +21,8 @@ namespace SpaceOptima
 		void DestroyEntity(Entity entity);
 
 
-		void OnUpdate(Timestep ts);
+		void OnUpdateEditor(Timestep ts, EditorCamera& camera);
+		//void OnUpdateRuntime(Timestep ts); // TODO in the future
 
 		void OnViewportResize(uint32_t width, uint32_t height);
 

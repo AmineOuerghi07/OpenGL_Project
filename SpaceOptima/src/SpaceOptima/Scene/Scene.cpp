@@ -39,10 +39,11 @@ namespace SpaceOptima
 	}
 
 
-	void Scene::OnUpdate(Timestep ts)
+	void Scene::OnUpdateEditor(Timestep ts,EditorCamera& camera)
 	{
+		// This code can be used for runtime cameras
 
-		Camera* primaryCamera = nullptr;
+		/*Camera* primaryCamera = nullptr;
 		glm::mat4 cameraTransform;
 
 		auto view = m_Registry.view<CameraComponent, TransformComponent>();
@@ -56,12 +57,11 @@ namespace SpaceOptima
 				cameraTransform = transform.GetTransform();
 				break;
 			}
-		}
+		}*/
 
 
-		if (primaryCamera)
-		{
-			Renderer2D::BeginScene(*primaryCamera, cameraTransform);
+	
+			Renderer2D::BeginScene(camera);
 			auto group = m_Registry.group<TransformComponent>(entt::get<SpriteRendererComponent>);
 			for (auto entity : group)
 			{
@@ -71,8 +71,9 @@ namespace SpaceOptima
 			}
 
 			Renderer2D::EndScene();
-		}
+		
 	}
+
 	void Scene::OnViewportResize(uint32_t width, uint32_t height)
 	{
 		m_ViewportWidth = width;
