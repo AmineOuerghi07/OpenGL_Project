@@ -30,6 +30,8 @@ namespace SpaceOptima
 
 		FramebufferSpecification fbSpecs;
 
+		fbSpecs.Attachments = { FramebufferTextureFormat::RGBA8,FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth };
+
 		fbSpecs.Height = 720;
 		fbSpecs.Width = 1280;
 
@@ -111,10 +113,11 @@ namespace SpaceOptima
 		RenderCommand::SetClearColor({ 0.2f, 0.2f, 0.2f, 1 });
 		RenderCommand::Clear();
 
-		static float rotation = 0.0f;
-		rotation += ts * 50.0f;
-		//SO_CORE_INFO("rotation = {0}", rotation);
-		SO_CLIENT_INFO("Delta Time : {0}s  ({1}ms)", ts.GetSeconds(), 1000 / ts.GetMilliSeconds());
+		// Clear our entity ID Attachment to -1
+		
+		m_Framebuffer->ClearAttachment(1, -1);
+
+		//SO_CLIENT_INFO("Delta Time : {0}s  ({1}ms)", ts.GetSeconds(), 1000 / ts.GetMilliSeconds());
 
 
 		//Renderer2D::BeginScene(m_CameraController.GetCamera());
@@ -123,7 +126,23 @@ namespace SpaceOptima
 
 		//Renderer2D::EndScene();
 
+		auto [mx, my] = ImGui::GetMousePos();
 
+		mx -= m_ViewportBounds[0].x;
+		my -= m_ViewportBounds[0].y;
+
+		glm::vec2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
+
+		my = m_ViewportSize.y - my;
+
+		int mouseX = (int)mx;
+		int mouseY = (int)my;
+		SO_CLIENT_WARN("Mouse Pos  : {0} {1}", mouseX, mouseY);
+		if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)m_ViewportSize.x && mouseY < (int)m_ViewportSize.y)
+		{
+			int pixelData = m_Framebuffer->ReadPixel(1, mouseX, mouseY);
+			m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.get());
+		}
 
 		m_Framebuffer->Unbind();
 
@@ -232,6 +251,13 @@ namespace SpaceOptima
 		m_SceneHierarchyPanel.OnImGuiRender();
 
 		ImGui::Begin("Settings");
+		std::string name = "None";
+		if (m_HoveredEntity)
+		{
+			name = m_HoveredEntity.GetComponent<TagComponent>().Tag;
+		}
+		ImGui::Text("Hovered Entity: %s",name.c_str());
+
 		ImGui::Text("Renderer2D Stats");
 		ImGui::Text("Draw Calls : %d", stats.DrawCalls);
 		ImGui::Text("Quads : %d", stats.QuadCount);
@@ -242,18 +268,30 @@ namespace SpaceOptima
 
 		ImGui::Begin("viewport");
 
+		auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
+		auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
+		auto viewportOffset = ImGui::GetWindowPos();
+
+		m_ViewportBounds[0] = { viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y };
+		m_ViewportBounds[1] = { viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y };
+
 		m_ViewportFocused = ImGui::IsWindowFocused();
 		m_ViewportHovered = ImGui::IsWindowHovered();
 		Application::GetApplication().GetImGuiLayer()->BlockEvents(!m_ViewportFocused || !m_ViewportHovered);
 		ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
 		m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
 
-		SO_CLIENT_WARN("viewport size : {0}  {1}", viewportPanelSize.x, viewportPanelSize.y);
+		//SO_CLIENT_WARN("viewport size : {0}  {1}", viewportPanelSize.x, viewportPanelSize.y);
 
-		uint32_t framebufferTexture = m_Framebuffer->GetColorAttachementRendererID();
+		uint32_t framebufferTexture = m_Framebuffer->GetColorAttachmentRendererID();
 
-		ImGui::Image((void*)(uint64_t)m_Framebuffer->GetColorAttachementRendererID(), ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0,1 }, ImVec2{ 1,0 });
+		ImGui::Image((void*)(uint64_t)m_Framebuffer->GetColorAttachmentRendererID(), ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0,1 }, ImVec2{ 1,0 });
 
+
+
+
+		//SO_CLIENT_WARN("MIN BOUNDS : {0} {1}", m_ViewportBounds[0].x, m_ViewportBounds[0].y);
+		//SO_CLIENT_WARN("MAX BOUNDS : {0} {1}", m_ViewportBounds[1].x, m_ViewportBounds[1].y);
 
 		// Gizmos
 
@@ -273,9 +311,9 @@ namespace SpaceOptima
 		{
 			ImGuizmo::SetOrthographic(false);
 			ImGuizmo::SetDrawlist();
-			float width = (float)ImGui::GetWindowWidth();
-			float height = (float)ImGui::GetWindowHeight();
-			ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, width, height);
+			
+			
+			ImGuizmo::SetRect(m_ViewportBounds[0].x, m_ViewportBounds[0].y, m_ViewportBounds[1].x - m_ViewportBounds[0].x, m_ViewportBounds[1].y - m_ViewportBounds[0].y);
 
 			// Can be used for runtime camera in the future
 			//	auto cameraEntity = m_ActiveScene->GetPrimaryCameraEntity();
@@ -328,6 +366,7 @@ namespace SpaceOptima
 		m_EditorCamera.OnEvent(e);
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<KeyPressedEvent>(SO_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
+		dispatcher.Dispatch<MouseButtonPressedEvent>(SO_BIND_EVENT_FN(EditorLayer::OnMousePressed));
 	}
 
 	bool EditorLayer::OnKeyPressed(KeyPressedEvent& e)
@@ -376,6 +415,18 @@ namespace SpaceOptima
 			m_GizmoType = ImGuizmo::OPERATION::SCALE;
 			break;
 
+		}
+		return false;
+	}
+
+	bool EditorLayer::OnMousePressed(MouseButtonPressedEvent& e)
+	{
+		if (e.GetMouseButton() == SO_MOUSE_BUTTON_LEFT)
+		{
+			if (m_ViewportHovered && !ImGuizmo::IsOver() && !Input::IsKeyPressed(SO_KEY_LEFT_ALT))
+			{
+				m_SceneHierarchyPanel.SetSelectedEntity(m_HoveredEntity);
+			}
 		}
 		return false;
 	}
