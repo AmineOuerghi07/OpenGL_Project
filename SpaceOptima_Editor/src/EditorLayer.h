@@ -20,6 +20,7 @@ namespace SpaceOptima
 
 	private:
 		bool OnKeyPressed(KeyPressedEvent& e);
+		bool OnMousePressed(MouseButtonPressedEvent& e);
 		void NewScene();
 		void SaveSceneAs();
 		void OpenScene();
@@ -43,11 +44,15 @@ namespace SpaceOptima
 
 		glm::vec2 m_ViewportSize = {1280.0, 720.0};
 
+		glm::vec2 m_ViewportBounds[2];
+
 		bool m_ViewportFocused = false;
 		bool m_ViewportHovered = false;
 
 		Entity m_PrimaryCamera;
 		Entity m_SecondCamera;
+
+		Entity m_HoveredEntity;
 
 		EditorCamera m_EditorCamera;
 
