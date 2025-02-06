@@ -25,8 +25,8 @@ namespace SpaceOptima
 	void EditorLayer::OnAttach()
 	{
 
-		m_Texture = Texture2D::Create("assets/textures/textureTest.jpg");
-		m_TextureMilk = Texture2D::Create("assets/textures/test.jpg");
+		//m_Texture = Texture2D::Create("assets/textures/textureTest.jpg");
+		//m_TextureMilk = Texture2D::Create("assets/textures/test.jpg");
 
 		FramebufferSpecification fbSpecs;
 
@@ -137,7 +137,7 @@ namespace SpaceOptima
 
 		int mouseX = (int)mx;
 		int mouseY = (int)my;
-		SO_CLIENT_WARN("Mouse Pos  : {0} {1}", mouseX, mouseY);
+		//SO_CLIENT_WARN("Mouse Pos  : {0} {1}", mouseX, mouseY);
 		if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)m_ViewportSize.x && mouseY < (int)m_ViewportSize.y)
 		{
 			int pixelData = m_Framebuffer->ReadPixel(1, mouseX, mouseY);
@@ -250,6 +250,10 @@ namespace SpaceOptima
 
 		m_SceneHierarchyPanel.OnImGuiRender();
 
+		m_ContentBrowserPanel.OnImGuiRender();
+
+		//ImGui::ShowDemoWindow();
+
 		ImGui::Begin("Settings");
 		std::string name = "None";
 		if (m_HoveredEntity)
@@ -292,6 +296,19 @@ namespace SpaceOptima
 
 		//SO_CLIENT_WARN("MIN BOUNDS : {0} {1}", m_ViewportBounds[0].x, m_ViewportBounds[0].y);
 		//SO_CLIENT_WARN("MAX BOUNDS : {0} {1}", m_ViewportBounds[1].x, m_ViewportBounds[1].y);
+
+		// Drag and Drop into the scene
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+			{
+				const wchar_t* path = (const wchar_t*)payload->Data;
+				OpenScene(path);
+			}
+			ImGui::EndDragDropTarget();
+		}
+
+
 
 		// Gizmos
 
@@ -448,16 +465,22 @@ namespace SpaceOptima
 		}
 	}
 
+
+	void EditorLayer::OpenScene(const std::filesystem::path& path)
+	{
+		m_ActiveScene = std::make_shared<Scene>();
+		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		m_SceneHierarchyPanel.SetContext(m_ActiveScene);
+		SceneSerializer sceneSerializer(m_ActiveScene);
+		sceneSerializer.Deserialize(path.string());
+	}
+
 	void EditorLayer::OpenScene()
 	{
 		std::string filePath = FileDialogs::OpenFile("SpaceOptima Planogram (*.so)\0*.so\0");
 		if (!filePath.empty())
 		{
-			m_ActiveScene = std::make_shared<Scene>();
-			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-			m_SceneHierarchyPanel.SetContext(m_ActiveScene);
-			SceneSerializer sceneSerializer(m_ActiveScene);
-			sceneSerializer.Deserialize(filePath);
+			OpenScene(filePath);
 		}
 	}
 

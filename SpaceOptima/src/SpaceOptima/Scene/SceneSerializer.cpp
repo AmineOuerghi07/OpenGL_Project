@@ -159,6 +159,13 @@ namespace SpaceOptima
 
 			auto& spriteRendererComponent = entity.GetComponent<SpriteRendererComponent>();
 			out << YAML::Key << "Color" << YAML::Value << YAML::convert<glm::vec4>::encode(spriteRendererComponent.Color);
+			if (spriteRendererComponent.Texture)
+			{
+				std::string path = spriteRendererComponent.Texture->GetTexturePath();
+				out << YAML::Key << "Texture" << YAML::Value << path;
+			}
+
+			out << YAML::Key << "TilingFactor" << YAML::Value << spriteRendererComponent.TilingFactor;
 
 			out << YAML::EndMap;
 		}
@@ -294,6 +301,13 @@ namespace SpaceOptima
 					auto& src = deserializedEntity.AddComponent<SpriteRendererComponent>();
 
 					src.Color = spriteRenderer["Color"].as<glm::vec4>();
+
+					if (spriteRenderer["Texture"])
+					{
+						src.Texture = Texture2D::Create(spriteRenderer["Texture"].as<std::string>());
+					}
+					if (spriteRenderer["TilingFactor"])
+						src.TilingFactor = spriteRenderer["TilingFactor"].as<float>();
 				}
 			}
 		}

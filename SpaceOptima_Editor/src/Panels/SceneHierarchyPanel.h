@@ -3,7 +3,7 @@
 #include <SpaceOptima/Core/Core.h>
 #include <SpaceOptima/Scene/Scene.h>
 #include <SpaceOptima/Scene/Entity.h>
-
+#include <SpaceOptima/Renderer/Texture.h>
 
 namespace SpaceOptima
 {
@@ -11,7 +11,7 @@ namespace SpaceOptima
 	{
 	public:
 
-		SceneHierarchyPanel() = default;
+		SceneHierarchyPanel();
 
 		SceneHierarchyPanel(const Ref<Scene>& scene);
 
@@ -31,6 +31,8 @@ namespace SpaceOptima
 		Ref<Scene> m_Context;
 
 		Entity m_SelectionContext;
+
+		Ref<Texture2D> m_TextureHolder;
 
 	};
 }

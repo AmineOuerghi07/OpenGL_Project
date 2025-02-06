@@ -1,3 +1,4 @@
+#include "sopch.h"
 #include "SceneHierarchyPanel.h"
 
 #include <imgui.h>
@@ -12,11 +13,22 @@
 #include <glm/gtc/type_ptr.hpp>
 
 
+#include <filesystem>
+
 namespace SpaceOptima
 {
+
+	extern const std::filesystem::path s_AssetsDirectory;
+
+	SceneHierarchyPanel::SceneHierarchyPanel()
+	{
+		m_TextureHolder = Texture2D::Create("Resources/Images/TexturePlaceholder.png");
+	}
+
 	SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene>& context)
 	{
 		SetContext(context);
+		m_TextureHolder = Texture2D::Create("Resources/Images/TexturePlaceholder.png");
 	}
 
 
@@ -396,9 +408,40 @@ namespace SpaceOptima
 		});
 
 
-		DrawComponent<SpriteRendererComponent>("Sprite Renderer", entity, [](auto& component){
-			auto& color = component.Color;
-			ImGui::ColorEdit4("Colors", glm::value_ptr(color));
+		DrawComponent<SpriteRendererComponent>("Sprite Renderer", entity, [&](auto& component){
+			
+			// Color
+			//auto& color = component.Color;
+			//auto& texture = component.Texture;
+			//auto& tilingFactor = component.TilingFactor;
+			ImGui::ColorEdit4("Colors", glm::value_ptr(component.Color));
+			
+			Ref<Texture2D> texturePlaceHolder = m_TextureHolder;
+			// Texture
+			if (component.Texture)
+			{
+				ImGui::ImageButton("Texture", (ImTextureID)(component.Texture->GetRendererID()), { 100.f, 100.0f }, { 0 , 1 }, { 1 , 0 });
+			}
+			else
+			{
+				ImGui::ImageButton("Texture", (ImTextureID)(texturePlaceHolder->GetRendererID()), {100.f, 100.0f}, { 0 , 1 }, { 1 , 0 });
+			}
+			if (ImGui::BeginDragDropTarget())
+			{
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+				{
+					const wchar_t* path = (const wchar_t*)payload->Data;
+					std::filesystem::path texturePath = std::filesystem::path(path);
+					SO_CORE_WARN("THE TEXTURE PATH IS : {0}", texturePath.string()); 
+					component.Texture = Texture2D::Create(texturePath.string());
+				}
+				
+				ImGui::EndDragDropTarget();
+			}
+
+
+			// Tiling Factor
+			ImGui::DragFloat("Tiling Factor", &component.TilingFactor,1.0f, 1.0f, 100.0f);
 			
 		});
 
