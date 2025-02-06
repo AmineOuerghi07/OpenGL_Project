@@ -2,7 +2,7 @@
 
 #include <SpaceOptima.h>
 #include "Panels/SceneHierarchyPanel.h"
-
+#include "Panels/ContentBrowserPanel.h"
 #include "SpaceOptima/Renderer/EditorCamera.h"
 
 namespace SpaceOptima
@@ -23,6 +23,7 @@ namespace SpaceOptima
 		bool OnMousePressed(MouseButtonPressedEvent& e);
 		void NewScene();
 		void SaveSceneAs();
+		void OpenScene(const std::filesystem::path& path);
 		void OpenScene();
 
 	private:
@@ -31,16 +32,19 @@ namespace SpaceOptima
 
 
 		// Temporary
-		Ref<Texture2D> m_Texture;
+		/*Ref<Texture2D> m_Texture;
 		Ref<Texture2D> m_TextureMilk;
 		Ref<VertexArray> m_VertexArray;
 		Ref<Shader> m_Shader;
-		Ref<VertexArray> m_SquareVA;
+		Ref<VertexArray> m_SquareVA;*/
+		//Entity m_Square;
+		
 		Ref<Framebuffer> m_Framebuffer;
 
 		Ref<Scene> m_ActiveScene;
 
-		Entity m_Square;
+
+	
 
 		glm::vec2 m_ViewportSize = {1280.0, 720.0};
 
@@ -62,6 +66,7 @@ namespace SpaceOptima
 
 		// Panels
 		SceneHierarchyPanel m_SceneHierarchyPanel;
+		ContentBrowserPanel m_ContentBrowserPanel;
 		
 		glm::vec4 m_SquareColor = { 0.8f, 0.0f, 0.1f, 1.0f };
 

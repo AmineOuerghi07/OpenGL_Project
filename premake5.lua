@@ -1,3 +1,6 @@
+VULKAN_SDK = os.getenv("VULKAN_SDK")
+
+
 workspace "SpaceOptima"
 	startproject "Sandbox"
 	architecture "x64"
@@ -19,6 +22,25 @@ IncludeDir["stb_image"] ="SpaceOptima/vendor/stb_image"
 IncludeDir["entt"] ="SpaceOptima/vendor/entt/include"
 IncludeDir["yaml_cpp"] ="SpaceOptima/vendor/yaml-cpp/include"
 IncludeDir["ImGuizmo"] ="SpaceOptima/vendor/ImGuizmo"
+IncludeDir["VulkanSDK"] = "%{VULKAN_SDK}/Include"
+
+LibraryDir = {}
+
+LibraryDir["VulkanSDK"] = "%{VULKAN_SDK}/Lib"
+
+Library = {}
+
+Library["Vulkan"] = "%{LibraryDir.VulkanSDK}/vulkan-1.lib"
+Library["VulkanUtils"] = "%{LibraryDir.VulkanSDK}/VkLayer_utils.lib"
+
+Library["ShaderC_Debug"] = "%{LibraryDir.VulkanSDK}/shaderc_sharedd.lib"
+Library["SPIRV_Cross_Debug"] = "%{LibraryDir.VulkanSDK}/spirv-cross-cored.lib"
+Library["SPIRV_Cross_GLSL_Debug"] = "%{LibraryDir.VulkanSDK}/spirv-cross-glsld.lib"
+Library["SPIRV_Tools_Debug"] = "%{LibraryDir.VulkanSDK}/SPIRV-Toolsd.lib"
+
+Library["ShaderC_Release"] = "%{LibraryDir.VulkanSDK}/shaderc_shared.lib"
+Library["SPIRV_Cross_Release"] = "%{LibraryDir.VulkanSDK}/spirv-cross-core.lib"
+Library["SPIRV_Cross_GLSL_Release"] = "%{LibraryDir.VulkanSDK}/spirv-cross-glsl.lib"
 
 group "Dependencies"
 	include "SpaceOptima/vendor/GLFW"
@@ -33,7 +55,7 @@ project "SpaceOptima"
 	kind "StaticLib"
 	language "C++"
 	cppdialect "C++20"
-	staticruntime "on"
+	staticruntime "off"
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 	pchheader "sopch.h"
@@ -53,7 +75,7 @@ project "SpaceOptima"
 		"%{prj.name}/vendor/glm/glm/**.cpp",
 
 		"%{prj.name}/vendor/ImGuizmo/ImGuizmo.h",
-		"%{prj.name}/vendor/ImGuizmo/ImGuizmo.cpp"
+		"%{prj.name}/vendor/ImGuizmo/ImGuizmo.cpp",
 	}
 
 	includedirs
@@ -67,7 +89,8 @@ project "SpaceOptima"
 		"%{IncludeDir.stb_image}",
 		"%{IncludeDir.entt}",
 		"%{IncludeDir.yaml_cpp}",
-		"%{IncludeDir.ImGuizmo}"
+		"%{IncludeDir.ImGuizmo}",
+		"%{IncludeDir.VulkanSDK}"
 
 	}
 
@@ -95,6 +118,18 @@ project "SpaceOptima"
 	filter "files:SpaceOptima/vendor/glm/glm/detail/**.cpp"
 	flags { "NoPCH" }
 
+	filter "files:SpaceOptima/vendor/shaderc/libshaderc/include/**.hpp"
+	flags { "NoPCH" }
+	
+	filter "files:SpaceOptima/vendor/shaderc/libshaderc/include/**.h"
+	flags { "NoPCH" }
+
+	filter "files:SpaceOptima/vendor/spirv/spirv_cross/**.cpp"
+	flags { "NoPCH" }
+
+	filter "files:SpaceOptima/vendor/spirv/spirv_cross/**.hpp"
+	flags { "NoPCH" }
+
 	filter "system:windows"
 		systemversion "latest"
 		defines 
@@ -109,15 +144,38 @@ project "SpaceOptima"
 		defines "SO_ENGINE_DEBUG"
 		runtime "Debug"
 		symbols "on"
+		links
+		{
+			"%{Library.ShaderC_Debug}",
+			"%{Library.SPIRV_Cross_Debug}",
+			"%{Library.SPIRV_Cross_GLSL_Debug}"
+		}
+
+		
 	filter "configurations:Release"
 		defines "SO_ENGINE_RELEASE"
 		runtime "Release"
 		optimize "on"
+		links
+		{
+			"%{Library.ShaderC_Release}",
+			"%{Library.SPIRV_Cross_Release}",
+			"%{Library.SPIRV_Cross_GLSL_Release}"
+		}
+
+
 
 	filter "configurations:Dist"
 		defines "SO_ENGINE_DIST"
 		runtime "Release"
 		optimize "on"
+
+		links
+		{
+			"%{Library.ShaderC_Release}",
+			"%{Library.SPIRV_Cross_Release}",
+			"%{Library.SPIRV_Cross_GLSL_Release}"
+		}
 	
 
 
@@ -126,7 +184,7 @@ project "SpaceOptima_Editor"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++20"
-	staticruntime "on"
+	staticruntime "off"
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
@@ -179,7 +237,7 @@ project "SpaceOptima_Editor"
 		kind "ConsoleApp"
 		language "C++"
 		cppdialect "C++20"
-		staticruntime "on"
+		staticruntime "off"
 		targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 		objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 	
