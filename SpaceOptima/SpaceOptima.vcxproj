@@ -148,6 +148,7 @@
     <ClInclude Include="src\Platform\OpenGL\OpenGLFramebuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLRendererAPI.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLShader.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLStorageBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLTexture.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLUniformBuffer.h" />
     <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h" />
@@ -184,6 +185,7 @@
     <ClInclude Include="src\SpaceOptima\Renderer\Renderer2D.h" />
     <ClInclude Include="src\SpaceOptima\Renderer\RendererAPI.h" />
     <ClInclude Include="src\SpaceOptima\Renderer\Shader.h" />
+    <ClInclude Include="src\SpaceOptima\Renderer\StorageBuffer.h" />
     <ClInclude Include="src\SpaceOptima\Renderer\Texture.h" />
     <ClInclude Include="src\SpaceOptima\Renderer\UniformBuffer.h" />
     <ClInclude Include="src\SpaceOptima\Renderer\VertexArray.h" />
@@ -629,6 +631,7 @@
     <ClCompile Include="src\Platform\OpenGL\OpenGLFramebuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLRendererAPI.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLShader.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLStorageBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLTexture.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLUniformBuffer.cpp" />
     <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp" />
@@ -653,6 +656,7 @@
     <ClCompile Include="src\SpaceOptima\Renderer\Renderer2D.cpp" />
     <ClCompile Include="src\SpaceOptima\Renderer\RendererAPI.cpp" />
     <ClCompile Include="src\SpaceOptima\Renderer\Shader.cpp" />
+    <ClCompile Include="src\SpaceOptima\Renderer\StorageBuffer.cpp" />
     <ClCompile Include="src\SpaceOptima\Renderer\Texture.cpp" />
     <ClCompile Include="src\SpaceOptima\Renderer\UniformBuffer.cpp" />
     <ClCompile Include="src\SpaceOptima\Renderer\VertexArray.cpp" />
