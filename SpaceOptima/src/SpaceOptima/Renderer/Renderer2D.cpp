@@ -5,6 +5,8 @@
 #include "RenderCommand.h"
 #include "UniformBuffer.h"
 
+#include "StorageBuffer.h"
+
 #include <glm/gtc/matrix_transform.hpp>
 
 
@@ -29,7 +31,7 @@ namespace SpaceOptima
 		const uint32_t MaxQuads = 10000;
 		const uint32_t MaxVertices = MaxQuads * 4;
 		const uint32_t MaxIndices = MaxQuads * 6;
-		const uint32_t MaxTextureSlots = 20000;
+		const uint32_t MaxTextureSlots = 1000;
 		//const static uint32_t MaxTextureSlots = 32;
 
 		Ref<VertexArray> QuadVertexArray;
@@ -56,7 +58,7 @@ namespace SpaceOptima
 		};
 		CameraData CameraBuffer;
 		Ref<UniformBuffer> CameraUniformBuffer;
-		Ref<UniformBuffer> TexturesBuffer = nullptr;
+		Ref<StorageBuffer> TexturesBuffer = nullptr;
 	};
 
 	static Renderer2DData s_Data;
@@ -141,8 +143,8 @@ namespace SpaceOptima
 		s_Data.QuadVertexPositions[2] = { 0.5f,  0.5f, 0.0f, 1.0f};
 		s_Data.QuadVertexPositions[3] = {-0.5f,  0.5f, 0.0f, 1.0f};
 
-		s_Data.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer2DData::CameraData), 0, 0);
-		s_Data.TexturesBuffer = UniformBuffer::Create(s_Data.MaxTextureSlots * sizeof(uint64_t), 1);
+		s_Data.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer2DData::CameraData), 0);
+		s_Data.TexturesBuffer = StorageBuffer::Create(s_Data.MaxTextureSlots * sizeof(uint64_t), 1) ;
 	}
 
 	void Renderer2D::Shutdown()
@@ -208,7 +210,7 @@ namespace SpaceOptima
 		}
 
 
-		s_Data.TexturesBuffer->SetData((const void*)s_Data.TextureHandles.data(), s_Data.TextureHandles.size() * sizeof(uint64_t));
+		s_Data.TexturesBuffer->SetData((const void*) s_Data.TextureHandles.data(), s_Data.TextureHandles.size() * sizeof(uint64_t), 0);
 
 		s_Data.TextureShader->Bind();
 

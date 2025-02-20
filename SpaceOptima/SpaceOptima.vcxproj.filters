@@ -1507,6 +1507,8 @@
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\OpenGL\OpenGLShader.h" />
+    <ClInclude Include="src\Platform\OpenGL\OpenGLStorageBuffer.h" />
+    <ClInclude Include="src\SpaceOptima\Renderer\StorageBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
@@ -1630,5 +1632,7 @@
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\OpenGL\OpenGLShader.cpp" />
+    <ClCompile Include="src\Platform\OpenGL\OpenGLStorageBuffer.cpp" />
+    <ClCompile Include="src\SpaceOptima\Renderer\StorageBuffer.cpp" />
   </ItemGroup>
 </Project>
