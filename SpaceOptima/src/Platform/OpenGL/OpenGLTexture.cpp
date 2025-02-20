@@ -4,6 +4,7 @@
 #include "stb_image.h"
 
 
+
 namespace SpaceOptima
 {
 	OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height)
@@ -22,6 +23,11 @@ namespace SpaceOptima
 
 		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+
+		glGenerateTextureMipmap(m_RendererID);
+
+		m_Handle = glGetTextureHandleARB(m_RendererID);
 
 		
 	}
@@ -70,12 +76,17 @@ namespace SpaceOptima
 		glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, dataFormat, GL_UNSIGNED_BYTE, data);
+		
+		glGenerateTextureMipmap(m_RendererID);
+
+		m_Handle = glGetTextureHandleARB(m_RendererID);
 
 		stbi_image_free(data);
 	}
 
 	OpenGLTexture2D::~OpenGLTexture2D()
 	{
+		glMakeTextureHandleNonResidentARB(m_Handle);
 		glDeleteTextures(1, &m_RendererID);
 	}
 
@@ -89,6 +100,12 @@ namespace SpaceOptima
 		size_t bpp = m_DataFormat == GL_RGBA ? 4 : 3;
 		SO_CORE_ASSERT(size == m_Width * m_Height * bpp, "Size is not right !!!");
 		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
+	}
+
+	void OpenGLTexture2D::MakeTextureResident() const
+	{
+		if(!glIsImageHandleResidentARB(m_Handle))
+			glMakeTextureHandleResidentARB(m_Handle);
 	}
 
 }

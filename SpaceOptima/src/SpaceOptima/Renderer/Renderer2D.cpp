@@ -29,7 +29,8 @@ namespace SpaceOptima
 		const uint32_t MaxQuads = 10000;
 		const uint32_t MaxVertices = MaxQuads * 4;
 		const uint32_t MaxIndices = MaxQuads * 6;
-		const static uint32_t MaxTextureSlots = 32;
+		const uint32_t MaxTextureSlots = 20000;
+		//const static uint32_t MaxTextureSlots = 32;
 
 		Ref<VertexArray> QuadVertexArray;
 		Ref<VertexBuffer> QuadVertexBuffer;
@@ -41,7 +42,8 @@ namespace SpaceOptima
 		QuadVertex* QuadVertexBufferBase = nullptr;
 		QuadVertex* QuadVertexBufferPtr = nullptr;
 
-		std::array<Ref<Texture2D>, MaxTextureSlots> TextureSlots;
+		std::vector<Ref<Texture2D>> TextureSlots;
+		std::vector<uint64_t> TextureHandles;
 		uint32_t TextureSlotIndex = 1; // 0 = White Texture
 
 		glm::vec4 QuadVertexPositions[4];
@@ -54,6 +56,7 @@ namespace SpaceOptima
 		};
 		CameraData CameraBuffer;
 		Ref<UniformBuffer> CameraUniformBuffer;
+		Ref<UniformBuffer> TexturesBuffer = nullptr;
 	};
 
 	static Renderer2DData s_Data;
@@ -117,24 +120,29 @@ namespace SpaceOptima
 
 		s_Data.WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
 
+		s_Data.WhiteTexture->MakeTextureResident();
+
 		s_Data.TextureShader = SpaceOptima::Shader::Create("assets/shaders/Texture.glsl");
+
+		s_Data.TextureHandles.emplace_back(s_Data.WhiteTexture->GetHandle());
 
 		s_Data.TextureShader->Bind();
 
-		int32_t samplers[s_Data.MaxTextureSlots];
+		/*int32_t samplers[s_Data.MaxTextureSlots];
 		for (uint32_t i = 0; i < s_Data.MaxTextureSlots; i++)
 			samplers[i] = i;
 
-		s_Data.TextureShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
+		s_Data.TextureShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);*/
 
-		s_Data.TextureSlots[0] = s_Data.WhiteTexture;
+		s_Data.TextureSlots.emplace_back(s_Data.WhiteTexture);
 
 		s_Data.QuadVertexPositions[0] = {-0.5f, -0.5f, 0.0f, 1.0f};
 		s_Data.QuadVertexPositions[1] = { 0.5f, -0.5f, 0.0f, 1.0f};
 		s_Data.QuadVertexPositions[2] = { 0.5f,  0.5f, 0.0f, 1.0f};
 		s_Data.QuadVertexPositions[3] = {-0.5f,  0.5f, 0.0f, 1.0f};
 
-		s_Data.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer2DData::CameraData), 0);
+		s_Data.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer2DData::CameraData), 0, 0);
+		s_Data.TexturesBuffer = UniformBuffer::Create(s_Data.MaxTextureSlots * sizeof(uint64_t), 1);
 	}
 
 	void Renderer2D::Shutdown()
@@ -184,14 +192,27 @@ namespace SpaceOptima
 
 	void Renderer2D::Flush()
 	{
-		// Bind Textures
-		for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
+		if (s_Data.TextureHandles.size() != s_Data.TextureSlots.size())
 		{
-			s_Data.TextureSlots[i]->Bind(i);
+			s_Data.TextureHandles.clear();
 		}
+		// Bind Textures
+		for (uint32_t i = 0; i < s_Data.TextureSlots.size(); i++)
+		{
+			//s_Data.TextureSlots[i]->Bind(i);
+			s_Data.TextureSlots[i].get()->MakeTextureResident();
+			if (s_Data.TextureHandles.size() != s_Data.TextureSlots.size())
+			{
+				s_Data.TextureHandles.emplace_back(s_Data.TextureSlots[i]->GetHandle());
+			}
+		}
+
+
+		s_Data.TexturesBuffer->SetData((const void*)s_Data.TextureHandles.data(), s_Data.TextureHandles.size() * sizeof(uint64_t));
 
 		s_Data.TextureShader->Bind();
 
+		
 		RenderCommand::DrawIndexed(s_Data.QuadVertexArray,s_Data.QuadIndexCount);
 
 		s_Data.Stats.DrawCalls++;
@@ -386,21 +407,23 @@ namespace SpaceOptima
 
 		float textureIndex = 0.0f;
 
-		for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
+		bool textureAlreadyBound = false;
+
+		for (uint32_t i = 0; i < s_Data.TextureSlots.size() && !textureAlreadyBound; i++)
 		{
 			if (*s_Data.TextureSlots[i].get() == *texture.get())
 			{
 				textureIndex = (float)i;
-				break;
+				textureAlreadyBound = true;
 			}
 		}
 
-		if (textureIndex == 0.0f)
+		if (!textureAlreadyBound)
 		{
-			textureIndex = (float)s_Data.TextureSlotIndex;
-			s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture;
-			s_Data.TextureSlotIndex++;
+			s_Data.TextureSlots.emplace_back(texture);
+			textureIndex = s_Data.TextureSlots.size() - 1;
 		}
+
 
 		for (size_t i = 0; i < quadVertexCount; i++)
 		{

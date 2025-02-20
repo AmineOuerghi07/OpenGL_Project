@@ -2,8 +2,9 @@
 #include "OpenGLUniformBuffer.h"
 #include <glad/glad.h>
 namespace SpaceOptima {
-	OpenGLUniformBuffer::OpenGLUniformBuffer(uint32_t size, uint32_t binding)
+	OpenGLUniformBuffer::OpenGLUniformBuffer(uint32_t size, uint32_t binding, uint32_t renderer)
 	{
+		m_RendererID = renderer;
 		glCreateBuffers(1, &m_RendererID);
 		glNamedBufferData(m_RendererID, size, nullptr, GL_DYNAMIC_DRAW); // TODO: investigate usage hint
 		glBindBufferBase(GL_UNIFORM_BUFFER, binding, m_RendererID);
