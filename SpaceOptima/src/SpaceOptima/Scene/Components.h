@@ -40,7 +40,7 @@ namespace SpaceOptima
 
 		Ref<Texture2D> Texture;
 
-		float TilingFactor;
+		float TilingFactor = 1.0f;
 
 		SpriteRendererComponent() = default;
 		SpriteRendererComponent(const SpriteRendererComponent&) = default;

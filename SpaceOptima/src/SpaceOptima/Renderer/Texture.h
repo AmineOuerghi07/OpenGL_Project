@@ -16,6 +16,10 @@ namespace SpaceOptima
 		virtual void Bind(uint32_t slot = 0) const = 0;
 		virtual void SetData(void* data, size_t size) const = 0;
 		virtual bool operator==(const Texture& other) const = 0;
+
+		// this function is working only on OpenGL 4.6 and above and mostly on NVIDIA and AMD GPUs
+		virtual void MakeTextureResident() const = 0;
+		virtual uint64_t GetHandle() const = 0;
 	};
 
 	class Texture2D : public Texture

@@ -1,7 +1,11 @@
 // Basic Texture Shader
 
 #type vertex
-#version 450 core
+#version 460 core
+
+#extension GL_ARB_bindless_texture : require
+
+#extension GL_NV_uniform_buffer_std430_layout : enable
 
 layout(location = 0) in vec3 a_Position;
 layout(location = 1) in vec4 a_Color;
@@ -10,7 +14,7 @@ layout(location = 3) in float a_TexIndex;
 layout(location = 4) in float a_TilingFactor;
 layout(location = 5) in int a_EntityID;
 
-layout(std140, binding = 0) uniform Camera
+layout(binding = 0, std430) uniform Camera
 {
 	mat4 u_ViewProjection;
 };
@@ -38,7 +42,11 @@ void main()
 }
 
 #type fragment
-#version 450 core
+#version 460 core
+
+#extension GL_ARB_bindless_texture : require
+
+#extension GL_NV_uniform_buffer_std430_layout : enable
 
 layout(location = 0) out vec4 color;
 layout(location = 1) out int color2;
@@ -54,13 +62,18 @@ layout (location = 0) in VertexOutput Input;
 layout (location = 3) in flat float v_TexIndex;
 layout (location = 4) in flat int v_EntityID;
 
-layout (binding = 0) uniform sampler2D u_Textures[32];
+layout(binding = 1, std430) uniform u_Textures
+{
+	sampler2D textures[1600];
+};
 
 void main()
 {
 	vec4 texColor = Input.Color;
 
-	switch(int(v_TexIndex))
+	texColor *= texture(textures[int(v_TexIndex)], Input.TexCoord * Input.TilingFactor);
+
+	/*switch(int(v_TexIndex))
 	{
 		case  0: texColor *= texture(u_Textures[ 0], Input.TexCoord * Input.TilingFactor); break;
 		case  1: texColor *= texture(u_Textures[ 1], Input.TexCoord * Input.TilingFactor); break;
@@ -94,7 +107,7 @@ void main()
 		case 29: texColor *= texture(u_Textures[29], Input.TexCoord * Input.TilingFactor); break;
 		case 30: texColor *= texture(u_Textures[30], Input.TexCoord * Input.TilingFactor); break;
 		case 31: texColor *= texture(u_Textures[31], Input.TexCoord * Input.TilingFactor); break;
-	}
+	}*/
 	color = texColor;
 
 	color2 = v_EntityID;
