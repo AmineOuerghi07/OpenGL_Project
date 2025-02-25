@@ -31,7 +31,7 @@ namespace SpaceOptima
 		const uint32_t MaxQuads = 10000;
 		const uint32_t MaxVertices = MaxQuads * 4;
 		const uint32_t MaxIndices = MaxQuads * 6;
-		const uint32_t MaxTextureSlots = 1000;
+		const static uint32_t MaxTextureSlots = 1000;
 		//const static uint32_t MaxTextureSlots = 32;
 
 		Ref<VertexArray> QuadVertexArray;
@@ -122,8 +122,6 @@ namespace SpaceOptima
 
 		s_Data.WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
 
-		s_Data.WhiteTexture->MakeTextureResident();
-
 		s_Data.TextureShader = SpaceOptima::Shader::Create("assets/shaders/Texture.glsl");
 
 		s_Data.TextureHandles.emplace_back(s_Data.WhiteTexture->GetHandle());
@@ -202,7 +200,6 @@ namespace SpaceOptima
 		for (uint32_t i = 0; i < s_Data.TextureSlots.size(); i++)
 		{
 			//s_Data.TextureSlots[i]->Bind(i);
-			s_Data.TextureSlots[i].get()->MakeTextureResident();
 			if (s_Data.TextureHandles.size() != s_Data.TextureSlots.size())
 			{
 				s_Data.TextureHandles.emplace_back(s_Data.TextureSlots[i]->GetHandle());
