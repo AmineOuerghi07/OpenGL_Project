@@ -18,7 +18,6 @@ namespace SpaceOptima
 		virtual bool operator==(const Texture& other) const = 0;
 
 		// this function is working only on OpenGL 4.6 and above and mostly on NVIDIA and AMD GPUs
-		virtual void MakeTextureResident() const = 0;
 		virtual uint64_t GetHandle() const = 0;
 	};
 

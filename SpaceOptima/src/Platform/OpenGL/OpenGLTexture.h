@@ -24,8 +24,6 @@ namespace SpaceOptima
 			return m_RendererID == ((OpenGLTexture2D&)other).m_RendererID;
 		}
 
-
-		virtual void MakeTextureResident() const override;
 		virtual uint64_t GetHandle() const override { return m_Handle; }
 
 	private:

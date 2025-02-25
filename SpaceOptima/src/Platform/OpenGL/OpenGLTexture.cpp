@@ -29,7 +29,8 @@ namespace SpaceOptima
 
 		m_Handle = glGetTextureHandleARB(m_RendererID);
 
-		
+		glMakeTextureHandleResidentARB(m_Handle);
+
 	}
 
 
@@ -81,6 +82,8 @@ namespace SpaceOptima
 
 		m_Handle = glGetTextureHandleARB(m_RendererID);
 
+		glMakeTextureHandleResidentARB(m_Handle);
+
 		stbi_image_free(data);
 	}
 
@@ -102,10 +105,5 @@ namespace SpaceOptima
 		glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
 	}
 
-	void OpenGLTexture2D::MakeTextureResident() const
-	{
-		if(!glIsImageHandleResidentARB(m_Handle))
-			glMakeTextureHandleResidentARB(m_Handle);
-	}
 
 }
