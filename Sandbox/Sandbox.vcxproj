@@ -78,8 +78,8 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>SO_PLATFORM_WINDOWS;SO_ENGINE_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\SpaceOptima\vendor\spdlog\include;..\SpaceOptima\src;..\SpaceOptima\vendor\glm;..\SpaceOptima\vendor\imgui;..\SpaceOptima\vendor\entt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>FE_PLATFORM_WINDOWS;FE_ENGINE_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\FunEngine\vendor\spdlog\include;..\FunEngine\src;..\FunEngine\vendor\glm;..\FunEngine\vendor\imgui;..\FunEngine\vendor\entt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -95,8 +95,8 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>SO_PLATFORM_WINDOWS;SO_ENGINE_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\SpaceOptima\vendor\spdlog\include;..\SpaceOptima\src;..\SpaceOptima\vendor\glm;..\SpaceOptima\vendor\imgui;..\SpaceOptima\vendor\entt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>FE_PLATFORM_WINDOWS;FE_ENGINE_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\FunEngine\vendor\spdlog\include;..\FunEngine\src;..\FunEngine\vendor\glm;..\FunEngine\vendor\imgui;..\FunEngine\vendor\entt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -116,8 +116,8 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>SO_PLATFORM_WINDOWS;SO_ENGINE_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\SpaceOptima\vendor\spdlog\include;..\SpaceOptima\src;..\SpaceOptima\vendor\glm;..\SpaceOptima\vendor\imgui;..\SpaceOptima\vendor\entt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>FE_PLATFORM_WINDOWS;FE_ENGINE_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\FunEngine\vendor\spdlog\include;..\FunEngine\src;..\FunEngine\vendor\glm;..\FunEngine\vendor\imgui;..\FunEngine\vendor\entt\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -141,7 +141,7 @@
     <ClCompile Include="src\SandboxApp.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SpaceOptima\SpaceOptima.vcxproj">
+    <ProjectReference Include="..\FunEngine\FunEngine.vcxproj">
       <Project>{1BD2E18C-8787-5A82-107C-54597C305186}</Project>
     </ProjectReference>
   </ItemGroup>

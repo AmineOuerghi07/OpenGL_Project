@@ -1,5 +1,5 @@
-#include <SpaceOptima.h>
-#include <SpaceOptima/Core/EntryPoint.h>
+#include <FunEngine.h>
+#include <FunEngine/Core/EntryPoint.h>
 
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -11,13 +11,13 @@
 
 #include "Sandbox2D.h"
 
-class ExampleLayer : public SpaceOptima::Layer
+class ExampleLayer : public FunEngine::Layer
 {
 public:
 	ExampleLayer() :Layer("Example"), m_CameraController(1280.0f / 720.0f, true)
 	{
 		//Vertex Array
-		m_VertexArray = SpaceOptima::VertexArray::Create();
+		m_VertexArray = FunEngine::VertexArray::Create();
 		//Vertex Buffer
 
 		float vertices[3 * 7] =
@@ -27,15 +27,15 @@ public:
 			0.0f, 0.5f, 0.0f, 0.2f, 0.2f, 0.6f, 1.0f
 		};
 
-		SpaceOptima::Ref<SpaceOptima::VertexBuffer> vertexBuffer;
+		FunEngine::Ref<FunEngine::VertexBuffer> vertexBuffer;
 
-		vertexBuffer = SpaceOptima::VertexBuffer::Create(vertices, sizeof(vertices));
+		vertexBuffer = FunEngine::VertexBuffer::Create(vertices, sizeof(vertices));
 		//m_VertexBuffer->Bind();
 		//glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-		SpaceOptima::BufferLayout layout = {
-			{SpaceOptima::ShaderDataType::Float3, "a_Position"},
-			{SpaceOptima::ShaderDataType::Float4, "a_Color"}
+		FunEngine::BufferLayout layout = {
+			{FunEngine::ShaderDataType::Float3, "a_Position"},
+			{FunEngine::ShaderDataType::Float4, "a_Color"}
 
 		};
 
@@ -46,8 +46,8 @@ public:
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, nullptr);*/
 
 		unsigned int indices[3] = { 0, 1, 2 };
-		SpaceOptima::Ref<SpaceOptima::IndexBuffer> indexBuffer;
-		indexBuffer = SpaceOptima::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
+		FunEngine::Ref<FunEngine::IndexBuffer> indexBuffer;
+		indexBuffer = FunEngine::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t));
 
 		m_VertexArray->SetIndexBuffer(indexBuffer);
 		//Index Buffer
@@ -61,13 +61,13 @@ public:
 			-0.5f,  0.5f, 0.0f, 0.0f, 1.0f
 		};
 
-		m_SquareVA = (SpaceOptima::VertexArray::Create());
-		SpaceOptima::Ref<SpaceOptima::VertexBuffer> SquareVB;
-		SquareVB = SpaceOptima::VertexBuffer::Create(squareVertices, sizeof(squareVertices));
+		m_SquareVA = (FunEngine::VertexArray::Create());
+		FunEngine::Ref<FunEngine::VertexBuffer> SquareVB;
+		SquareVB = FunEngine::VertexBuffer::Create(squareVertices, sizeof(squareVertices));
 
-		SpaceOptima::BufferLayout squareVBLayout = {
-			{SpaceOptima::ShaderDataType::Float3, "a_Position"},
-			{SpaceOptima::ShaderDataType::Float2, "a_TextCoord"}
+		FunEngine::BufferLayout squareVBLayout = {
+			{FunEngine::ShaderDataType::Float3, "a_Position"},
+			{FunEngine::ShaderDataType::Float2, "a_TextCoord"}
 		};
 
 		SquareVB->SetLayout(squareVBLayout);
@@ -75,8 +75,8 @@ public:
 		m_SquareVA->AddVertexBuffer(SquareVB);
 
 		unsigned int squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
-		SpaceOptima::Ref < SpaceOptima::IndexBuffer > SquareIB;
-		SquareIB = (SpaceOptima::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
+		FunEngine::Ref < FunEngine::IndexBuffer > SquareIB;
+		SquareIB = (FunEngine::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(uint32_t)));
 
 		m_SquareVA->SetIndexBuffer(SquareIB);
 
@@ -116,7 +116,7 @@ public:
 		)";
 
 
-		m_Shader = SpaceOptima::Shader::Create("FirstShader",vertexSrc, fragmentSrc);
+		m_Shader = FunEngine::Shader::Create("FirstShader",vertexSrc, fragmentSrc);
 
 
 		std::string blueShaderVertexSrc = R"(
@@ -156,7 +156,7 @@ public:
 		)";
 
 
-		m_BlueShader = SpaceOptima::Shader::Create("BlueShader",blueShaderVertexSrc, blueShaderFragmentSrc);
+		m_BlueShader = FunEngine::Shader::Create("BlueShader",blueShaderVertexSrc, blueShaderFragmentSrc);
 
 
 
@@ -164,38 +164,38 @@ public:
 
 		auto textureShader = m_ShaderLibrary.Load("assets/shaders/Texture.glsl");
 
-		m_Texture = SpaceOptima::Texture2D::Create("assets/textures/textureTest.jpg");
+		m_Texture = FunEngine::Texture2D::Create("assets/textures/textureTest.jpg");
 		
-		m_TextureRGBA = SpaceOptima::Texture2D::Create("assets/textures/textureRGBA.png");
+		m_TextureRGBA = FunEngine::Texture2D::Create("assets/textures/textureRGBA.png");
 
 		m_SquareColor = { 0.9f, 0.2f, 0.2f };
 
 
-		std::dynamic_pointer_cast<SpaceOptima::OpenGLShader>(textureShader)->Bind();
-		std::dynamic_pointer_cast<SpaceOptima::OpenGLShader>(textureShader)->UploadUniformInt("u_Texture", 0);
+		std::dynamic_pointer_cast<FunEngine::OpenGLShader>(textureShader)->Bind();
+		std::dynamic_pointer_cast<FunEngine::OpenGLShader>(textureShader)->UploadUniformInt("u_Texture", 0);
 
 	}
-	void OnUpdate(SpaceOptima::Timestep ts) override 
+	void OnUpdate(FunEngine::Timestep ts) override 
 	{
 		
-		//SO_CLIENT_TRACE("Delta Time : {0}s  ({1}ms)", ts.GetSeconds(), ts.GetMilliSeconds());
+		//FE_CLIENT_TRACE("Delta Time : {0}s  ({1}ms)", ts.GetSeconds(), ts.GetMilliSeconds());
 
 
 
 
-		/*if (SpaceOptima::Input::IsKeyPressed(SO_KEY_J))
+		/*if (FunEngine::Input::IsKeyPressed(FE_KEY_J))
 		{
 			m_SquarePosition.x -= m_SquareMoveSpeed * ts;
 		}
-		else if (SpaceOptima::Input::IsKeyPressed(SO_KEY_L))
+		else if (FunEngine::Input::IsKeyPressed(FE_KEY_L))
 		{
 			m_SquarePosition.x += m_SquareMoveSpeed * ts;
 		}
-		if (SpaceOptima::Input::IsKeyPressed(SO_KEY_K))
+		if (FunEngine::Input::IsKeyPressed(FE_KEY_K))
 		{
 			m_SquarePosition.y -= m_SquareMoveSpeed * ts;
 		}
-		else if (SpaceOptima::Input::IsKeyPressed(SO_KEY_I))
+		else if (FunEngine::Input::IsKeyPressed(FE_KEY_I))
 		{
 			m_SquarePosition.y += m_SquareMoveSpeed * ts;
 		}*/
@@ -207,12 +207,12 @@ public:
 		m_CameraController.OnUpdate(ts);
 
 		// Render
-		SpaceOptima::RenderCommand::SetClearColor({ 0.2f, 0.2f, 0.2f, 1 });
-		SpaceOptima::RenderCommand::Clear();
+		FunEngine::RenderCommand::SetClearColor({ 0.2f, 0.2f, 0.2f, 1 });
+		FunEngine::RenderCommand::Clear();
 
 	
 
-		SpaceOptima::Renderer::BeginScene(m_CameraController.GetCamera());
+		FunEngine::Renderer::BeginScene(m_CameraController.GetCamera());
 
 		//m_BlueShader->Bind();
 		//m_BlueShader->UploadUniformMat4("u_ViewProjection", m_Camera.GetViewProjectionMatrix());
@@ -223,10 +223,10 @@ public:
 
 		
 
-		//std::dynamic_pointer_cast<SpaceOptima::OpenGLShader>(m_Shader)->Bind();
+		//std::dynamic_pointer_cast<FunEngine::OpenGLShader>(m_Shader)->Bind();
 
-		std::dynamic_pointer_cast<SpaceOptima::OpenGLShader>(m_BlueShader)->Bind();
-		std::dynamic_pointer_cast<SpaceOptima::OpenGLShader>(m_BlueShader)->UploadUniformFloat3("u_Color", m_SquareColor);
+		std::dynamic_pointer_cast<FunEngine::OpenGLShader>(m_BlueShader)->Bind();
+		std::dynamic_pointer_cast<FunEngine::OpenGLShader>(m_BlueShader)->UploadUniformFloat3("u_Color", m_SquareColor);
 		
 		
 		for (int y = 0; y < 20; y++)
@@ -237,7 +237,7 @@ public:
 
 				glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
 				
-				SpaceOptima::Renderer::Submit(m_BlueShader, m_SquareVA, transform);
+				FunEngine::Renderer::Submit(m_BlueShader, m_SquareVA, transform);
 
 			}
 		}
@@ -246,15 +246,15 @@ public:
 		
 		auto textureShader = m_ShaderLibrary.Get("Texture");
 
-		SpaceOptima::Renderer::Submit(textureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+		FunEngine::Renderer::Submit(textureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 
 		m_TextureRGBA->Bind();
 
-		SpaceOptima::Renderer::Submit(textureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+		FunEngine::Renderer::Submit(textureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 
 
 		// Triangle 
-		//SpaceOptima::Renderer::Submit(m_Shader, m_VertexArray);
+		//FunEngine::Renderer::Submit(m_Shader, m_VertexArray);
 		
 		
 		//m_SquareVA->Bind();
@@ -262,39 +262,39 @@ public:
 		//m_BlueShader->UploadUniformMat4("u_ViewProjection", m_Camera.GetViewProjectionMatrix());
 	
 
-		SpaceOptima::Renderer::EndScene();
+		FunEngine::Renderer::EndScene();
 		//glDrawElements(GL_TRIANGLES, m_SquareVA->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 		//m_Shader->Bind();
 		//m_VertexArray->Bind();
 		//glDrawElements(GL_TRIANGLES, m_VertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 
 	}
-	void OnEvent(SpaceOptima::Event& e) override
+	void OnEvent(FunEngine::Event& e) override
 	{
-		/*SpaceOptima::EventDispatcher dispatcher(event);
-		dispatcher.Dispatch<SpaceOptima::KeyPressedEvent>(SO_BIND_EVENT_FN(ExampleLayer::OnKeyPressedEvent));*/
+		/*FunEngine::EventDispatcher dispatcher(event);
+		dispatcher.Dispatch<FunEngine::KeyPressedEvent>(FE_BIND_EVENT_FN(ExampleLayer::OnKeyPressedEvent));*/
 		m_CameraController.OnEvent(e);
 
 	}
 
-	//bool OnKeyPressedEvent(SpaceOptima::KeyPressedEvent& event)
+	//bool OnKeyPressedEvent(FunEngine::KeyPressedEvent& event)
 	//{
-	//	if (event.GetKeyCode() == SO_KEY_LEFT)
+	//	if (event.GetKeyCode() == FE_KEY_LEFT)
 	//	{
 	//		m_CameraPosition.x -= m_CameraSpeed;
 	//	}
 
-	//	if (event.GetKeyCode() == SO_KEY_RIGHT)
+	//	if (event.GetKeyCode() == FE_KEY_RIGHT)
 	//	{
 	//		m_CameraPosition.x += m_CameraSpeed;
 	//	}
 
-	//	if (event.GetKeyCode() == SO_KEY_UP)
+	//	if (event.GetKeyCode() == FE_KEY_UP)
 	//	{
 	//		m_CameraPosition.y += m_CameraSpeed;
 	//	}
 
-	//	if (event.GetKeyCode() == SO_KEY_DOWN)
+	//	if (event.GetKeyCode() == FE_KEY_DOWN)
 	//	{
 	//		m_CameraPosition.y -= m_CameraSpeed;
 	//	}
@@ -312,24 +312,24 @@ public:
 	}
 	private:
 
-		SpaceOptima::ShaderLibrary m_ShaderLibrary;
+		FunEngine::ShaderLibrary m_ShaderLibrary;
 
-		SpaceOptima::Ref<SpaceOptima::Shader> m_Shader;
-		SpaceOptima::Ref<SpaceOptima::Shader> m_BlueShader;
+		FunEngine::Ref<FunEngine::Shader> m_Shader;
+		FunEngine::Ref<FunEngine::Shader> m_BlueShader;
 
-		SpaceOptima::Ref<SpaceOptima::VertexArray> m_VertexArray;
-		SpaceOptima::Ref<SpaceOptima::VertexArray> m_SquareVA;
+		FunEngine::Ref<FunEngine::VertexArray> m_VertexArray;
+		FunEngine::Ref<FunEngine::VertexArray> m_SquareVA;
 
-		SpaceOptima::Ref<SpaceOptima::Texture2D> m_Texture;
-		SpaceOptima::Ref<SpaceOptima::Texture2D> m_TextureRGBA;
+		FunEngine::Ref<FunEngine::Texture2D> m_Texture;
+		FunEngine::Ref<FunEngine::Texture2D> m_TextureRGBA;
 
-		SpaceOptima::OrthographicCameraController m_CameraController;
+		FunEngine::OrthographicCameraController m_CameraController;
 		
 
 		glm::vec3 m_SquareColor;
 
 };
-class Sandbox : public SpaceOptima::Application
+class Sandbox : public FunEngine::Application
 {
 	public:
 		Sandbox()
@@ -345,7 +345,7 @@ class Sandbox : public SpaceOptima::Application
 		};
 };
 
-SpaceOptima::Application* SpaceOptima::CreateApplication()
+FunEngine::Application* FunEngine::CreateApplication()
 {
 	return new Sandbox();
 }

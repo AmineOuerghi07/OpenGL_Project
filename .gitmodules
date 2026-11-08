@@ -1,20 +1,20 @@
 
-[submodule "SpaceOptima/vendor/imgui"]
-	path = SpaceOptima/vendor/imgui
+[submodule "FunEngine/vendor/imgui"]
+	path = FunEngine/vendor/imgui
 	url = https://github.com/youssefAbidUp/imgui.git
 
-[submodule "SpaceOptima/vendor/glm"]
-	path = SpaceOptima/vendor/glm
+[submodule "FunEngine/vendor/glm"]
+	path = FunEngine/vendor/glm
 	url = https://github.com/g-truc/glm.git
-[submodule "SpaceOptima/vendor/GLFW"]
-	path = SpaceOptima/vendor/GLFW
+[submodule "FunEngine/vendor/GLFW"]
+	path = FunEngine/vendor/GLFW
 	url = https://github.com/youssefAbidUp/glfw.git
-[submodule "SpaceOptima/vendor/spdlog"]
-	path = SpaceOptima/vendor/spdlog
+[submodule "FunEngine/vendor/spdlog"]
+	path = FunEngine/vendor/spdlog
 	url = https://github.com/gabime/spdlog.git
-[submodule "SpaceOptima/vendor/yaml-cpp"]
-	path = SpaceOptima/vendor/yaml-cpp
+[submodule "FunEngine/vendor/yaml-cpp"]
+	path = FunEngine/vendor/yaml-cpp
 	url = https://github.com/youssefAbidUp/yaml-cpp.git
-[submodule "SpaceOptima/vendor/ImGuizmo"]
-	path = SpaceOptima/vendor/ImGuizmo
+[submodule "FunEngine/vendor/ImGuizmo"]
+	path = FunEngine/vendor/ImGuizmo
 	url = https://github.com/youssefAbidUp/ImGuizmo.git

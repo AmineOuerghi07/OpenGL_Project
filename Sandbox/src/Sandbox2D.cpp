@@ -16,15 +16,15 @@ Sandbox2D::Sandbox2D()
 void Sandbox2D::OnAttach()
 {
 
-	m_Texture = SpaceOptima::Texture2D::Create("assets/textures/textureTest.jpg");
-	m_TextureMilk = SpaceOptima::Texture2D::Create("assets/textures/test.jpg");
+	m_Texture = FunEngine::Texture2D::Create("assets/textures/textureTest.jpg");
+	m_TextureMilk = FunEngine::Texture2D::Create("assets/textures/test.jpg");
 
-	SpaceOptima::FramebufferSpecification fbSpecs;
+	FunEngine::FramebufferSpecification fbSpecs;
 
 	fbSpecs.Height = 720;
 	fbSpecs.Width = 1280;
 
-	m_Framebuffer = SpaceOptima::Framebuffer::Create(fbSpecs);
+	m_Framebuffer = FunEngine::Framebuffer::Create(fbSpecs);
 
 
 }
@@ -33,25 +33,25 @@ void Sandbox2D::OnDetach()
 {
 }
 
-void Sandbox2D::OnUpdate(SpaceOptima::Timestep ts)
+void Sandbox2D::OnUpdate(FunEngine::Timestep ts)
 {
-	SO_PROFILE_FUNCTION();
+	FE_PROFILE_FUNCTION();
 	// Update
 	// Reset here
 
 	
-	SpaceOptima::Renderer2D::ResetStats();
+	FunEngine::Renderer2D::ResetStats();
 	{
-		SO_PROFILE_SCOPE("CameraOnUpdate");
+		FE_PROFILE_SCOPE("CameraOnUpdate");
 		m_CameraController.OnUpdate(ts);
 	}
 	// Render
 	m_Framebuffer->Bind();
 	{
 
-		SO_PROFILE_SCOPE("RenderCommand SetColor");
-		SpaceOptima::RenderCommand::SetClearColor({ 0.2f, 0.2f, 0.2f, 1 });
-		SpaceOptima::RenderCommand::Clear();
+		FE_PROFILE_SCOPE("RenderCommand SetColor");
+		FunEngine::RenderCommand::SetClearColor({ 0.2f, 0.2f, 0.2f, 1 });
+		FunEngine::RenderCommand::Clear();
 
 
 	}
@@ -64,31 +64,31 @@ void Sandbox2D::OnUpdate(SpaceOptima::Timestep ts)
 			
 			static float rotation = 0.0f;
 			rotation += ts * 50.0f;
-			//SO_CORE_INFO("rotation = {0}", rotation);
-			SO_CLIENT_INFO("Delta Time : {0}s  ({1}ms)", ts.GetSeconds(), 1000 / ts.GetMilliSeconds());
-			SO_PROFILE_SCOPE("Renderer RenderScene");
-			SpaceOptima::Renderer2D::BeginScene(m_CameraController.GetCamera());
+			//FE_CORE_INFO("rotation = {0}", rotation);
+			FE_CLIENT_INFO("Delta Time : {0}s  ({1}ms)", ts.GetSeconds(), 1000 / ts.GetMilliSeconds());
+			FE_PROFILE_SCOPE("Renderer RenderScene");
+			FunEngine::Renderer2D::BeginScene(m_CameraController.GetCamera());
 
-			//SpaceOptima::Renderer2D::DrawRotatedQuad({ -1.0f, 1.0f }, { 0.8f, 0.8f }, { 0.2f, 0.2f, 0.8f, 1.0f }, rotation);
-			//SpaceOptima::Renderer2D::DrawRotatedQuad({ 1.0f, -1.0f }, { 0.8f, 0.8f }, { 0.2f, 0.2f, 0.8f, 1.0f }, rotation);
+			//FunEngine::Renderer2D::DrawRotatedQuad({ -1.0f, 1.0f }, { 0.8f, 0.8f }, { 0.2f, 0.2f, 0.8f, 1.0f }, rotation);
+			//FunEngine::Renderer2D::DrawRotatedQuad({ 1.0f, -1.0f }, { 0.8f, 0.8f }, { 0.2f, 0.2f, 0.8f, 1.0f }, rotation);
 			for (float i = -4.5f; i < 5.0f; i += 1.2f)
 			{
 				for (float y = -9.5f; y < 9.5f; y += 0.55f)
 				{
-					SpaceOptima::Renderer2D::DrawRotatedQuad({ y, i }, { 0.45f, 0.9f }, m_TextureMilk,45.0f);
+					FunEngine::Renderer2D::DrawRotatedQuad({ y, i }, { 0.45f, 0.9f }, m_TextureMilk,45.0f);
 				}
 			}
-			//SpaceOptima::Renderer2D::DrawQuad({ 5.0f, 5.0f }, { 0.45f, 0.45f }, { 0.8f, 0.2f, 0.2f, 1.0f });
-			//SpaceOptima::Renderer2D::DrawQuad({ -0.5f, -0.5f }, { 0.45f, 0.45f }, { 0.2f, 0.8f, 0.2f, 1.0f });
+			//FunEngine::Renderer2D::DrawQuad({ 5.0f, 5.0f }, { 0.45f, 0.45f }, { 0.8f, 0.2f, 0.2f, 1.0f });
+			//FunEngine::Renderer2D::DrawQuad({ -0.5f, -0.5f }, { 0.45f, 0.45f }, { 0.2f, 0.8f, 0.2f, 1.0f });
 
-			SpaceOptima::Renderer2D::DrawQuad({ 0.0f, 0.0f , -0.1f }, { 20.0f, 10.0f }, m_Texture, 1.0f, {0.6f, 0.2f, 0.2f, 1.0f});
-			//SpaceOptima::Renderer2D::DrawRotatedQuad({ 0.0f, 0.0f , 0.0f }, { 1.0f, 1.0f }, m_Texture, rotation, 1.0f, { 0.5f, 0.2f, 0.2f, 1.0f });
-
-
-			//SpaceOptima::Renderer2D::EndScene();
+			FunEngine::Renderer2D::DrawQuad({ 0.0f, 0.0f , -0.1f }, { 20.0f, 10.0f }, m_Texture, 1.0f, {0.6f, 0.2f, 0.2f, 1.0f});
+			//FunEngine::Renderer2D::DrawRotatedQuad({ 0.0f, 0.0f , 0.0f }, { 1.0f, 1.0f }, m_Texture, rotation, 1.0f, { 0.5f, 0.2f, 0.2f, 1.0f });
 
 
-			//SpaceOptima::Renderer2D::BeginScene(m_CameraController.GetCamera());
+			//FunEngine::Renderer2D::EndScene();
+
+
+			//FunEngine::Renderer2D::BeginScene(m_CameraController.GetCamera());
 
 			
 			
@@ -97,10 +97,10 @@ void Sandbox2D::OnUpdate(SpaceOptima::Timestep ts)
 				for (float x = -10.f; x < 10.f; x += 0.5f)
 				{
 					glm::vec4 color = {(x + 10.0f) / 10.0f, 0.4f, (y + 10.0f) / 10.0f, 1.0f};
-					SpaceOptima::Renderer2D::DrawQuad({ x, y }, { 0.45f, 0.45f }, color);
+					FunEngine::Renderer2D::DrawQuad({ x, y }, { 0.45f, 0.45f }, color);
 				}
 			}*/
-			SpaceOptima::Renderer2D::EndScene();
+			FunEngine::Renderer2D::EndScene();
 			
 			
 		}
@@ -108,16 +108,16 @@ void Sandbox2D::OnUpdate(SpaceOptima::Timestep ts)
 	}
 
 	/*
-	std::dynamic_pointer_cast<SpaceOptima::OpenGLShader>(m_Shader)->Bind();
-	std::dynamic_pointer_cast<SpaceOptima::OpenGLShader>(m_Shader)->UploadUniformFloat4("u_Color", m_SquareColor);
+	std::dynamic_pointer_cast<FunEngine::OpenGLShader>(m_Shader)->Bind();
+	std::dynamic_pointer_cast<FunEngine::OpenGLShader>(m_Shader)->UploadUniformFloat4("u_Color", m_SquareColor);
 	*/
 }
 
 void Sandbox2D::OnImGuiRender()
 {
-	SO_PROFILE_FUNCTION();
+	FE_PROFILE_FUNCTION();
 
-	auto stats = SpaceOptima::Renderer2D::GetStats();
+	auto stats = FunEngine::Renderer2D::GetStats();
 	
 
 	static bool dockspaceOpen = true;
@@ -178,7 +178,7 @@ void Sandbox2D::OnImGuiRender()
         {
             // Disabling fullscreen would allow the window to be moved to the front of other windows,
             // which we can't undo at the moment without finer window depth/z control.
-            if(ImGui::MenuItem("Exit")) SpaceOptima::Application::GetApplication().Close();
+            if(ImGui::MenuItem("Exit")) FunEngine::Application::GetApplication().Close();
 
 
             ImGui::EndMenu();
@@ -207,7 +207,7 @@ void Sandbox2D::OnImGuiRender()
     ImGui::End();
 }
 
-void Sandbox2D::OnEvent(SpaceOptima::Event& e)
+void Sandbox2D::OnEvent(FunEngine::Event& e)
 {
 	m_CameraController.OnEvent(e);
 }
