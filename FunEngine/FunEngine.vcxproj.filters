@@ -1,8 +1,35 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="src">
       <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\FunEngine">
+      <UniqueIdentifier>{9BFB6EC2-07BC-EAF8-D0F6-33763C762FD5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\FunEngine\Core">
+      <UniqueIdentifier>{D3980C63-BF7C-CDB8-28DD-C70B14E0B73A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\FunEngine\Debug">
+      <UniqueIdentifier>{510EACC4-BD6F-89D2-46DD-CF84B23DC091}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\FunEngine\Events">
+      <UniqueIdentifier>{1F2BB85D-0BBA-4127-B4D8-5522A04652CD}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\FunEngine\ImGui">
+      <UniqueIdentifier>{05790AC5-71DA-E7D2-FA47-2E8566A81E92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\FunEngine\Math">
+      <UniqueIdentifier>{54D91163-40BD-D2B8-A91D-CD0B9520BD3A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\FunEngine\Renderer">
+      <UniqueIdentifier>{A17D6AA3-8D77-93F5-76E4-2906627DF961}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\FunEngine\Scene">
+      <UniqueIdentifier>{F870BAC5-64D2-97D3-ED3F-DE8559A0CE92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\FunEngine\Utils">
+      <UniqueIdentifier>{3B05E8C5-A766-C5D3-30D4-0B869C34FC92}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Platform">
       <UniqueIdentifier>{21CA02E5-0D2D-9289-B6B2-CA3FA2F45D0C}</UniqueIdentifier>
@@ -12,33 +39,6 @@
     </Filter>
     <Filter Include="src\Platform\Windows">
       <UniqueIdentifier>{5B054582-4794-CE4B-F0B2-E246DC20DFF1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\FunEngine">
-      <UniqueIdentifier>{B205BCA4-1E91-2969-27A2-AC5D93AC8569}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\FunEngine\Core">
-      <UniqueIdentifier>{4A89B646-3618-4010-DF36-540BCBA450B6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\FunEngine\Debug">
-      <UniqueIdentifier>{A80D941D-147A-4F18-DD6D-E77549997180}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\FunEngine\Events">
-      <UniqueIdentifier>{5615A0D3-420F-C925-2B7C-5F3617152F92}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\FunEngine\ImGui">
-      <UniqueIdentifier>{5C78F21D-C8E4-AD18-91D8-4576FD03D080}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\FunEngine\Math">
-      <UniqueIdentifier>{CBC9BB46-B758-4510-6077-590B4CE555B6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\FunEngine\Renderer">
-      <UniqueIdentifier>{98D1F532-84F6-44B3-AD41-2A4399C543D1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\FunEngine\Scene">
-      <UniqueIdentifier>{4F70A21E-BBDC-5D19-84D0-F576F0FB7F81}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\FunEngine\Utils">
-      <UniqueIdentifier>{9204D01E-FE70-8B19-C764-23773390AD81}</UniqueIdentifier>
     </Filter>
     <Filter Include="vendor">
       <UniqueIdentifier>{B3738122-9F15-ACF8-88D0-BF4C74113349}</UniqueIdentifier>
@@ -72,30 +72,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h">
-      <Filter>src\Platform\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h">
-      <Filter>src\Platform\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Platform\OpenGL\OpenGLFramebuffer.h">
-      <Filter>src\Platform\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Platform\OpenGL\OpenGLRendererAPI.h">
-      <Filter>src\Platform\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Platform\OpenGL\OpenGLTexture.h">
-      <Filter>src\Platform\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Platform\OpenGL\OpenGLUniformBuffer.h">
-      <Filter>src\Platform\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h">
-      <Filter>src\Platform\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Platform\Windows\WindowsWindow.h">
-      <Filter>src\Platform\Windows</Filter>
-    </ClInclude>
     <ClInclude Include="src\FunEngine.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -192,6 +168,9 @@
     <ClInclude Include="src\FunEngine\Renderer\Shader.h">
       <Filter>src\FunEngine\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\FunEngine\Renderer\StorageBuffer.h">
+      <Filter>src\FunEngine\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\FunEngine\Renderer\Texture.h">
       <Filter>src\FunEngine\Renderer</Filter>
     </ClInclude>
@@ -218,6 +197,36 @@
     </ClInclude>
     <ClInclude Include="src\FunEngine\Utils\PlatformUtils.h">
       <Filter>src\FunEngine\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLBuffer.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLContext.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLFramebuffer.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLRendererAPI.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLShader.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLStorageBuffer.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLTexture.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLUniformBuffer.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\OpenGL\OpenGLVertexArray.h">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platform\Windows\WindowsWindow.h">
+      <Filter>src\Platform\Windows</Filter>
     </ClInclude>
     <ClInclude Include="src\fepch.h">
       <Filter>src</Filter>
@@ -1506,41 +1515,8 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Platform\OpenGL\OpenGLShader.h" />
-    <ClInclude Include="src\Platform\OpenGL\OpenGLStorageBuffer.h" />
-    <ClInclude Include="src\FunEngine\Renderer\StorageBuffer.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
-      <Filter>src\Platform\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp">
-      <Filter>src\Platform\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Platform\OpenGL\OpenGLFramebuffer.cpp">
-      <Filter>src\Platform\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Platform\OpenGL\OpenGLRendererAPI.cpp">
-      <Filter>src\Platform\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Platform\OpenGL\OpenGLTexture.cpp">
-      <Filter>src\Platform\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Platform\OpenGL\OpenGLUniformBuffer.cpp">
-      <Filter>src\Platform\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp">
-      <Filter>src\Platform\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Platform\Windows\WindowsInput.cpp">
-      <Filter>src\Platform\Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Platform\Windows\WindowsPlatformUtils.cpp">
-      <Filter>src\Platform\Windows</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp">
-      <Filter>src\Platform\Windows</Filter>
-    </ClCompile>
     <ClCompile Include="src\FunEngine\Core\Application.cpp">
       <Filter>src\FunEngine\Core</Filter>
     </ClCompile>
@@ -1595,6 +1571,9 @@
     <ClCompile Include="src\FunEngine\Renderer\Shader.cpp">
       <Filter>src\FunEngine\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="src\FunEngine\Renderer\StorageBuffer.cpp">
+      <Filter>src\FunEngine\Renderer</Filter>
+    </ClCompile>
     <ClCompile Include="src\FunEngine\Renderer\Texture.cpp">
       <Filter>src\FunEngine\Renderer</Filter>
     </ClCompile>
@@ -1616,6 +1595,42 @@
     <ClCompile Include="src\FunEngine\Scene\SceneSerializer.cpp">
       <Filter>src\FunEngine\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLBuffer.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLContext.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLFramebuffer.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLRendererAPI.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLShader.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLStorageBuffer.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLTexture.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLUniformBuffer.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\OpenGL\OpenGLVertexArray.cpp">
+      <Filter>src\Platform\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\Windows\WindowsInput.cpp">
+      <Filter>src\Platform\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\Windows\WindowsPlatformUtils.cpp">
+      <Filter>src\Platform\Windows</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\Windows\WindowsWindow.cpp">
+      <Filter>src\Platform\Windows</Filter>
+    </ClCompile>
     <ClCompile Include="src\fepch.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -1631,8 +1646,5 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Platform\OpenGL\OpenGLShader.cpp" />
-    <ClCompile Include="src\Platform\OpenGL\OpenGLStorageBuffer.cpp" />
-    <ClCompile Include="src\FunEngine\Renderer\StorageBuffer.cpp" />
   </ItemGroup>
 </Project>
