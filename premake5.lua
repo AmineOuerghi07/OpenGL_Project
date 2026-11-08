@@ -1,7 +1,7 @@
 VULKAN_SDK = os.getenv("VULKAN_SDK")
 
 
-workspace "SpaceOptima"
+workspace "FunEngine"
 	startproject "Sandbox"
 	architecture "x64"
 	configurations 
@@ -14,14 +14,14 @@ workspace "SpaceOptima"
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 IncludeDir = {}
-IncludeDir["GLFW"] ="SpaceOptima/vendor/GLFW/include"
-IncludeDir["Glad"] ="SpaceOptima/vendor/Glad/include"
-IncludeDir["imgui"] ="SpaceOptima/vendor/imgui"
-IncludeDir["glm"] ="SpaceOptima/vendor/glm"
-IncludeDir["stb_image"] ="SpaceOptima/vendor/stb_image"
-IncludeDir["entt"] ="SpaceOptima/vendor/entt/include"
-IncludeDir["yaml_cpp"] ="SpaceOptima/vendor/yaml-cpp/include"
-IncludeDir["ImGuizmo"] ="SpaceOptima/vendor/ImGuizmo"
+IncludeDir["GLFW"] ="FunEngine/vendor/GLFW/include"
+IncludeDir["Glad"] ="FunEngine/vendor/Glad/include"
+IncludeDir["imgui"] ="FunEngine/vendor/imgui"
+IncludeDir["glm"] ="FunEngine/vendor/glm"
+IncludeDir["stb_image"] ="FunEngine/vendor/stb_image"
+IncludeDir["entt"] ="FunEngine/vendor/entt/include"
+IncludeDir["yaml_cpp"] ="FunEngine/vendor/yaml-cpp/include"
+IncludeDir["ImGuizmo"] ="FunEngine/vendor/ImGuizmo"
 IncludeDir["VulkanSDK"] = "%{VULKAN_SDK}/Include"
 
 LibraryDir = {}
@@ -43,23 +43,23 @@ Library["SPIRV_Cross_Release"] = "%{LibraryDir.VulkanSDK}/spirv-cross-core.lib"
 Library["SPIRV_Cross_GLSL_Release"] = "%{LibraryDir.VulkanSDK}/spirv-cross-glsl.lib"
 
 group "Dependencies"
-	include "SpaceOptima/vendor/GLFW"
-	include "SpaceOptima/vendor/Glad"
-	include "SpaceOptima/vendor/imgui"
-	include "SpaceOptima/vendor/yaml-cpp"
+	include "FunEngine/vendor/GLFW"
+	include "FunEngine/vendor/Glad"
+	include "FunEngine/vendor/imgui"
+	include "FunEngine/vendor/yaml-cpp"
 	group ""
 
-project "SpaceOptima"
+project "FunEngine"
 
-	location "SpaceOptima"
+	location "FunEngine"
 	kind "StaticLib"
 	language "C++"
 	cppdialect "C++20"
 	staticruntime "off"
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
-	pchheader "sopch.h"
-	pchsource "SpaceOptima/src/sopch.cpp"
+	pchheader "fepch.h"
+	pchsource "FunEngine/src/fepch.cpp"
 	files 
 	{
 		"%{prj.name}/src/**.h",
@@ -109,39 +109,39 @@ project "SpaceOptima"
 		"yaml-cpp"
 	}
 	
-	filter "files:SpaceOptima/vendor/ImGuizmo/**.cpp"
+	filter "files:FunEngine/vendor/ImGuizmo/**.cpp"
 	flags { "NoPCH" }
 
-	filter "files:SpaceOptima/vendor/glm/glm/**.cppm"
+	filter "files:FunEngine/vendor/glm/glm/**.cppm"
 	flags { "NoPCH" }
 
-	filter "files:SpaceOptima/vendor/glm/glm/detail/**.cpp"
+	filter "files:FunEngine/vendor/glm/glm/detail/**.cpp"
 	flags { "NoPCH" }
 
-	filter "files:SpaceOptima/vendor/shaderc/libshaderc/include/**.hpp"
+	filter "files:FunEngine/vendor/shaderc/libshaderc/include/**.hpp"
 	flags { "NoPCH" }
 	
-	filter "files:SpaceOptima/vendor/shaderc/libshaderc/include/**.h"
+	filter "files:FunEngine/vendor/shaderc/libshaderc/include/**.h"
 	flags { "NoPCH" }
 
-	filter "files:SpaceOptima/vendor/spirv/spirv_cross/**.cpp"
+	filter "files:FunEngine/vendor/spirv/spirv_cross/**.cpp"
 	flags { "NoPCH" }
 
-	filter "files:SpaceOptima/vendor/spirv/spirv_cross/**.hpp"
+	filter "files:FunEngine/vendor/spirv/spirv_cross/**.hpp"
 	flags { "NoPCH" }
 
 	filter "system:windows"
 		systemversion "latest"
 		defines 
 		{
-			"SO_PLATFORM_WINDOWS",
-			"SO_BUILD_DLL",
+			"FE_PLATFORM_WINDOWS",
+			"FE_BUILD_DLL",
 			"GLFW_INCLUDE_NONE"
 		}
 
 
 	filter "configurations:Debug"
-		defines "SO_ENGINE_DEBUG"
+		defines "FE_ENGINE_DEBUG"
 		runtime "Debug"
 		symbols "on"
 		links
@@ -153,7 +153,7 @@ project "SpaceOptima"
 
 		
 	filter "configurations:Release"
-		defines "SO_ENGINE_RELEASE"
+		defines "FE_ENGINE_RELEASE"
 		runtime "Release"
 		optimize "on"
 		links
@@ -166,7 +166,7 @@ project "SpaceOptima"
 
 
 	filter "configurations:Dist"
-		defines "SO_ENGINE_DIST"
+		defines "FE_ENGINE_DIST"
 		runtime "Release"
 		optimize "on"
 
@@ -179,8 +179,8 @@ project "SpaceOptima"
 	
 
 
-project "SpaceOptima_Editor"
-	location "SpaceOptima_Editor"
+project "FunEngine_Editor"
+	location "FunEngine_Editor"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++20"
@@ -196,37 +196,37 @@ project "SpaceOptima_Editor"
 
 	includedirs 
 	{
-		"SpaceOptima/vendor/spdlog/include",
-		"SpaceOptima/src/",
+		"FunEngine/vendor/spdlog/include",
+		"FunEngine/src/",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.entt}",
-		"SpaceOptima/vendor/imgui/",
+		"FunEngine/vendor/imgui/",
 		"%{IncludeDir.ImGuizmo}"
 	}
 
 	links 
 	{
-		"SpaceOptima"
+		"FunEngine"
 	}
 
 	filter "system:windows"
 		systemversion "latest"
 		defines 
 		{
-			"SO_PLATFORM_WINDOWS",
+			"FE_PLATFORM_WINDOWS",
 		}
 		
 	filter "configurations:Debug"
-		defines "SO_ENGINE_DEBUG"
+		defines "FE_ENGINE_DEBUG"
 		runtime "Debug"
 		symbols "on"
 	filter "configurations:Release"
-		defines "SO_ENGINE_RELEASE"
+		defines "FE_ENGINE_RELEASE"
 		runtime "Release"
 		optimize "on"
 
 	filter "configurations:Dist"
-		defines "SO_ENGINE_DIST"
+		defines "FE_ENGINE_DIST"
 		runtime "Release"
 		optimize "on"
 
@@ -249,35 +249,35 @@ project "SpaceOptima_Editor"
 	
 		includedirs 
 		{
-			"SpaceOptima/vendor/spdlog/include",
-			"SpaceOptima/src/",
+			"FunEngine/vendor/spdlog/include",
+			"FunEngine/src/",
 			"%{IncludeDir.glm}",
-			"SpaceOptima/vendor/imgui/",
+			"FunEngine/vendor/imgui/",
 			"%{IncludeDir.entt}"
 		}
 	
 		links 
 		{
-			"SpaceOptima"
+			"FunEngine"
 		}
 	
 		filter "system:windows"
 			systemversion "latest"
 			defines 
 			{
-				"SO_PLATFORM_WINDOWS",
+				"FE_PLATFORM_WINDOWS",
 			}
 			
 		filter "configurations:Debug"
-			defines "SO_ENGINE_DEBUG"
+			defines "FE_ENGINE_DEBUG"
 			runtime "Debug"
 			symbols "on"
 		filter "configurations:Release"
-			defines "SO_ENGINE_RELEASE"
+			defines "FE_ENGINE_RELEASE"
 			runtime "Release"
 			optimize "on"
 	
 		filter "configurations:Dist"
-			defines "SO_ENGINE_DIST"
+			defines "FE_ENGINE_DIST"
 			runtime "Release"
 			optimize "on"
