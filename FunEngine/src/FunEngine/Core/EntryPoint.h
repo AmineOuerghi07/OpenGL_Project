@@ -10,6 +10,8 @@ extern FunEngine::Application* FunEngine::CreateApplication();
 int main(int argc, char** argv)
 {
 	FunEngine::Log::Init();
+	if (FunEngine::RendererSelect_HandleSetRendererAndExit(argc, argv))
+		return 0;
 	if (!FunEngine::RendererSelect_Apply(argc, argv))
 		return 1;
 	FE_PROFILE_BEGIN_SESSION("Startup", "FunEngine-StartUp.json");
