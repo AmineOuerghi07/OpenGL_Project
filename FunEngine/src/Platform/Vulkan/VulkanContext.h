@@ -6,6 +6,8 @@
 #include <vulkan/vulkan.h>
 #include <vector>
 #include <glm/glm.hpp>
+#include <memory>
+#include "VulkanTrianglePass.h"
 
 struct GLFWwindow;
 
@@ -15,6 +17,8 @@ namespace FunEngine
 	{
 	public:
 		static constexpr int MaxFramesInFlight = 2;
+
+		static VulkanContext* Get() { return s_Instance; }
 
 		VulkanContext(GLFWwindow* windowHandle);
 		~VulkanContext() override;
@@ -45,6 +49,8 @@ namespace FunEngine
 		VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& modes);
 		VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 
+		static VulkanContext* s_Instance;
+
 		GLFWwindow* m_WindowHandle = nullptr;
 		VkSurfaceKHR m_Surface = VK_NULL_HANDLE;
 
@@ -64,6 +70,9 @@ namespace FunEngine
 		std::vector<VkSemaphore> m_RenderFinishedSemaphores; // per swapchain image
 		std::vector<VkFence> m_InFlightFences;
 		std::vector<VkFence> m_ImagesInFlight;
+
+		VulkanTrianglePass m_TrianglePass;
+		bool m_DrawTriangle = true;
 
 		uint32_t m_CurrentFrame = 0;
 		bool m_FramebufferResized = false;

@@ -22,10 +22,13 @@ namespace FunEngine
 		}
 	}
 
+	VulkanContext* VulkanContext::s_Instance = nullptr;
+
 	VulkanContext::VulkanContext(GLFWwindow* windowHandle)
 		: m_WindowHandle(windowHandle)
 	{
 		FE_CORE_ASSERT(m_WindowHandle, "Window handle is null");
+		s_Instance = this;
 	}
 
 	VulkanContext::~VulkanContext()
@@ -36,6 +39,8 @@ namespace FunEngine
 			return;
 
 		vkDeviceWaitIdle(vkDevice);
+
+		m_TrianglePass.Shutdown();
 
 		for (auto semaphore : m_RenderFinishedSemaphores)
 			vkDestroySemaphore(vkDevice, semaphore, nullptr);
@@ -55,6 +60,7 @@ namespace FunEngine
 			vkDestroySurfaceKHR(device.GetInstance(), m_Surface, nullptr);
 
 		VulkanDevice::Get().Shutdown();
+		s_Instance = nullptr;
 	}
 
 	void VulkanContext::Init()
@@ -73,6 +79,8 @@ namespace FunEngine
 		CreateCommandPool();
 		CreateCommandBuffers();
 		CreateSyncObjects();
+
+		m_TrianglePass.Init(m_RenderPass);
 
 		FE_CORE_INFO("Vulkan swapchain: {0}x{1}", m_SwapchainExtent.width, m_SwapchainExtent.height);
 	}
@@ -433,6 +441,8 @@ namespace FunEngine
 		renderPassInfo.pClearValues = &clearColor;
 
 		vkCmdBeginRenderPass(cmd, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+		if (m_DrawTriangle)
+			m_TrianglePass.Record(cmd, m_SwapchainExtent);
 		vkCmdEndRenderPass(cmd);
 
 		CheckVk(vkEndCommandBuffer(cmd), "vkEndCommandBuffer");
