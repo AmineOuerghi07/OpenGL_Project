@@ -46,6 +46,7 @@ namespace FunEngine
 			// Release GPU resources while the device is still alive (layers and statics die after this body).
 			if (auto* ctx = VulkanContext::Get())
 				ctx->WaitIdle();
+			m_ImGuiLayer->OnDetach();
 			Renderer::Shutdown();
 		}
 #endif
@@ -90,7 +91,7 @@ namespace FunEngine
 			}
 			
 			m_ImGuiLayer->Begin();
-			if (m_ImGuiLayer->IsInitialized())
+			if (m_ImGuiLayer->IsFrameBegun())
 			{
 				for (Layer* layer : m_LayerStack)
 				{

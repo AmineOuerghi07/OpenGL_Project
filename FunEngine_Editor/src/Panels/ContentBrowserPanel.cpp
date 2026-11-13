@@ -49,7 +49,7 @@ namespace FunEngine
 
 			Ref<Texture2D> icon = p.is_directory() ? m_DirectoryIcon : m_FileIcon;
 			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
-			ImGui::ImageButton(fileName.c_str(), (ImTextureID)icon->GetRendererID(), { iconSize, iconSize }, { 1 , 1 }, { 0 , 0 });
+			ImGui::ImageButton(fileName.c_str(), (ImTextureID)icon->GetImGuiID(), { iconSize, iconSize }, { 1 , 1 }, { 0 , 0 });
 			
 			if (ImGui::BeginDragDropSource())
 			{

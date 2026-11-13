@@ -8,6 +8,12 @@
 #include "backends/imgui_impl_opengl3.h"
 #include "backends/imgui_impl_glfw.h"
 
+#ifdef FE_WITH_VULKAN
+#include "backends/imgui_impl_vulkan.h"
+#include "Platform/Vulkan/VulkanContext.h"
+#include "Platform/Vulkan/VulkanDevice.h"
+#endif
+
 // TEMP
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
@@ -20,10 +26,65 @@ namespace FunEngine {
 
 	namespace
 	{
+		static bool IsVulkan()
+		{
+			return RendererAPI::GetAPI() == RendererAPI::API::Vulkan;
+		}
+
 		static bool UseImGuiForCurrentRenderer()
 		{
+#ifdef FE_WITH_VULKAN
+			if (IsVulkan())
+				return true;
+#endif
 			return RendererAPI::GetAPI() == RendererAPI::API::OpenGL;
 		}
+
+#ifdef FE_WITH_VULKAN
+		static VkDescriptorPool s_ImGuiDescriptorPool = VK_NULL_HANDLE;
+
+		static void CheckImGuiVk(VkResult result)
+		{
+			if (result != VK_SUCCESS)
+				FE_CORE_ERROR("ImGui Vulkan backend error: {0}", (int)result);
+		}
+
+		static void InitVulkanBackend(GLFWwindow* window)
+		{
+			auto* context = VulkanContext::Get();
+			FE_CORE_ASSERT(context, "Vulkan context missing for ImGui");
+			auto& device = VulkanDevice::Get();
+
+			VkDescriptorPoolSize poolSizes[] = {
+				{ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000 },
+			};
+			VkDescriptorPoolCreateInfo poolInfo{};
+			poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+			poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+			poolInfo.maxSets = 1000;
+			poolInfo.poolSizeCount = 1;
+			poolInfo.pPoolSizes = poolSizes;
+			CheckImGuiVk(vkCreateDescriptorPool(device.GetDevice(), &poolInfo, nullptr, &s_ImGuiDescriptorPool));
+
+			ImGui_ImplGlfw_InitForVulkan(window, true);
+
+			ImGui_ImplVulkan_InitInfo initInfo{};
+			initInfo.Instance = device.GetInstance();
+			initInfo.PhysicalDevice = device.GetPhysicalDevice();
+			initInfo.Device = device.GetDevice();
+			initInfo.QueueFamily = device.GetGraphicsQueueFamily();
+			initInfo.Queue = device.GetGraphicsQueue();
+			initInfo.DescriptorPool = s_ImGuiDescriptorPool;
+			initInfo.RenderPass = context->GetRenderPass();
+			initInfo.MinImageCount = 2;
+			initInfo.ImageCount = std::max(2u, context->GetSwapchainImageCount());
+			initInfo.MSAASamples = VK_SAMPLE_COUNT_1_BIT;
+			initInfo.CheckVkResultFn = CheckImGuiVk;
+			ImGui_ImplVulkan_Init(&initInfo);
+
+			VulkanContext::SetImGuiInitialized(true);
+		}
+#endif
 	}
 
 	
@@ -38,10 +99,7 @@ namespace FunEngine {
 
 	void ImGuiLayer::OnAttach() {
 		if (!UseImGuiForCurrentRenderer())
-		{
-			FE_CORE_INFO("ImGui deferred for Vulkan (Phase 5)");
 			return;
-		}
 
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
@@ -49,7 +107,8 @@ namespace FunEngine {
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;	// Enable Keyboard Controls
 		// io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad; // Enable Gamepad controls
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;		// Enable Docking
-		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;		// Enable Multi Viewports / Platform Windows
+		if (!IsVulkan())
+			io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;	// Multi-viewport is not implemented for the Vulkan backend
 
 		// io.ConfigFlags |= ImGuiConfigFlags_ViewportsNoTaskBarIcons;
 		// io.ConfigFlags |= ImGuiConfigFlags_ViewportsNoMerge;
@@ -95,6 +154,14 @@ namespace FunEngine {
 		GLFWwindow* window = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
 
 		// Setup Platform/Renderer bindings 
+#ifdef FE_WITH_VULKAN
+		if (IsVulkan())
+		{
+			InitVulkanBackend(window);
+			m_Initialized = true;
+			return;
+		}
+#endif
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
 		ImGui_ImplOpenGL3_Init("#version 410");
 		m_Initialized = true;
@@ -102,10 +169,22 @@ namespace FunEngine {
 
 	void ImGuiLayer::Begin()
 	{
-		if (!UseImGuiForCurrentRenderer())
+		m_FrameBegun = false;
+		if (!UseImGuiForCurrentRenderer() || !m_Initialized)
 			return;
 
+#ifdef FE_WITH_VULKAN
+		if (IsVulkan())
+		{
+			auto* context = VulkanContext::Get();
+			if (!context || !context->IsFrameActive())
+				return;
+			ImGui_ImplVulkan_NewFrame();
+		}
+		else
+#endif
 		ImGui_ImplOpenGL3_NewFrame();
+		m_FrameBegun = true;
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 		ImGuizmo::BeginFrame();
@@ -113,8 +192,9 @@ namespace FunEngine {
 
 	void ImGuiLayer::End()
 	{
-		if (!UseImGuiForCurrentRenderer())
+		if (!m_FrameBegun)
 			return;
+		m_FrameBegun = false;
 
 		ImGuiIO& io = ImGui::GetIO();
 		Application& app = Application::GetApplication();
@@ -123,6 +203,16 @@ namespace FunEngine {
 		// Rendering
 
 		ImGui::Render();
+#ifdef FE_WITH_VULKAN
+		if (IsVulkan())
+		{
+			auto* context = VulkanContext::Get();
+			context->SetCurrentFramebuffer(nullptr);
+			if (context->EnsureRenderPass())
+				ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), context->GetCurrentCommandBuffer());
+			return;
+		}
+#endif
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
@@ -137,9 +227,27 @@ namespace FunEngine {
 	
 
 	void ImGuiLayer::OnDetach() {
-		if (!UseImGuiForCurrentRenderer())
+		if (!UseImGuiForCurrentRenderer() || !m_Initialized)
 			return;
+		m_Initialized = false;
 
+#ifdef FE_WITH_VULKAN
+		if (IsVulkan())
+		{
+			if (auto* context = VulkanContext::Get())
+				context->WaitIdle();
+			VulkanContext::SetImGuiInitialized(false);
+			ImGui_ImplVulkan_Shutdown();
+			ImGui_ImplGlfw_Shutdown();
+			ImGui::DestroyContext();
+			if (s_ImGuiDescriptorPool != VK_NULL_HANDLE)
+			{
+				vkDestroyDescriptorPool(VulkanDevice::Get().GetDevice(), s_ImGuiDescriptorPool, nullptr);
+				s_ImGuiDescriptorPool = VK_NULL_HANDLE;
+			}
+			return;
+		}
+#endif
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();

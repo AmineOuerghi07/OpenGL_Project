@@ -498,21 +498,44 @@ namespace FunEngine
 
 		float textureIndex = 0.0f;
 
-		bool textureAlreadyBound = false;
-
-		for (uint32_t i = 0; i < s_Data.TextureSlots.size() && !textureAlreadyBound; i++)
+		if (UsesSlotTable())
 		{
-			if (*s_Data.TextureSlots[i].get() == *texture.get())
+			for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
 			{
-				textureIndex = (float)i;
-				textureAlreadyBound = true;
+				if (*s_Data.TextureSlots[i].get() == *texture.get())
+				{
+					textureIndex = (float)i;
+					break;
+				}
+			}
+
+			if (textureIndex == 0.0f)
+			{
+				if (s_Data.TextureSlotIndex >= Renderer2DData::MaxTextureSlots)
+					FlushAndReset();
+				textureIndex = (float)s_Data.TextureSlotIndex;
+				s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture;
+				s_Data.TextureSlotIndex++;
 			}
 		}
-
-		if (!textureAlreadyBound)
+		else
 		{
-			s_Data.TextureSlots.emplace_back(texture);
-			textureIndex = s_Data.TextureSlots.size() - 1;
+			bool textureAlreadyBound = false;
+
+			for (uint32_t i = 0; i < s_Data.TextureSlots.size() && !textureAlreadyBound; i++)
+			{
+				if (*s_Data.TextureSlots[i].get() == *texture.get())
+				{
+					textureIndex = (float)i;
+					textureAlreadyBound = true;
+				}
+			}
+
+			if (!textureAlreadyBound)
+			{
+				s_Data.TextureSlots.emplace_back(texture);
+				textureIndex = s_Data.TextureSlots.size() - 1;
+			}
 		}
 
 

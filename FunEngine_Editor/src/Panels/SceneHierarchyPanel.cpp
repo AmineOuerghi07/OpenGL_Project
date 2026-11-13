@@ -426,11 +426,11 @@ namespace FunEngine
 			// Texture
 			if (component.Texture)
 			{
-				ImGui::ImageButton("Texture", (ImTextureID)(component.Texture->GetRendererID()), { 100.f, 100.0f }, { 0 , 1 }, { 1 , 0 });
+				ImGui::ImageButton("Texture", (ImTextureID)(component.Texture->GetImGuiID()), { 100.f, 100.0f }, { 0 , 1 }, { 1 , 0 });
 			}
 			else
 			{
-				ImGui::ImageButton("Texture", (ImTextureID)(texturePlaceHolder->GetRendererID()), {100.f, 100.0f}, { 0 , 1 }, { 1 , 0 });
+				ImGui::ImageButton("Texture", (ImTextureID)(texturePlaceHolder->GetImGuiID()), {100.f, 100.0f}, { 0 , 1 }, { 1 , 0 });
 			}
 			if (ImGui::BeginDragDropTarget())
 			{

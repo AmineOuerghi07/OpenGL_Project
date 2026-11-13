@@ -305,9 +305,8 @@ namespace FunEngine
 
 		//FE_CLIENT_WARN("viewport size : {0}  {1}", viewportPanelSize.x, viewportPanelSize.y);
 
-		uint32_t framebufferTexture = m_Framebuffer->GetColorAttachmentRendererID();
 
-		ImGui::Image((void*)(uint64_t)m_Framebuffer->GetColorAttachmentRendererID(), ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0,1 }, ImVec2{ 1,0 });
+		ImGui::Image(m_Framebuffer->GetColorAttachmentImGuiID(), ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0,1 }, ImVec2{ 1,0 });
 
 
 
