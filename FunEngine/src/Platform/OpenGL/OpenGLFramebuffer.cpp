@@ -25,7 +25,8 @@ namespace FunEngine
 
 		static void CreateTextures(bool multisampled, uint32_t* outID, uint32_t count)
 		{
-			glCreateTextures(TextureTarget(multisampled), count, outID);
+			glGenTextures(count, outID);
+			(void)multisampled;
 		}
 
 		static void BindTexture(bool multisampled, uint32_t id)
@@ -34,7 +35,7 @@ namespace FunEngine
 		}
 
 
-		static void AttachColorTexture(uint32_t id, int samples, GLenum internalFormat, GLenum format, uint32_t width, uint32_t height, int index)
+		static void AttachColorTexture(uint32_t id, int samples, GLenum internalFormat, GLenum format, GLenum type, uint32_t width, uint32_t height, int index)
 		{
 			bool multisampled = samples > 1;
 			if (multisampled)
@@ -43,14 +44,14 @@ namespace FunEngine
 			}
 			else
 			{
-				glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, nullptr);
+				// Integer color (e.g. GL_R32I / GL_RED_INTEGER) requires GL_INT, not UNSIGNED_BYTE.
+				glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, nullptr);
 
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-				
 			}
 
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, TextureTarget(multisampled), id, 0);
@@ -65,7 +66,8 @@ namespace FunEngine
 			}
 			else
 			{
-				glTexStorage2D(GL_TEXTURE_2D, 1, format, width, height);
+				// glTexStorage2D is fine on 4.2+; use TexImage for Apple GL 4.1 core.
+				glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, nullptr);
 
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -153,7 +155,7 @@ namespace FunEngine
 			m_DepthAttachments = 0;
 		}
 
-		glCreateFramebuffers(1, &m_RendererID);
+		glGenFramebuffers(1, &m_RendererID);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
 
 		bool multisample = m_Specifications.Sample > 1;
@@ -171,11 +173,11 @@ namespace FunEngine
 				switch (m_ColorAttachmentsSpecs[i].TextureFormat)
 				{
 				case FramebufferTextureFormat::RGBA8:
-					Utils::AttachColorTexture(m_ColorAttachments[i], m_Specifications.Sample, GL_RGBA8, GL_RGBA, m_Specifications.Width, m_Specifications.Height, i);
+					Utils::AttachColorTexture(m_ColorAttachments[i], m_Specifications.Sample, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, m_Specifications.Width, m_Specifications.Height, i);
 					break;
 
 				case FramebufferTextureFormat::RED_INTEGER:
-					Utils::AttachColorTexture(m_ColorAttachments[i], m_Specifications.Sample, GL_R32I, GL_RED_INTEGER, m_Specifications.Width, m_Specifications.Height, i);
+					Utils::AttachColorTexture(m_ColorAttachments[i], m_Specifications.Sample, GL_R32I, GL_RED_INTEGER, GL_INT, m_Specifications.Width, m_Specifications.Height, i);
 					break;
 				}
 			}
@@ -245,16 +247,12 @@ namespace FunEngine
 
 	void OpenGLFramebuffer::ClearAttachment(uint32_t attachmentIndex, int value)
 	{
-
-		//int value = -1;
-		//glClearTexImage(m_ColorAttachments[1], 0, GL_RED_INTEGER, GL_INT, &value);
-
-		auto& spec = m_ColorAttachmentsSpecs[attachmentIndex];
-		spec.TextureFormat;
-
-		glClearTexImage(m_ColorAttachments[attachmentIndex], 0,
-			Utils::FunEngineTextureFormatToGL(spec.TextureFormat), GL_INT, &value);
-
+		// glClearTexImage is GL 4.4+; clear integer attachments via glClearBufferiv.
+		// drawbuffer index matches the i-th entry previously set by glDrawBuffers.
+		FE_CORE_ASSERT(attachmentIndex < m_ColorAttachments.size(), "ClearAttachment index out of range");
+		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
+		const GLint v = value;
+		glClearBufferiv(GL_COLOR, (GLint)attachmentIndex, &v);
 	}
 	
 }

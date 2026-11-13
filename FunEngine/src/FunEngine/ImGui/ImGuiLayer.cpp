@@ -1,4 +1,5 @@
 #include "fepch.h"
+#include <cstdio>
 #include "ImGuiLayer.h"
 #include "imgui.h"
 
@@ -39,12 +40,27 @@ namespace FunEngine {
 		// io.ConfigFlags |= ImGuiConfigFlags_ViewportsNoTaskBarIcons;
 		// io.ConfigFlags |= ImGuiConfigFlags_ViewportsNoMerge;
 
-		// Setup Dear Imgui
-
-		io.Fonts->AddFontFromFileTTF("assets/fonts/opensans/OpenSans-Bold.ttf", 18.0f);
-
-
-		io.FontDefault = io.Fonts->AddFontFromFileTTF("assets/fonts/opensans/OpenSans-Regular.ttf", 18.0f);
+		// Setup Dear Imgui fonts (Editor ships assets/fonts; Sandbox may not).
+		{
+			const char* boldPath = "assets/fonts/opensans/OpenSans-Bold.ttf";
+			const char* regularPath = "assets/fonts/opensans/OpenSans-Regular.ttf";
+			FILE* bold = fopen(boldPath, "rb");
+			FILE* regular = fopen(regularPath, "rb");
+			if (bold && regular)
+			{
+				fclose(bold);
+				fclose(regular);
+				io.Fonts->AddFontFromFileTTF(boldPath, 18.0f);
+				io.FontDefault = io.Fonts->AddFontFromFileTTF(regularPath, 18.0f);
+			}
+			else
+			{
+				if (bold) fclose(bold);
+				if (regular) fclose(regular);
+				FE_CORE_WARN("ImGui fonts not found under assets/fonts — using default font");
+				io.Fonts->AddFontDefault();
+			}
+		}
 
 		ImGui::StyleColorsDark();
 		// ImGui::StyleColorsClassic();

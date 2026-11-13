@@ -20,7 +20,7 @@ void Sandbox2D::OnAttach()
 	m_TextureMilk = FunEngine::Texture2D::Create("assets/textures/test.jpg");
 
 	FunEngine::FramebufferSpecification fbSpecs;
-
+	fbSpecs.Attachments = { FunEngine::FramebufferTextureFormat::RGBA8 };
 	fbSpecs.Height = 720;
 	fbSpecs.Width = 1280;
 
@@ -198,9 +198,9 @@ void Sandbox2D::OnImGuiRender()
 
 	ImGui::ColorEdit4("SquareColor", glm::value_ptr(m_SquareColor));
 
-	uint32_t framebufferTexture = m_Framebuffer->GetColorAttachementRendererID();
+	uint32_t framebufferTexture = m_Framebuffer->GetColorAttachmentRendererID();
 
-	ImGui::Image((void*)(uint64_t)m_Framebuffer->GetColorAttachementRendererID(), ImVec2{1280.0, 720.0}, ImVec2{ 0,1 }, ImVec2{ 1,0 });
+	ImGui::Image((void*)(uint64_t)m_Framebuffer->GetColorAttachmentRendererID(), ImVec2{1280.0, 720.0}, ImVec2{ 0,1 }, ImVec2{ 1,0 });
 
 	ImGui::End();
 

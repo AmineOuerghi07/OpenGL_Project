@@ -1,6 +1,7 @@
 #include "fepch.h"
 #include "SceneHierarchyPanel.h"
 
+#include <cstring>
 #include <imgui.h>
 
 
@@ -267,7 +268,12 @@ namespace FunEngine
 			char buffer[256];
 
 			memset(buffer, 0, sizeof(buffer));
+#if defined(FE_PLATFORM_WINDOWS)
 			strcpy_s(buffer, sizeof(buffer), tag.c_str());
+#else
+			std::strncpy(buffer, tag.c_str(), sizeof(buffer) - 1);
+			buffer[sizeof(buffer) - 1] = '\0';
+#endif
 
 			if (ImGui::InputText("##Tag", buffer, sizeof(buffer)))
 			{
@@ -430,8 +436,13 @@ namespace FunEngine
 			{
 				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
 				{
+#if defined(FE_PLATFORM_WINDOWS)
 					const wchar_t* path = (const wchar_t*)payload->Data;
 					std::filesystem::path texturePath = std::filesystem::path(path);
+#else
+					const char* path = (const char*)payload->Data;
+					std::filesystem::path texturePath = std::filesystem::path(path);
+#endif
 					FE_CORE_WARN("THE TEXTURE PATH IS : {0}", texturePath.string()); 
 					component.Texture = Texture2D::Create(texturePath.string());
 				}

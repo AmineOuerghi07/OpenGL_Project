@@ -41,7 +41,14 @@ namespace FunEngine
 			m_Scene->m_Registry.remove<T>(m_EntityHandle);
 		}
 		
-		operator bool() const { return m_EntityHandle != entt::null; }
+		// Must verify registry membership: mouse-picking can yield garbage IDs that are
+		// not entt::null (e.g. float clear-color bits reinterpreted as int).
+		operator bool() const
+		{
+			return m_Scene != nullptr
+				&& m_EntityHandle != entt::null
+				&& m_Scene->m_Registry.valid(m_EntityHandle);
+		}
 		operator uint32_t() const { return (uint32_t)m_EntityHandle; }
 
 		bool operator==(const Entity& other) const { return m_EntityHandle == other.m_EntityHandle && m_Scene == other.m_Scene; }

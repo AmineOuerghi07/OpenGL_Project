@@ -37,6 +37,16 @@ namespace FunEngine
 
 		m_Framebuffer = Framebuffer::Create(fbSpecs);
 
+		// Sanity-check entity-ID (RED_INTEGER) attachment: clear to -1 and read back.
+		{
+			m_Framebuffer->Bind();
+			m_Framebuffer->ClearAttachment(1, -1);
+			const int idProbe = m_Framebuffer->ReadPixel(1, 0, 0);
+			m_Framebuffer->Unbind();
+			FE_CORE_ASSERT(idProbe == -1, "RED_INTEGER framebuffer clear/read failed (got {0})", idProbe);
+			FE_CORE_INFO("RED_INTEGER pick attachment OK (read-back {0})", idProbe);
+		}
+
 		m_ActiveScene = std::make_shared<Scene>();
 
 		m_EditorCamera = EditorCamera(45.0f, 1.778f, 0.1f, 1000.0f);
@@ -141,7 +151,15 @@ namespace FunEngine
 		if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)m_ViewportSize.x && mouseY < (int)m_ViewportSize.y)
 		{
 			int pixelData = m_Framebuffer->ReadPixel(1, mouseX, mouseY);
-			m_HoveredEntity = pixelData == -1 ? Entity() : Entity((entt::entity)pixelData, m_ActiveScene.get());
+			if (pixelData == -1)
+			{
+				m_HoveredEntity = {};
+			}
+			else
+			{
+				Entity picked((entt::entity)pixelData, m_ActiveScene.get());
+				m_HoveredEntity = picked ? picked : Entity{};
+			}
 		}
 
 		m_Framebuffer->Unbind();
@@ -256,7 +274,7 @@ namespace FunEngine
 
 		ImGui::Begin("Settings");
 		std::string name = "None";
-		if (m_HoveredEntity)
+		if (m_HoveredEntity && m_HoveredEntity.HasComponent<TagComponent>())
 		{
 			name = m_HoveredEntity.GetComponent<TagComponent>().Tag;
 		}
@@ -302,8 +320,13 @@ namespace FunEngine
 		{
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
 			{
+#if defined(FE_PLATFORM_WINDOWS)
 				const wchar_t* path = (const wchar_t*)payload->Data;
 				OpenScene(path);
+#else
+				const char* path = (const char*)payload->Data;
+				OpenScene(path);
+#endif
 			}
 			ImGui::EndDragDropTarget();
 		}
