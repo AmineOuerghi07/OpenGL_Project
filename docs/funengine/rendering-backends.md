@@ -46,8 +46,10 @@ OpenGL is the **default**. Vulkan is **opt-in at build time** and again **opt-in
 | CLI | `--renderer=vulkan` · `--renderer=opengl` · also `--renderer vulkan` |
 | Environment | `FE_RENDERER=vulkan` |
 | Config (cwd) | File `funengine.cfg` with a line `renderer=vulkan` |
+| Editor UI | **Settings → Backend** combo — writes cfg and relaunches (or shows a restart notice) |
+| Scripted cfg | `--set-renderer=vulkan` (writes `funengine.cfg` and exits 0) |
 
-If you pass `--renderer=vulkan` but the binary was built **without** `--with-vulkan`, startup fails with a clear log: rebuild with `--with-vulkan`.
+If you pass `--renderer=vulkan` but the binary was built **without** `--with-vulkan`, startup fails with a clear log: rebuild with `--with-vulkan`. The Editor dropdown **disables** Vulkan in that case.
 
 Always run from the app folder (`Sandbox/` or `FunEngine_Editor/`) so `assets/` resolves.
 
@@ -259,45 +261,26 @@ Application
 
 ---
 
-## 4. Switching backend from the ImGui UI (design only — not implemented)
+## 4. Switching backend from the ImGui UI (**implemented** — option A)
 
-Goal: a dropdown in the Editor (or Sandbox settings) for OpenGL vs Vulkan.
+**Where:** Editor **Settings** panel → **Backend** combo (shows Active API).
 
-### Option A — Dropdown → write `funengine.cfg` → restart
+**Behavior (option A):**
 
-**Idea:** UI writes `renderer=vulkan|opengl` into `funengine.cfg` (cwd), shows “Restart required,” then `Application::Close()` or asks the user to relaunch. Next process picks it up via existing `RendererSelect` (unless CLI/env override).
+1. Choosing OpenGL or Vulkan calls `RendererSelect_WriteConfig` → `funengine.cfg` gets `renderer=opengl|vulkan`.  
+2. `RendererSelect_RelaunchWith` spawns a new process with the same argv, forcing `--renderer=<choice>` (so CLI overrides from the previous launch cannot stick), then `Application::Close()`.  
+3. If spawn fails, Settings shows a **restart required** notice (cfg is still saved).  
+4. If the binary was built **without** `--with-vulkan`, Vulkan is `BeginDisabled` with “(rebuild with --with-vulkan)”.
 
-**What it takes in this codebase**
+Helpers: `RendererSelect_IsVulkanCompiledIn`, `--set-renderer=` for scripted cfg writes.
 
-- Small ImGui combo in e.g. Editor settings or a new “Renderer” panel.  
-- Write/replace the `renderer=` line in `funengine.cfg` (same format `RendererSelect` already reads).  
-- Optional: spawn the same executable again then exit (platform-specific); or just quit and let the user relaunch.  
-- No change to GLFW context, ImGui backend, or GPU object lifetimes mid-run.  
-- Dual build still required for Vulkan to appear as a choice (grey out / hide if `!FE_WITH_VULKAN`).
+### Option B — Live hot-swap (still not implemented)
 
-**Pros:** Matches how selection already works; tiny, safe, easy to test.  
-**Cons:** Not instant; CLI/env still win over cfg if set (document that in the UI).
+Destroying/recreating GLFW context, ImGui backend, all GPU resources, and layer caches in-process remains a large separate project. **Not recommended** while option A works.
 
-### Option B — Live hot-swap (no restart)
+### Recommendation (unchanged)
 
-**Idea:** Destroy the current GPU world and rebuild the other backend in-process.
-
-**What it would take here (large)**
-
-1. **Tear down** ImGui backend (GL or Vulkan), `Renderer2D`, all textures/FBOs/shaders held by Editor/Sandbox layers, then `GraphicsContext` / device / GL context.  
-2. **Recreate GLFW window or context:** OpenGL needs a GL context; Vulkan needs `GLFW_NO_API` + surface. Today the window is created once in `Application` ctor from the already-chosen API — hot-swap likely means **destroy and recreate the GLFW window** (or always create `NO_API` and use a GL context on a hidden path — not how we work today).  
-3. **Re-init** device/context, factories, `Renderer2D`, reload SPIR-V or GL shaders, recreate Editor FBO, re-upload textures from CPU paths / files, re-init ImGui for the new API, restore UI state.  
-4. **Sync:** `vkDeviceWaitIdle` / GL finish; no dangling descriptor sets in ImGui.  
-5. **Layers:** `EditorLayer` / `Sandbox2D` cache GPU handles — every cached `Ref<Framebuffer>`, `Ref<Texture2D>`, shader must be rebuilt. Scene entities keep CPU data; GPU resources do not.  
-6. **Edge cases:** minimized swapchain, validation layers, Mac portability, VSync, docking layout (`imgui.ini`), multi-viewport (already off on Vulkan).
-
-**Pros:** Instant feedback for demos.  
-**Cons:** High risk, large refactor, easy to leak or crash; fights current “API chosen before `Window::Create`” design.
-
-### Recommendation
-
-**Prefer option A (save cfg + restart).**  
-The engine already selects the backend before the window exists; a restart reuses that path with almost no new surface area. Offer the dropdown only in dual builds, write `funengine.cfg`, and quit (or auto-relaunch) with a one-line status. Revisit hot-swap only if product requirements demand zero-restart switching — treat it as a separate project, not a settings tweak.
+Keep **cfg + relaunch**. Do not invest in hot-swap unless product requirements demand zero-restart switching.
 
 ---
 
@@ -314,4 +297,4 @@ cd Sandbox && ../bin/Debug-macosx-AARCH64/Sandbox/Sandbox                 # Open
 ```
 
 **PR:** https://github.com/AmineOuerghi07/OpenGL_Project/pull/3  
-**Phases done:** 0–5 (OpenGL kept). **Not done:** ImGui backend dropdown (this doc only).
+**Phases done:** 0–5 (OpenGL kept). **Editor Backend dropdown:** implemented (cfg + relaunch).
