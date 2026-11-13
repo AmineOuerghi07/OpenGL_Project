@@ -17,6 +17,7 @@ namespace FunEngine
 
 		virtual const FramebufferSpecification& GetSpecification() const override { return m_Specifications; }
 
+		virtual void* GetColorAttachmentImGuiID(uint32_t index = 0) const override { return (void*)(uintptr_t)GetColorAttachmentRendererID(index); }
 		virtual uint32_t GetColorAttachmentRendererID(uint32_t index = 0) const override { return m_ColorAttachments[index]; }
 
 		virtual void Resize(uint32_t width, uint32_t height) override;

@@ -3,6 +3,9 @@
 
 #include "FunEngine/Renderer/Renderer.h"
 #include "Platform/OpenGL/OpenGLShader.h"
+#ifdef FE_WITH_VULKAN
+#include "Platform/Vulkan/VulkanShader.h"
+#endif
 
 namespace FunEngine {
 
@@ -12,6 +15,9 @@ namespace FunEngine {
 		{
 		case RendererAPI::API::None:    FE_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
 		case RendererAPI::API::OpenGL:  return std::make_shared<OpenGLShader>(filepath); //CreateRef<OpenGLShader>(filepath);
+#ifdef FE_WITH_VULKAN
+		case RendererAPI::API::Vulkan:  return std::make_shared<VulkanShader>(filepath);
+#endif
 		}
 
 		FE_CORE_ASSERT(false, "Unknown RendererAPI!");
@@ -24,6 +30,9 @@ namespace FunEngine {
 		{
 		case RendererAPI::API::None:    FE_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
 		case RendererAPI::API::OpenGL:  return std::make_shared<OpenGLShader>(name, vertexSrc, fragmentSrc); //CreateRef<OpenGLShader>(name, vertexSrc, fragmentSrc);
+#ifdef FE_WITH_VULKAN
+		case RendererAPI::API::Vulkan:  return std::make_shared<VulkanShader>(name, vertexSrc, fragmentSrc);
+#endif
 		}
 
 		FE_CORE_ASSERT(false, "Unknown RendererAPI!");

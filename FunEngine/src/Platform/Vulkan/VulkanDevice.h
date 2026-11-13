@@ -15,6 +15,17 @@ namespace FunEngine
 		bool RuntimeDescriptorArray = false;
 		bool DescriptorBindingPartiallyBound = false;
 		bool ShaderSampledImageArrayNonUniformIndexing = false;
+		bool DescriptorBindingSampledImageUpdateAfterBind = false;
+
+		uint32_t MaxPerStageUpdateAfterBindSampledImages = 0;
+		uint32_t MaxPerStageUpdateAfterBindSamplers = 0;
+
+		// Full bindless-style texture array (runtime array + partially bound + update after bind).
+		bool IsBindlessCapable() const
+		{
+			return RuntimeDescriptorArray && DescriptorBindingPartiallyBound &&
+				ShaderSampledImageArrayNonUniformIndexing && DescriptorBindingSampledImageUpdateAfterBind;
+		}
 	};
 
 	class VulkanDevice
@@ -37,6 +48,9 @@ namespace FunEngine
 		uint32_t GetPresentQueueFamily() const { return m_PresentQueueFamily; }
 
 		const VulkanDescriptorIndexingSupport& GetDescriptorIndexingSupport() const { return m_DescriptorIndexing; }
+		const VkPhysicalDeviceLimits& GetLimits() const { return m_Limits; }
+		VkFormat GetDepthStencilFormat() const { return m_DepthStencilFormat; }
+		uint32_t FindMemoryType(uint32_t typeBits, VkMemoryPropertyFlags properties) const;
 
 	private:
 		VulkanDevice() = default;
@@ -62,7 +76,11 @@ namespace FunEngine
 		uint32_t m_GraphicsQueueFamily = UINT32_MAX;
 		uint32_t m_PresentQueueFamily = UINT32_MAX;
 
+		void QueryDeviceLimits();
+
 		VulkanDescriptorIndexingSupport m_DescriptorIndexing;
+		VkPhysicalDeviceLimits m_Limits{};
+		VkFormat m_DepthStencilFormat = VK_FORMAT_UNDEFINED;
 		std::vector<const char*> m_DeviceExtensions;
 	};
 }

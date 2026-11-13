@@ -235,11 +235,23 @@ namespace FunEngine
 		m_DescriptorIndexing.DescriptorBindingPartiallyBound = indexing.descriptorBindingPartiallyBound == VK_TRUE;
 		m_DescriptorIndexing.ShaderSampledImageArrayNonUniformIndexing =
 			indexing.shaderSampledImageArrayNonUniformIndexing == VK_TRUE;
+		m_DescriptorIndexing.DescriptorBindingSampledImageUpdateAfterBind =
+			indexing.descriptorBindingSampledImageUpdateAfterBind == VK_TRUE;
 
-		FE_CORE_INFO("Vulkan descriptor indexing: runtimeDescriptorArray={0}, partiallyBound={1}, nonUniformIndexing={2}",
+		VkPhysicalDeviceDescriptorIndexingProperties indexingProps{};
+		indexingProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_PROPERTIES;
+		VkPhysicalDeviceProperties2 props2{};
+		props2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2;
+		props2.pNext = &indexingProps;
+		vkGetPhysicalDeviceProperties2(m_PhysicalDevice, &props2);
+		m_DescriptorIndexing.MaxPerStageUpdateAfterBindSampledImages = indexingProps.maxPerStageDescriptorUpdateAfterBindSampledImages;
+		m_DescriptorIndexing.MaxPerStageUpdateAfterBindSamplers = indexingProps.maxPerStageDescriptorUpdateAfterBindSamplers;
+
+		FE_CORE_INFO("Vulkan descriptor indexing: runtimeDescriptorArray={0}, partiallyBound={1}, nonUniformIndexing={2}, sampledImageUpdateAfterBind={3}",
 			m_DescriptorIndexing.RuntimeDescriptorArray,
 			m_DescriptorIndexing.DescriptorBindingPartiallyBound,
-			m_DescriptorIndexing.ShaderSampledImageArrayNonUniformIndexing);
+			m_DescriptorIndexing.ShaderSampledImageArrayNonUniformIndexing,
+			m_DescriptorIndexing.DescriptorBindingSampledImageUpdateAfterBind);
 	}
 
 	void VulkanDevice::CreateLogicalDevice(VkSurfaceKHR surface)
@@ -281,11 +293,14 @@ namespace FunEngine
 			m_DeviceExtensions.push_back("VK_KHR_portability_subset");
 #endif
 
+		QueryDescriptorIndexingFeatures();
+
 		VkPhysicalDeviceDescriptorIndexingFeatures indexingFeatures{};
 		indexingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES;
-		indexingFeatures.runtimeDescriptorArray = VK_TRUE;
-		indexingFeatures.descriptorBindingPartiallyBound = VK_TRUE;
-		indexingFeatures.shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
+		indexingFeatures.runtimeDescriptorArray = m_DescriptorIndexing.RuntimeDescriptorArray;
+		indexingFeatures.descriptorBindingPartiallyBound = m_DescriptorIndexing.DescriptorBindingPartiallyBound;
+		indexingFeatures.shaderSampledImageArrayNonUniformIndexing = m_DescriptorIndexing.ShaderSampledImageArrayNonUniformIndexing;
+		indexingFeatures.descriptorBindingSampledImageUpdateAfterBind = m_DescriptorIndexing.DescriptorBindingSampledImageUpdateAfterBind;
 
 		VkPhysicalDeviceFeatures2 deviceFeatures2{};
 		deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
@@ -304,8 +319,41 @@ namespace FunEngine
 		vkGetDeviceQueue(m_Device, m_GraphicsQueueFamily, 0, &m_GraphicsQueue);
 		vkGetDeviceQueue(m_Device, m_PresentQueueFamily, 0, &m_PresentQueue);
 
-		QueryDescriptorIndexingFeatures();
+		QueryDeviceLimits();
 		m_DeviceReady = true;
+	}
+
+	void VulkanDevice::QueryDeviceLimits()
+	{
+		VkPhysicalDeviceProperties props;
+		vkGetPhysicalDeviceProperties(m_PhysicalDevice, &props);
+		m_Limits = props.limits;
+
+		const VkFormat candidates[] = { VK_FORMAT_D24_UNORM_S8_UINT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D16_UNORM_S8_UINT };
+		for (VkFormat format : candidates)
+		{
+			VkFormatProperties formatProps;
+			vkGetPhysicalDeviceFormatProperties(m_PhysicalDevice, format, &formatProps);
+			if (formatProps.optimalTilingFeatures & VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT)
+			{
+				m_DepthStencilFormat = format;
+				break;
+			}
+		}
+		FE_CORE_ASSERT(m_DepthStencilFormat != VK_FORMAT_UNDEFINED, "No depth/stencil format available");
+	}
+
+	uint32_t VulkanDevice::FindMemoryType(uint32_t typeBits, VkMemoryPropertyFlags properties) const
+	{
+		VkPhysicalDeviceMemoryProperties memProps;
+		vkGetPhysicalDeviceMemoryProperties(m_PhysicalDevice, &memProps);
+		for (uint32_t i = 0; i < memProps.memoryTypeCount; ++i)
+		{
+			if ((typeBits & (1u << i)) && (memProps.memoryTypes[i].propertyFlags & properties) == properties)
+				return i;
+		}
+		FE_CORE_ASSERT(false, "Failed to find suitable Vulkan memory type");
+		return 0;
 	}
 
 	void VulkanDevice::CreateDevice(VkSurfaceKHR surface)

@@ -6,6 +6,10 @@
 
 #include <GLFW/glfw3.h>
 
+#ifdef FE_WITH_VULKAN
+#include "Platform/Vulkan/VulkanContext.h"
+#endif
+
 // PR Testing Ysf
 namespace FunEngine
 {
@@ -36,7 +40,15 @@ namespace FunEngine
 
 	Application::~Application()
 	{
-
+#ifdef FE_WITH_VULKAN
+		if (RendererAPI::GetAPI() == RendererAPI::API::Vulkan)
+		{
+			// Release GPU resources while the device is still alive (layers and statics die after this body).
+			if (auto* ctx = VulkanContext::Get())
+				ctx->WaitIdle();
+			Renderer::Shutdown();
+		}
+#endif
 	}
 
 	void Application::OnEvent(Event& e)
@@ -62,6 +74,13 @@ namespace FunEngine
 			float time = (float) glfwGetTime(); // Should be in platform Platform::GetTime()
 			Timestep timestep = time - m_LastFrameTime;
 			m_LastFrameTime = time;
+#ifdef FE_WITH_VULKAN
+			if (RendererAPI::GetAPI() == RendererAPI::API::Vulkan)
+			{
+				if (auto* ctx = VulkanContext::Get())
+					ctx->BeginFrame();
+			}
+#endif
 			if (!m_Minimized)
 			{
 				for (Layer* layer : m_LayerStack)

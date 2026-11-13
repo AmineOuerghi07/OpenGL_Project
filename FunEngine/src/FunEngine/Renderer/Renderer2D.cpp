@@ -180,6 +180,18 @@ namespace FunEngine
 	void Renderer2D::Shutdown()
 	{
 		delete[] s_Data.QuadVertexBufferBase;
+		s_Data.QuadVertexBufferBase = nullptr;
+		s_Data.QuadVertexBufferPtr = nullptr;
+
+		s_Data.QuadVertexArray.reset();
+		s_Data.QuadVertexBuffer.reset();
+		s_Data.TextureShader.reset();
+		s_Data.WhiteTexture.reset();
+		s_Data.TextureSlots.clear();
+		s_Data.CameraUniformBuffer.reset();
+#ifndef FE_PLATFORM_MACOS
+		s_Data.TexturesBuffer.reset();
+#endif
 	}
 
 	void Renderer2D::BeginScene(const Camera& camera, const glm::mat4& transform)

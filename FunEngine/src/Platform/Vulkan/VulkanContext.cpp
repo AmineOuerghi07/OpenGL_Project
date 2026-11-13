@@ -3,10 +3,17 @@
 #include "fepch.h"
 #include "VulkanContext.h"
 #include "VulkanDevice.h"
+#include "VulkanBuffer.h"
+#include "VulkanFramebuffer.h"
+#include "VulkanTextureRegistry.h"
+#include "VulkanUtils.h"
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <algorithm>
+#include <chrono>
+#include <cstdlib>
+#include <thread>
 
 namespace FunEngine
 {
@@ -23,6 +30,7 @@ namespace FunEngine
 	}
 
 	VulkanContext* VulkanContext::s_Instance = nullptr;
+	bool VulkanContext::s_ImGuiInitialized = false;
 
 	VulkanContext::VulkanContext(GLFWwindow* windowHandle)
 		: m_WindowHandle(windowHandle)
@@ -40,6 +48,12 @@ namespace FunEngine
 
 		vkDeviceWaitIdle(vkDevice);
 
+		for (uint32_t slot = 0; slot < MaxFramesInFlight; ++slot)
+			RunDeferredDestroys(slot);
+		VulkanPipelineCache::Get().Shutdown();
+		VulkanTextureRegistry::Get().Shutdown();
+		VulkanBuffer::Shutdown();
+
 		m_TrianglePass.Shutdown();
 
 		for (auto semaphore : m_RenderFinishedSemaphores)
@@ -55,6 +69,8 @@ namespace FunEngine
 
 		if (m_RenderPass != VK_NULL_HANDLE)
 			vkDestroyRenderPass(vkDevice, m_RenderPass, nullptr);
+		if (m_RenderPassLoad != VK_NULL_HANDLE)
+			vkDestroyRenderPass(vkDevice, m_RenderPassLoad, nullptr);
 
 		if (m_Surface != VK_NULL_HANDLE)
 			vkDestroySurfaceKHR(device.GetInstance(), m_Surface, nullptr);
@@ -80,7 +96,12 @@ namespace FunEngine
 		CreateCommandBuffers();
 		CreateSyncObjects();
 
-		m_TrianglePass.Init(m_RenderPass);
+		VulkanTextureRegistry::Get().Init();
+
+		const char* triangleEnv = std::getenv("FE_VULKAN_TRIANGLE");
+		m_DrawTriangle = triangleEnv && triangleEnv[0] && triangleEnv[0] != '0';
+		if (m_DrawTriangle)
+			m_TrianglePass.Init(m_RenderPass);
 
 		FE_CORE_INFO("Vulkan swapchain: {0}x{1}", m_SwapchainExtent.width, m_SwapchainExtent.height);
 	}
@@ -95,7 +116,8 @@ namespace FunEngine
 	{
 		for (const auto& format : formats)
 		{
-			if (format.format == VK_FORMAT_B8G8R8A8_SRGB && format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
+			// UNORM matches the OpenGL default framebuffer (no implicit sRGB encode on write).
+			if (format.format == VK_FORMAT_B8G8R8A8_UNORM && format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
 				return format;
 		}
 		return formats[0];
@@ -223,44 +245,49 @@ namespace FunEngine
 
 	void VulkanContext::CreateRenderPass()
 	{
-		VkAttachmentDescription colorAttachment{};
-		colorAttachment.format = m_SwapchainImageFormat;
-		colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-		colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-		colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-		colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-		colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-		colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-		colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+		for (int variant = 0; variant < 2; ++variant)
+		{
+			const bool clear = variant == 0;
 
-		VkAttachmentReference colorAttachmentRef{};
-		colorAttachmentRef.attachment = 0;
-		colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+			VkAttachmentDescription colorAttachment{};
+			colorAttachment.format = m_SwapchainImageFormat;
+			colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+			colorAttachment.loadOp = clear ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_LOAD;
+			colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+			colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+			colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+			colorAttachment.initialLayout = clear ? VK_IMAGE_LAYOUT_UNDEFINED : VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+			colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
-		VkSubpassDescription subpass{};
-		subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-		subpass.colorAttachmentCount = 1;
-		subpass.pColorAttachments = &colorAttachmentRef;
+			VkAttachmentReference colorAttachmentRef{};
+			colorAttachmentRef.attachment = 0;
+			colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-		VkSubpassDependency dependency{};
-		dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-		dependency.dstSubpass = 0;
-		dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-		dependency.srcAccessMask = 0;
-		dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-		dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+			VkSubpassDescription subpass{};
+			subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+			subpass.colorAttachmentCount = 1;
+			subpass.pColorAttachments = &colorAttachmentRef;
 
-		VkRenderPassCreateInfo renderPassInfo{};
-		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-		renderPassInfo.attachmentCount = 1;
-		renderPassInfo.pAttachments = &colorAttachment;
-		renderPassInfo.subpassCount = 1;
-		renderPassInfo.pSubpasses = &subpass;
-		renderPassInfo.dependencyCount = 1;
-		renderPassInfo.pDependencies = &dependency;
+			VkSubpassDependency dependency{};
+			dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+			dependency.dstSubpass = 0;
+			dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+			dependency.srcAccessMask = clear ? 0 : (VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_SHADER_READ_BIT);
+			dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
 
-		CheckVk(vkCreateRenderPass(VulkanDevice::Get().GetDevice(), &renderPassInfo, nullptr, &m_RenderPass),
-			"vkCreateRenderPass");
+			VkRenderPassCreateInfo renderPassInfo{};
+			renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+			renderPassInfo.attachmentCount = 1;
+			renderPassInfo.pAttachments = &colorAttachment;
+			renderPassInfo.subpassCount = 1;
+			renderPassInfo.pSubpasses = &subpass;
+			renderPassInfo.dependencyCount = 1;
+			renderPassInfo.pDependencies = &dependency;
+
+			CheckVk(vkCreateRenderPass(VulkanDevice::Get().GetDevice(), &renderPassInfo, nullptr,
+				clear ? &m_RenderPass : &m_RenderPassLoad), "vkCreateRenderPass");
+		}
 	}
 
 	void VulkanContext::CreateFramebuffers()
@@ -396,23 +423,41 @@ namespace FunEngine
 		m_FramebufferResized = false;
 	}
 
-	void VulkanContext::SwapBuffers()
+	bool VulkanContext::BeginFrame()
 	{
+		if (m_FrameActive)
+			return true;
+
 		auto& vulkanDevice = VulkanDevice::Get();
 		VkDevice device = vulkanDevice.GetDevice();
 
+		int fbWidth = 0, fbHeight = 0;
+		glfwGetFramebufferSize(m_WindowHandle, &fbWidth, &fbHeight);
+		if (fbWidth == 0 || fbHeight == 0)
+		{
+			std::this_thread::sleep_for(std::chrono::milliseconds(10));
+			return false;
+		}
+
 		vkWaitForFences(device, 1, &m_InFlightFences[m_CurrentFrame], VK_TRUE, UINT64_MAX);
+		RunDeferredDestroys(m_CurrentFrame);
+		VulkanTextureRegistry::Get().BeginFrame(m_CurrentFrame);
+
+		if (m_FramebufferResized)
+			RecreateSwapchain();
 
 		uint32_t imageIndex = 0;
-		VkResult acquireResult = vkAcquireNextImageKHR(
-			device, m_Swapchain, UINT64_MAX, m_ImageAvailableSemaphores[m_CurrentFrame], VK_NULL_HANDLE, &imageIndex);
-
-		if (acquireResult == VK_ERROR_OUT_OF_DATE_KHR || acquireResult == VK_SUBOPTIMAL_KHR || m_FramebufferResized)
+		VkResult acquireResult = VK_ERROR_OUT_OF_DATE_KHR;
+		for (int attempt = 0; attempt < 2; ++attempt)
 		{
+			acquireResult = vkAcquireNextImageKHR(
+				device, m_Swapchain, UINT64_MAX, m_ImageAvailableSemaphores[m_CurrentFrame], VK_NULL_HANDLE, &imageIndex);
+			if (acquireResult != VK_ERROR_OUT_OF_DATE_KHR)
+				break;
 			RecreateSwapchain();
-			return;
 		}
-		CheckVk(acquireResult, "vkAcquireNextImageKHR");
+		if (acquireResult != VK_SUCCESS && acquireResult != VK_SUBOPTIMAL_KHR)
+			return false;
 
 		if (m_ImagesInFlight[imageIndex] != VK_NULL_HANDLE)
 			vkWaitForFences(device, 1, &m_ImagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
@@ -425,31 +470,181 @@ namespace FunEngine
 
 		VkCommandBufferBeginInfo beginInfo{};
 		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-
 		CheckVk(vkBeginCommandBuffer(cmd, &beginInfo), "vkBeginCommandBuffer");
+
+		m_ImageIndex = imageIndex;
+		m_FrameActive = true;
+		m_SwapchainPassActive = false;
+		m_SwapchainPassUsed = false;
+		m_CurrentFramebuffer = nullptr;
+		m_FrameSerial++;
+		return true;
+	}
+
+	void VulkanContext::RunDeferredDestroys(uint32_t slot)
+	{
+		auto pending = std::move(m_DeferredDestroys[slot]);
+		m_DeferredDestroys[slot].clear();
+		for (auto& fn : pending)
+			fn();
+	}
+
+	void VulkanContext::DeferDestroy(std::function<void()> destroyFn)
+	{
+		m_DeferredDestroys[m_CurrentFrame].push_back(std::move(destroyFn));
+	}
+
+	void VulkanContext::WaitIdle()
+	{
+		VkDevice device = VulkanDevice::Get().GetDevice();
+		if (device != VK_NULL_HANDLE)
+			vkDeviceWaitIdle(device);
+	}
+
+	void VulkanContext::SetCurrentFramebuffer(VulkanFramebuffer* framebuffer)
+	{
+		if (framebuffer == m_CurrentFramebuffer)
+			return;
+
+		if (m_FrameActive)
+		{
+			if (m_CurrentFramebuffer)
+				m_CurrentFramebuffer->EndPass(GetCurrentCommandBuffer());
+			else
+				EndSwapchainPass();
+		}
+		m_CurrentFramebuffer = framebuffer;
+	}
+
+	VulkanTargetInfo VulkanContext::GetCurrentTargetInfo() const
+	{
+		if (m_CurrentFramebuffer)
+			return m_CurrentFramebuffer->GetTargetInfo();
+
+		VulkanTargetInfo target;
+		target.RenderPass = m_RenderPass;
+		target.ColorAttachmentCount = 1;
+		target.HasDepth = false;
+		target.Extent = m_SwapchainExtent;
+		target.FlipViewportY = true;
+		return target;
+	}
+
+	void VulkanContext::BeginSwapchainPass(bool clear)
+	{
+		if (m_SwapchainPassActive || !m_FrameActive)
+			return;
+
+		VkCommandBuffer cmd = GetCurrentCommandBuffer();
+		const bool first = !m_SwapchainPassUsed;
 
 		VkClearValue clearColor{};
 		clearColor.color = { { m_ClearColor.r, m_ClearColor.g, m_ClearColor.b, m_ClearColor.a } };
 
 		VkRenderPassBeginInfo renderPassInfo{};
 		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-		renderPassInfo.renderPass = m_RenderPass;
-		renderPassInfo.framebuffer = m_SwapchainFramebuffers[imageIndex];
+		renderPassInfo.renderPass = first ? m_RenderPass : m_RenderPassLoad;
+		renderPassInfo.framebuffer = m_SwapchainFramebuffers[m_ImageIndex];
 		renderPassInfo.renderArea.offset = { 0, 0 };
 		renderPassInfo.renderArea.extent = m_SwapchainExtent;
 		renderPassInfo.clearValueCount = 1;
 		renderPassInfo.pClearValues = &clearColor;
-
 		vkCmdBeginRenderPass(cmd, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-		if (m_DrawTriangle)
+
+		m_SwapchainPassActive = true;
+		m_SwapchainPassUsed = true;
+
+		if (first && m_DrawTriangle)
 			m_TrianglePass.Record(cmd, m_SwapchainExtent);
-		vkCmdEndRenderPass(cmd);
+
+		if (!first && clear)
+		{
+			VkClearAttachment attachment{};
+			attachment.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			attachment.clearValue = clearColor;
+			VkClearRect rect{};
+			rect.rect.extent = m_SwapchainExtent;
+			rect.layerCount = 1;
+			vkCmdClearAttachments(cmd, 1, &attachment, 1, &rect);
+		}
+	}
+
+	void VulkanContext::EndSwapchainPass()
+	{
+		if (!m_SwapchainPassActive)
+			return;
+		vkCmdEndRenderPass(GetCurrentCommandBuffer());
+		m_SwapchainPassActive = false;
+	}
+
+	bool VulkanContext::EnsureRenderPass()
+	{
+		if (!m_FrameActive)
+			return false;
+
+		if (m_CurrentFramebuffer)
+		{
+			const float color[4] = { m_ClearColor.r, m_ClearColor.g, m_ClearColor.b, m_ClearColor.a };
+			m_CurrentFramebuffer->BeginPass(GetCurrentCommandBuffer(), false, color);
+		}
+		else
+		{
+			BeginSwapchainPass(false);
+		}
+		return true;
+	}
+
+	void VulkanContext::ClearCurrentTarget()
+	{
+		if (!m_FrameActive)
+			return;
+
+		const float color[4] = { m_ClearColor.r, m_ClearColor.g, m_ClearColor.b, m_ClearColor.a };
+		if (m_CurrentFramebuffer)
+		{
+			if (m_CurrentFramebuffer->IsPassActive())
+				m_CurrentFramebuffer->RecordClear(GetCurrentCommandBuffer(), color);
+			else
+				m_CurrentFramebuffer->BeginPass(GetCurrentCommandBuffer(), true, color);
+		}
+		else if (m_SwapchainPassActive)
+		{
+			VkClearAttachment attachment{};
+			attachment.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+			attachment.clearValue.color = { { color[0], color[1], color[2], color[3] } };
+			VkClearRect rect{};
+			rect.rect.extent = m_SwapchainExtent;
+			rect.layerCount = 1;
+			vkCmdClearAttachments(GetCurrentCommandBuffer(), 1, &attachment, 1, &rect);
+		}
+		else
+		{
+			BeginSwapchainPass(true);
+		}
+	}
+
+	void VulkanContext::SwapBuffers()
+	{
+		if (!m_FrameActive)
+			return;
+
+		auto& vulkanDevice = VulkanDevice::Get();
+		VkCommandBuffer cmd = m_CommandBuffers[m_CurrentFrame];
+
+		if (m_CurrentFramebuffer)
+		{
+			m_CurrentFramebuffer->EndPass(cmd);
+			m_CurrentFramebuffer = nullptr;
+		}
+		if (!m_SwapchainPassUsed)
+			BeginSwapchainPass(true);
+		EndSwapchainPass();
 
 		CheckVk(vkEndCommandBuffer(cmd), "vkEndCommandBuffer");
 
 		VkSemaphore waitSemaphores[] = { m_ImageAvailableSemaphores[m_CurrentFrame] };
 		VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-		VkSemaphore signalSemaphores[] = { m_RenderFinishedSemaphores[imageIndex] };
+		VkSemaphore signalSemaphores[] = { m_RenderFinishedSemaphores[m_ImageIndex] };
 
 		VkSubmitInfo submitInfo{};
 		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -470,7 +665,11 @@ namespace FunEngine
 		presentInfo.pWaitSemaphores = signalSemaphores;
 		presentInfo.swapchainCount = 1;
 		presentInfo.pSwapchains = &m_Swapchain;
-		presentInfo.pImageIndices = &imageIndex;
+		presentInfo.pImageIndices = &m_ImageIndex;
+
+		m_FrameActive = false;
+		m_SwapchainPassUsed = false;
+		m_CurrentFrame = (m_CurrentFrame + 1) % MaxFramesInFlight;
 
 		VkResult presentResult = vkQueuePresentKHR(vulkanDevice.GetPresentQueue(), &presentInfo);
 		if (presentResult == VK_ERROR_OUT_OF_DATE_KHR || presentResult == VK_SUBOPTIMAL_KHR)
@@ -481,8 +680,6 @@ namespace FunEngine
 		{
 			CheckVk(presentResult, "vkQueuePresentKHR");
 		}
-
-		m_CurrentFrame = (m_CurrentFrame + 1) % MaxFramesInFlight;
 	}
 }
 
