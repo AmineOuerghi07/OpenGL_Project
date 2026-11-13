@@ -306,6 +306,14 @@ namespace FunEngine
 		deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
 		deviceFeatures2.pNext = &indexingFeatures;
 
+		VkPhysicalDeviceFeatures supportedFeatures{};
+		vkGetPhysicalDeviceFeatures(m_PhysicalDevice, &supportedFeatures);
+		deviceFeatures2.features.shaderSampledImageArrayDynamicIndexing = supportedFeatures.shaderSampledImageArrayDynamicIndexing;
+		deviceFeatures2.features.independentBlend = supportedFeatures.independentBlend;
+		m_IndependentBlend = supportedFeatures.independentBlend == VK_TRUE;
+		if (!supportedFeatures.shaderSampledImageArrayDynamicIndexing)
+			FE_CORE_WARN("Vulkan: shaderSampledImageArrayDynamicIndexing unsupported; Renderer2D texture arrays may not work");
+
 		VkDeviceCreateInfo createInfo{};
 		createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 		createInfo.queueCreateInfoCount = (uint32_t)queueCreateInfos.size();

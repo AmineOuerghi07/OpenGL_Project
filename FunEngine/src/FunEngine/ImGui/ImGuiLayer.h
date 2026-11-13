@@ -17,8 +17,10 @@ namespace FunEngine
 		void End();
 		void BlockEvents(bool blockEvents) { m_BlockEvents = blockEvents; }
 		void SetDarkThemeColor();
+		bool IsInitialized() const { return m_Initialized; }
 	private:
 		bool m_BlockEvents;
 		float m_Time;
+		bool m_Initialized = false;
 	};
 }

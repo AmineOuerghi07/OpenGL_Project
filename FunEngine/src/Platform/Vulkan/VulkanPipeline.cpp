@@ -166,7 +166,7 @@ namespace FunEngine
 			auto& a = blendAttachments[i];
 			a.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT |
 				VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-			if (i == 0)
+			if (i == 0 && (target.ColorAttachmentCount == 1 || VulkanDevice::Get().SupportsIndependentBlend()))
 			{
 				a.blendEnable = VK_TRUE;
 				a.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;

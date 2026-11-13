@@ -1,4 +1,5 @@
 #include "Sandbox2D.h"
+#include <FunEngine/Renderer/RendererAPI.h>
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Platform/OpenGL/OpenGLShader.h"
@@ -25,6 +26,7 @@ void Sandbox2D::OnAttach()
 	fbSpecs.Width = 1280;
 
 	m_Framebuffer = FunEngine::Framebuffer::Create(fbSpecs);
+	m_RenderToFramebuffer = FunEngine::RendererAPI::GetAPI() == FunEngine::RendererAPI::API::OpenGL;
 
 
 }
@@ -46,7 +48,8 @@ void Sandbox2D::OnUpdate(FunEngine::Timestep ts)
 		m_CameraController.OnUpdate(ts);
 	}
 	// Render
-	m_Framebuffer->Bind();
+	if (m_RenderToFramebuffer)
+		m_Framebuffer->Bind();
 	{
 
 		FE_PROFILE_SCOPE("RenderCommand SetColor");
@@ -104,7 +107,8 @@ void Sandbox2D::OnUpdate(FunEngine::Timestep ts)
 			
 			
 		}
-		m_Framebuffer->Unbind();
+		if (m_RenderToFramebuffer)
+			m_Framebuffer->Unbind();
 	}
 
 	/*

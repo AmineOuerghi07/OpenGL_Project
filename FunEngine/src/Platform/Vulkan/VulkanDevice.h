@@ -49,6 +49,7 @@ namespace FunEngine
 
 		const VulkanDescriptorIndexingSupport& GetDescriptorIndexingSupport() const { return m_DescriptorIndexing; }
 		const VkPhysicalDeviceLimits& GetLimits() const { return m_Limits; }
+		bool SupportsIndependentBlend() const { return m_IndependentBlend; }
 		VkFormat GetDepthStencilFormat() const { return m_DepthStencilFormat; }
 		uint32_t FindMemoryType(uint32_t typeBits, VkMemoryPropertyFlags properties) const;
 
@@ -61,6 +62,7 @@ namespace FunEngine
 		void PickPhysicalDevice(VkSurfaceKHR surface);
 		void CreateLogicalDevice(VkSurfaceKHR surface);
 		void QueryDescriptorIndexingFeatures();
+		bool m_IndependentBlend = false;
 		bool IsDeviceSuitable(VkPhysicalDevice device, VkSurfaceKHR surface);
 
 		bool m_Initialized = false;

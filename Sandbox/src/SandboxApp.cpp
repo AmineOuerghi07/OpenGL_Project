@@ -335,10 +335,7 @@ class Sandbox : public FunEngine::Application
 	public:
 		Sandbox()
 		{
-			if (FunEngine::RendererAPI::GetAPI() == FunEngine::RendererAPI::API::OpenGL)
-				PushLayer(new Sandbox2D());
-			else
-				FE_CORE_INFO("Vulkan: Sandbox2D deferred — empty window / clear-only");
+			PushLayer(new Sandbox2D());
 		};
 		~Sandbox()
 		{
