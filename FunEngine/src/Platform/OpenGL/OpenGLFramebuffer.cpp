@@ -35,7 +35,7 @@ namespace FunEngine
 		}
 
 
-		static void AttachColorTexture(uint32_t id, int samples, GLenum internalFormat, GLenum format, uint32_t width, uint32_t height, int index)
+		static void AttachColorTexture(uint32_t id, int samples, GLenum internalFormat, GLenum format, GLenum type, uint32_t width, uint32_t height, int index)
 		{
 			bool multisampled = samples > 1;
 			if (multisampled)
@@ -44,14 +44,14 @@ namespace FunEngine
 			}
 			else
 			{
-				glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, nullptr);
+				// Integer color (e.g. GL_R32I / GL_RED_INTEGER) requires GL_INT, not UNSIGNED_BYTE.
+				glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, nullptr);
 
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-				
 			}
 
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + index, TextureTarget(multisampled), id, 0);
@@ -173,11 +173,11 @@ namespace FunEngine
 				switch (m_ColorAttachmentsSpecs[i].TextureFormat)
 				{
 				case FramebufferTextureFormat::RGBA8:
-					Utils::AttachColorTexture(m_ColorAttachments[i], m_Specifications.Sample, GL_RGBA8, GL_RGBA, m_Specifications.Width, m_Specifications.Height, i);
+					Utils::AttachColorTexture(m_ColorAttachments[i], m_Specifications.Sample, GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE, m_Specifications.Width, m_Specifications.Height, i);
 					break;
 
 				case FramebufferTextureFormat::RED_INTEGER:
-					Utils::AttachColorTexture(m_ColorAttachments[i], m_Specifications.Sample, GL_R32I, GL_RED_INTEGER, m_Specifications.Width, m_Specifications.Height, i);
+					Utils::AttachColorTexture(m_ColorAttachments[i], m_Specifications.Sample, GL_R32I, GL_RED_INTEGER, GL_INT, m_Specifications.Width, m_Specifications.Height, i);
 					break;
 				}
 			}
@@ -247,20 +247,12 @@ namespace FunEngine
 
 	void OpenGLFramebuffer::ClearAttachment(uint32_t attachmentIndex, int value)
 	{
-		// glClearTexImage is GL 4.4+; clear via the bound framebuffer on Mac / older GL.
+		// glClearTexImage is GL 4.4+; clear integer attachments via glClearBufferiv.
+		// drawbuffer index matches the i-th entry previously set by glDrawBuffers.
+		FE_CORE_ASSERT(attachmentIndex < m_ColorAttachments.size(), "ClearAttachment index out of range");
 		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
-		glDrawBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
 		const GLint v = value;
-		glClearBufferiv(GL_COLOR, attachmentIndex, &v);
-		if (m_ColorAttachments.size() > 1)
-		{
-			GLenum buffers[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
-			glDrawBuffers((GLsizei)m_ColorAttachments.size(), buffers);
-		}
-		else if (!m_ColorAttachments.empty())
-		{
-			glDrawBuffer(GL_COLOR_ATTACHMENT0);
-		}
+		glClearBufferiv(GL_COLOR, (GLint)attachmentIndex, &v);
 	}
 	
 }
