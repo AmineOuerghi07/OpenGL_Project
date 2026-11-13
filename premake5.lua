@@ -1,4 +1,4 @@
-VULKAN_SDK = os.getenv("VULKAN_SDK")
+VULKAN_SDK = os.getenv("VULKAN_SDK") or ""
 
 --------------------------------------------------------------------
 -- Premake helpers (Premake 5.0 removed flags { "NoPCH" })
@@ -29,12 +29,23 @@ newoption {
 	description = "Compile and link the Vulkan backend"
 }
 
+-- SPIR-V is prebuilt (scripts/compile_vulkan_shaders.sh). Do not link SDK shaderc /
+-- SPIRV-Cross into FunEngine; those libs are optional tooling only.
+if _OPTIONS["with-vulkan"] and (not VULKAN_SDK or VULKAN_SDK == "") then
+	print("NOTE: --with-vulkan without VULKAN_SDK. macOS Homebrew is fine; on Windows set VULKAN_SDK to the LunarG SDK before building.")
+end
+
 local function resolve_architecture()
 	if _OPTIONS["arch"] then
 		return _OPTIONS["arch"]
 	end
-	-- Host-native so `premake5 gmake` on Apple Silicon is arm64,
-	-- while Windows VS hosts stay x64 unless overridden.
+	-- Visual Studio projects must stay x64 when generated on an Apple Silicon Mac
+	-- (otherwise the checked-in .sln/.vcxproj become ARM64 and break Windows).
+	local action = _ACTION or ""
+	if action:match("^vs") then
+		return "x64"
+	end
+	-- Host-native for gmake/xcode on Apple Silicon.
 	if os.hostarch ~= nil and os.hostarch() == "ARM64" then
 		return "ARM64"
 	end
@@ -65,21 +76,10 @@ IncludeDir["stb_image"] = "FunEngine/vendor/stb_image"
 IncludeDir["entt"] = "FunEngine/vendor/entt/include"
 IncludeDir["yaml_cpp"] = "FunEngine/vendor/yaml-cpp/include"
 IncludeDir["ImGuizmo"] = "FunEngine/vendor/ImGuizmo"
-IncludeDir["VulkanSDK"] = "%{VULKAN_SDK}/Include"
-
+-- Windows Vulkan SDK paths (empty when unset — do not expand to "/Include").
+IncludeDir["VulkanSDK"] = (VULKAN_SDK ~= "" and (VULKAN_SDK .. "/Include") or "")
 LibraryDir = {}
-LibraryDir["VulkanSDK"] = "%{VULKAN_SDK}/Lib"
-
-Library = {}
-Library["Vulkan"] = "%{LibraryDir.VulkanSDK}/vulkan-1.lib"
-Library["VulkanUtils"] = "%{LibraryDir.VulkanSDK}/VkLayer_utils.lib"
-Library["ShaderC_Debug"] = "%{LibraryDir.VulkanSDK}/shaderc_sharedd.lib"
-Library["SPIRV_Cross_Debug"] = "%{LibraryDir.VulkanSDK}/spirv-cross-cored.lib"
-Library["SPIRV_Cross_GLSL_Debug"] = "%{LibraryDir.VulkanSDK}/spirv-cross-glsld.lib"
-Library["SPIRV_Tools_Debug"] = "%{LibraryDir.VulkanSDK}/SPIRV-Toolsd.lib"
-Library["ShaderC_Release"] = "%{LibraryDir.VulkanSDK}/shaderc_shared.lib"
-Library["SPIRV_Cross_Release"] = "%{LibraryDir.VulkanSDK}/spirv-cross-core.lib"
-Library["SPIRV_Cross_GLSL_Release"] = "%{LibraryDir.VulkanSDK}/spirv-cross-glsl.lib"
+LibraryDir["VulkanSDK"] = (VULKAN_SDK ~= "" and (VULKAN_SDK .. "/Lib") or "")
 
 group "Dependencies"
 	include "FunEngine/Build/GLFW"
@@ -136,10 +136,13 @@ project "FunEngine"
 	}
 
 	filter { "options:with-vulkan", "system:windows" }
-		includedirs
-		{
-			"%{IncludeDir.VulkanSDK}"
-		}
+		if IncludeDir["VulkanSDK"] ~= "" then
+			includedirs { IncludeDir["VulkanSDK"] }
+		end
+		if LibraryDir["VulkanSDK"] ~= "" then
+			libdirs { LibraryDir["VulkanSDK"] }
+		end
+		links { "vulkan-1" }
 
 	filter { "not options:with-vulkan" }
 		removefiles
@@ -165,12 +168,6 @@ project "FunEngine"
 		{
 			"vulkan",
 			"Metal.framework"
-		}
-
-	filter { "options:with-vulkan", "system:windows" }
-		links
-		{
-			"%{Library.Vulkan}"
 		}
 
 	filter {}
@@ -260,39 +257,15 @@ project "FunEngine"
 		runtime "Debug"
 		symbols "on"
 
-	filter { "configurations:Debug", "system:windows", "options:with-vulkan" }
-		links
-		{
-			"%{Library.ShaderC_Debug}",
-			"%{Library.SPIRV_Cross_Debug}",
-			"%{Library.SPIRV_Cross_GLSL_Debug}"
-		}
-
 	filter "configurations:Release"
 		defines "FE_ENGINE_RELEASE"
 		runtime "Release"
 		optimize "on"
 
-	filter { "configurations:Release", "system:windows", "options:with-vulkan" }
-		links
-		{
-			"%{Library.ShaderC_Release}",
-			"%{Library.SPIRV_Cross_Release}",
-			"%{Library.SPIRV_Cross_GLSL_Release}"
-		}
-
 	filter "configurations:Dist"
 		defines "FE_ENGINE_DIST"
 		runtime "Release"
 		optimize "on"
-
-	filter { "configurations:Dist", "system:windows", "options:with-vulkan" }
-		links
-		{
-			"%{Library.ShaderC_Release}",
-			"%{Library.SPIRV_Cross_Release}",
-			"%{Library.SPIRV_Cross_GLSL_Release}"
-		}
 
 --------------------------------------------------------------------
 -- Editor
@@ -370,10 +343,13 @@ project "FunEngine_Editor"
 		}
 
 	filter { "options:with-vulkan", "system:windows" }
-		links
-		{
-			"%{Library.Vulkan}"
-		}
+		if IncludeDir["VulkanSDK"] ~= "" then
+			includedirs { IncludeDir["VulkanSDK"] }
+		end
+		if LibraryDir["VulkanSDK"] ~= "" then
+			libdirs { LibraryDir["VulkanSDK"] }
+		end
+		links { "vulkan-1" }
 
 	filter "configurations:Debug"
 		defines "FE_ENGINE_DEBUG"
@@ -465,10 +441,13 @@ project "Sandbox"
 		}
 
 	filter { "options:with-vulkan", "system:windows" }
-		links
-		{
-			"%{Library.Vulkan}"
-		}
+		if IncludeDir["VulkanSDK"] ~= "" then
+			includedirs { IncludeDir["VulkanSDK"] }
+		end
+		if LibraryDir["VulkanSDK"] ~= "" then
+			libdirs { LibraryDir["VulkanSDK"] }
+		end
+		links { "vulkan-1" }
 
 	filter "configurations:Debug"
 		defines "FE_ENGINE_DEBUG"
