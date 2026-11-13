@@ -54,8 +54,13 @@ namespace FunEngine
 			if (ImGui::BeginDragDropSource())
 			{
 				std::filesystem::path relativePath(path);
+#if defined(FE_PLATFORM_WINDOWS)
 				const wchar_t* itemPath = relativePath.c_str();
 				ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itemPath, (wcslen(itemPath) + 1) * sizeof(wchar_t));
+#else
+				const std::string itemPath = relativePath.string();
+				ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itemPath.c_str(), itemPath.size() + 1);
+#endif
 				ImGui::EndDragDropSource();
 			}
 			

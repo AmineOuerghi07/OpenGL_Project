@@ -25,7 +25,8 @@ namespace FunEngine
 
 		static void CreateTextures(bool multisampled, uint32_t* outID, uint32_t count)
 		{
-			glCreateTextures(TextureTarget(multisampled), count, outID);
+			glGenTextures(count, outID);
+			(void)multisampled;
 		}
 
 		static void BindTexture(bool multisampled, uint32_t id)
@@ -65,7 +66,8 @@ namespace FunEngine
 			}
 			else
 			{
-				glTexStorage2D(GL_TEXTURE_2D, 1, format, width, height);
+				// glTexStorage2D is fine on 4.2+; use TexImage for Apple GL 4.1 core.
+				glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, nullptr);
 
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -153,7 +155,7 @@ namespace FunEngine
 			m_DepthAttachments = 0;
 		}
 
-		glCreateFramebuffers(1, &m_RendererID);
+		glGenFramebuffers(1, &m_RendererID);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
 
 		bool multisample = m_Specifications.Sample > 1;
@@ -245,16 +247,20 @@ namespace FunEngine
 
 	void OpenGLFramebuffer::ClearAttachment(uint32_t attachmentIndex, int value)
 	{
-
-		//int value = -1;
-		//glClearTexImage(m_ColorAttachments[1], 0, GL_RED_INTEGER, GL_INT, &value);
-
-		auto& spec = m_ColorAttachmentsSpecs[attachmentIndex];
-		spec.TextureFormat;
-
-		glClearTexImage(m_ColorAttachments[attachmentIndex], 0,
-			Utils::FunEngineTextureFormatToGL(spec.TextureFormat), GL_INT, &value);
-
+		// glClearTexImage is GL 4.4+; clear via the bound framebuffer on Mac / older GL.
+		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
+		glDrawBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
+		const GLint v = value;
+		glClearBufferiv(GL_COLOR, attachmentIndex, &v);
+		if (m_ColorAttachments.size() > 1)
+		{
+			GLenum buffers[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
+			glDrawBuffers((GLsizei)m_ColorAttachments.size(), buffers);
+		}
+		else if (!m_ColorAttachments.empty())
+		{
+			glDrawBuffer(GL_COLOR_ATTACHMENT0);
+		}
 	}
 	
 }

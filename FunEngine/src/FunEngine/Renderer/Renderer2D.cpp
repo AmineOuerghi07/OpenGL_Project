@@ -5,8 +5,11 @@
 #include "RenderCommand.h"
 #include "UniformBuffer.h"
 
+#ifndef FE_PLATFORM_MACOS
 #include "StorageBuffer.h"
+#endif
 
+#include <cstdio>
 #include <glm/gtc/matrix_transform.hpp>
 
 
@@ -31,8 +34,12 @@ namespace FunEngine
 		const uint32_t MaxQuads = 10000;
 		const uint32_t MaxVertices = MaxQuads * 4;
 		const uint32_t MaxIndices = MaxQuads * 6;
+#ifdef FE_PLATFORM_MACOS
+		// Apple GL ~4.1: fixed sampler2D array (no bindless / SSBO).
+		const static uint32_t MaxTextureSlots = 16;
+#else
 		const static uint32_t MaxTextureSlots = 1000;
-		//const static uint32_t MaxTextureSlots = 32;
+#endif
 
 		Ref<VertexArray> QuadVertexArray;
 		Ref<VertexBuffer> QuadVertexBuffer;
@@ -58,7 +65,9 @@ namespace FunEngine
 		};
 		CameraData CameraBuffer;
 		Ref<UniformBuffer> CameraUniformBuffer;
+#ifndef FE_PLATFORM_MACOS
 		Ref<StorageBuffer> TexturesBuffer = nullptr;
+#endif
 	};
 
 	static Renderer2DData s_Data;
@@ -122,19 +131,40 @@ namespace FunEngine
 
 		s_Data.WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
 
+#ifdef FE_PLATFORM_MACOS
+		// Prefer Texture_Mac.glsl (Editor); fall back to Texture.glsl (Sandbox #version 330).
+		{
+			FILE* f = fopen("assets/shaders/Texture_Mac.glsl", "r");
+			if (f)
+			{
+				fclose(f);
+				s_Data.TextureShader = FunEngine::Shader::Create("assets/shaders/Texture_Mac.glsl");
+			}
+			else
+			{
+				s_Data.TextureShader = FunEngine::Shader::Create("assets/shaders/Texture.glsl");
+			}
+		}
+#else
 		s_Data.TextureShader = FunEngine::Shader::Create("assets/shaders/Texture.glsl");
-
 		s_Data.TextureHandles.emplace_back(s_Data.WhiteTexture->GetHandle());
+#endif
 
 		s_Data.TextureShader->Bind();
 
-		/*int32_t samplers[s_Data.MaxTextureSlots];
-		for (uint32_t i = 0; i < s_Data.MaxTextureSlots; i++)
-			samplers[i] = i;
+#ifdef FE_PLATFORM_MACOS
+		int32_t samplers[Renderer2DData::MaxTextureSlots];
+		for (uint32_t i = 0; i < Renderer2DData::MaxTextureSlots; i++)
+			samplers[i] = (int32_t)i;
+		s_Data.TextureShader->SetIntArray("u_Textures", samplers, Renderer2DData::MaxTextureSlots);
+#endif
 
-		s_Data.TextureShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);*/
-
+#ifdef FE_PLATFORM_MACOS
+		s_Data.TextureSlots.resize(Renderer2DData::MaxTextureSlots);
+		s_Data.TextureSlots[0] = s_Data.WhiteTexture;
+#else
 		s_Data.TextureSlots.emplace_back(s_Data.WhiteTexture);
+#endif
 
 		s_Data.QuadVertexPositions[0] = {-0.5f, -0.5f, 0.0f, 1.0f};
 		s_Data.QuadVertexPositions[1] = { 0.5f, -0.5f, 0.0f, 1.0f};
@@ -142,7 +172,9 @@ namespace FunEngine
 		s_Data.QuadVertexPositions[3] = {-0.5f,  0.5f, 0.0f, 1.0f};
 
 		s_Data.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer2DData::CameraData), 0);
-		s_Data.TexturesBuffer = StorageBuffer::Create(s_Data.MaxTextureSlots * sizeof(uint64_t), 1) ;
+#ifndef FE_PLATFORM_MACOS
+		s_Data.TexturesBuffer = StorageBuffer::Create(s_Data.MaxTextureSlots * sizeof(uint64_t), 1);
+#endif
 	}
 
 	void Renderer2D::Shutdown()
@@ -192,28 +224,30 @@ namespace FunEngine
 
 	void Renderer2D::Flush()
 	{
+#ifdef FE_PLATFORM_MACOS
+		for (uint32_t i = 0; i < Renderer2DData::MaxTextureSlots; i++)
+		{
+			Ref<Texture2D> tex = (i < s_Data.TextureSlotIndex && s_Data.TextureSlots[i])
+				? s_Data.TextureSlots[i] : s_Data.WhiteTexture;
+			tex->Bind(i);
+		}
+#else
 		if (s_Data.TextureHandles.size() != s_Data.TextureSlots.size())
 		{
 			s_Data.TextureHandles.clear();
 		}
-		// Bind Textures
 		for (uint32_t i = 0; i < s_Data.TextureSlots.size(); i++)
 		{
-			//s_Data.TextureSlots[i]->Bind(i);
 			if (s_Data.TextureHandles.size() != s_Data.TextureSlots.size())
 			{
 				s_Data.TextureHandles.emplace_back(s_Data.TextureSlots[i]->GetHandle());
 			}
 		}
-
-
 		s_Data.TexturesBuffer->SetData((const void*) s_Data.TextureHandles.data(), s_Data.TextureHandles.size() * sizeof(uint64_t), 0);
+#endif
 
 		s_Data.TextureShader->Bind();
-
-		
 		RenderCommand::DrawIndexed(s_Data.QuadVertexArray,s_Data.QuadIndexCount);
-
 		s_Data.Stats.DrawCalls++;
 	}
 
@@ -318,6 +352,8 @@ namespace FunEngine
 		
 		if (textureIndex == 0.0f)
 		{
+			if (s_Data.TextureSlotIndex >= Renderer2DData::MaxTextureSlots)
+				FlushAndReset();
 			textureIndex = (float)s_Data.TextureSlotIndex;
 			s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture;
 			s_Data.TextureSlotIndex++;
@@ -340,22 +376,6 @@ namespace FunEngine
 		s_Data.QuadIndexCount += 6;
 
 		s_Data.Stats.QuadCount++;
-
-
-		//s_Data.TextureShader->SetFloat4("u_Color", color);//glm::vec4(1.0f));
-
-		//s_Data.TextureShader->SetFloat("u_TilingFactor", tilingFactor);
-	
-		//glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
-
-		//s_Data.TextureShader->SetMat4("u_Transform", transform);
-
-		//texture->Bind();
-
-		//s_Data.QuadVertexArray->Bind();
-
-		//RenderCommand::DrawIndexed(s_Data.QuadVertexArray);
-
 	}
 
 

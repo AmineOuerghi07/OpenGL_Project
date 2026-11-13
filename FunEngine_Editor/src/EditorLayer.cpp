@@ -302,8 +302,13 @@ namespace FunEngine
 		{
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
 			{
+#if defined(FE_PLATFORM_WINDOWS)
 				const wchar_t* path = (const wchar_t*)payload->Data;
 				OpenScene(path);
+#else
+				const char* path = (const char*)payload->Data;
+				OpenScene(path);
+#endif
 			}
 			ImGui::EndDragDropTarget();
 		}

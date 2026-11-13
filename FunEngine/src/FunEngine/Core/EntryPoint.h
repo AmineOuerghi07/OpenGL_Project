@@ -2,7 +2,7 @@
 #include "FunEngine/Core/Core.h"
 #include "FunEngine/Debug/Instrumentor.h"
 
-#ifdef FE_PLATFORM_WINDOWS
+#if defined(FE_PLATFORM_WINDOWS) || defined(FE_PLATFORM_MACOS) || defined(FE_PLATFORM_LINUX)
 
 extern FunEngine::Application* FunEngine::CreateApplication();
 

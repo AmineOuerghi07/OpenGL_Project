@@ -30,7 +30,8 @@ namespace FunEngine
 		EventCategoryMouseButton = BIT(4)
 	};
 
-#define EVENT_CLASS_TYPE(type) static EventType GetStaticType() { return EventType::##type; }\
+// Note: no token-paste after '::' — MSVC accepted EventType::##type; Clang rejects it.
+#define EVENT_CLASS_TYPE(type) static EventType GetStaticType() { return EventType::type; }\
 								virtual EventType GetEventType() const override { return GetStaticType(); }\
 								virtual const char* GetName() const override { return #type; }
 

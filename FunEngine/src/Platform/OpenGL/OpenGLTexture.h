@@ -33,6 +33,6 @@ namespace FunEngine
 		uint32_t m_RendererID;
 		GLenum m_DataFormat;
 		GLenum m_InternalFormat;
-		GLuint64 m_Handle;
+		uint64_t m_Handle = 0;
 	};
 }

@@ -77,7 +77,7 @@ Library["SPIRV_Cross_Release"] = "%{LibraryDir.VulkanSDK}/spirv-cross-core.lib"
 Library["SPIRV_Cross_GLSL_Release"] = "%{LibraryDir.VulkanSDK}/spirv-cross-glsl.lib"
 
 group "Dependencies"
-	include "FunEngine/vendor/GLFW"
+	include "FunEngine/Build/GLFW"
 	include "FunEngine/vendor/Glad"
 	include "FunEngine/vendor/imgui"
 	include "FunEngine/vendor/yaml-cpp"
@@ -101,6 +101,7 @@ project "FunEngine"
 	{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/src/**.mm",
 
 		"%{prj.name}/vendor/stb_image/**.cpp",
 		"%{prj.name}/vendor/stb_image/**.h",
@@ -144,6 +145,10 @@ project "FunEngine"
 		"yaml-cpp"
 	}
 
+	-- ObjC++ (.mm) cannot reuse a C++-only PCH on Clang.
+	filter "files:FunEngine/src/**.mm"
+		disable_pch()
+
 	-- Vendor translation units must not consume the engine PCH (Windows + Mac).
 	filter "files:FunEngine/vendor/ImGuizmo/**.cpp"
 		disable_pch()
@@ -179,20 +184,31 @@ project "FunEngine"
 			"opengl32.lib"
 		}
 
-	-- macOS bring-up: define platform + link Apple GL/window frameworks.
-	-- (GLFW Cocoa sources / Core.h still need follow-up work.)
 	filter "system:macosx"
 		defines
 		{
 			"FE_PLATFORM_MACOS",
-			"GLFW_INCLUDE_NONE"
+			"GLFW_INCLUDE_NONE",
+			"FMT_CONSTEVAL="
+		}
+		removefiles
+		{
+			"%{prj.name}/src/Platform/Windows/WindowsPlatformUtils.cpp"
 		}
 		links
 		{
 			"OpenGL.framework",
 			"Cocoa.framework",
 			"IOKit.framework",
-			"CoreVideo.framework"
+			"CoreVideo.framework",
+			"AppKit.framework",
+			"QuartzCore.framework"
+		}
+
+	filter "system:windows"
+		removefiles
+		{
+			"%{prj.name}/src/Platform/Mac/**"
 		}
 
 	filter "configurations:Debug"
@@ -264,7 +280,11 @@ project "FunEngine_Editor"
 
 	links
 	{
-		"FunEngine"
+		"FunEngine",
+		"GLFW",
+		"Glad",
+		"imgui",
+		"yaml-cpp"
 	}
 
 	filter "system:windows"
@@ -278,6 +298,16 @@ project "FunEngine_Editor"
 		defines
 		{
 			"FE_PLATFORM_MACOS",
+			"FMT_CONSTEVAL="
+		}
+		links
+		{
+			"OpenGL.framework",
+			"Cocoa.framework",
+			"IOKit.framework",
+			"CoreVideo.framework",
+			"AppKit.framework",
+			"QuartzCore.framework"
 		}
 
 	filter "configurations:Debug"
@@ -324,7 +354,11 @@ project "Sandbox"
 
 	links
 	{
-		"FunEngine"
+		"FunEngine",
+		"GLFW",
+		"Glad",
+		"imgui",
+		"yaml-cpp"
 	}
 
 	filter "system:windows"
@@ -338,6 +372,16 @@ project "Sandbox"
 		defines
 		{
 			"FE_PLATFORM_MACOS",
+			"FMT_CONSTEVAL="
+		}
+		links
+		{
+			"OpenGL.framework",
+			"Cocoa.framework",
+			"IOKit.framework",
+			"CoreVideo.framework",
+			"AppKit.framework",
+			"QuartzCore.framework"
 		}
 
 	filter "configurations:Debug"

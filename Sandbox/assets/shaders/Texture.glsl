@@ -35,7 +35,8 @@ in vec4 v_Color;
 in float v_TexIndex;
 in float v_TilingFactor;
 
-uniform sampler2D u_Textures[32];
+// Apple GL ~4.1 typically allows 16 fragment samplers (not 32).
+uniform sampler2D u_Textures[16];
 
 
 
