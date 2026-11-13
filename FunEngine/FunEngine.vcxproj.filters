@@ -165,6 +165,9 @@
     <ClInclude Include="src\FunEngine\Renderer\RendererAPI.h">
       <Filter>src\FunEngine\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\FunEngine\Renderer\RendererSelect.h">
+      <Filter>src\FunEngine\Renderer</Filter>
+    </ClInclude>
     <ClInclude Include="src\FunEngine\Renderer\Shader.h">
       <Filter>src\FunEngine\Renderer</Filter>
     </ClInclude>
@@ -1566,6 +1569,9 @@
       <Filter>src\FunEngine\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\FunEngine\Renderer\RendererAPI.cpp">
+      <Filter>src\FunEngine\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FunEngine\Renderer\RendererSelect.cpp">
       <Filter>src\FunEngine\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="src\FunEngine\Renderer\Shader.cpp">

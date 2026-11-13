@@ -58,6 +58,9 @@ namespace FunEngine
 		virtual const FramebufferSpecification& GetSpecification() const = 0;
 
 		virtual uint32_t GetColorAttachmentRendererID(uint32_t index = 0) const = 0;
+
+		// Value to pass as ImTextureID: GL texture id on OpenGL, VkDescriptorSet on Vulkan.
+		virtual void* GetColorAttachmentImGuiID(uint32_t index = 0) const = 0;
 		
 		virtual void Bind() = 0;
 		virtual void Unbind() = 0;

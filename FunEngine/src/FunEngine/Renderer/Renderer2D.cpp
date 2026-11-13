@@ -5,6 +5,10 @@
 #include "RenderCommand.h"
 #include "UniformBuffer.h"
 
+#ifdef FE_WITH_VULKAN
+#include "Platform/Vulkan/VulkanTextureRegistry.h"
+#endif
+
 #ifndef FE_PLATFORM_MACOS
 #include "StorageBuffer.h"
 #endif
@@ -36,9 +40,9 @@ namespace FunEngine
 		const uint32_t MaxIndices = MaxQuads * 6;
 #ifdef FE_PLATFORM_MACOS
 		// Apple GL ~4.1: fixed sampler2D array (no bindless / SSBO).
-		const static uint32_t MaxTextureSlots = 16;
+		static inline uint32_t MaxTextureSlots = 16;
 #else
-		const static uint32_t MaxTextureSlots = 1000;
+		static inline uint32_t MaxTextureSlots = 1000;
 #endif
 
 		Ref<VertexArray> QuadVertexArray;
@@ -71,6 +75,22 @@ namespace FunEngine
 	};
 
 	static Renderer2DData s_Data;
+
+	static bool IsVulkanRenderer()
+	{
+		return RendererAPI::GetAPI() == RendererAPI::API::Vulkan;
+	}
+
+	// GL on macOS uses a fixed sampler array bound slot by slot; Vulkan uses the same slot table
+	// but only binds the slots in use. GL elsewhere uses bindless handles in an SSBO.
+	static bool UsesSlotTable()
+	{
+#ifdef FE_PLATFORM_MACOS
+		return true;
+#else
+		return IsVulkanRenderer();
+#endif
+	}
 
 
 	void Renderer2D::Init()
@@ -131,6 +151,19 @@ namespace FunEngine
 
 		s_Data.WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
 
+		if (IsVulkanRenderer())
+		{
+#ifdef FE_WITH_VULKAN
+			auto& registry = VulkanTextureRegistry::Get();
+			Renderer2DData::MaxTextureSlots = registry.GetMaxTextureSlots();
+			s_Data.TextureShader = FunEngine::Shader::Create(registry.UsesDescriptorIndexing()
+				? "assets/shaders/vulkan/Renderer2D" : "assets/shaders/vulkan/Renderer2D_fixed");
+			FE_CORE_INFO("Renderer2D (Vulkan): {0} texture slots ({1})", Renderer2DData::MaxTextureSlots,
+				registry.UsesDescriptorIndexing() ? "descriptor indexing" : "fixed array");
+#endif
+		}
+		else
+		{
 #ifdef FE_PLATFORM_MACOS
 		// Prefer Texture_Mac.glsl (Editor); fall back to Texture.glsl (Sandbox #version 330).
 		{
@@ -149,22 +182,29 @@ namespace FunEngine
 		s_Data.TextureShader = FunEngine::Shader::Create("assets/shaders/Texture.glsl");
 		s_Data.TextureHandles.emplace_back(s_Data.WhiteTexture->GetHandle());
 #endif
+		}
 
 		s_Data.TextureShader->Bind();
 
 #ifdef FE_PLATFORM_MACOS
-		int32_t samplers[Renderer2DData::MaxTextureSlots];
-		for (uint32_t i = 0; i < Renderer2DData::MaxTextureSlots; i++)
-			samplers[i] = (int32_t)i;
-		s_Data.TextureShader->SetIntArray("u_Textures", samplers, Renderer2DData::MaxTextureSlots);
+		if (!IsVulkanRenderer())
+		{
+			std::vector<int32_t> samplers(Renderer2DData::MaxTextureSlots);
+			for (uint32_t i = 0; i < Renderer2DData::MaxTextureSlots; i++)
+				samplers[i] = (int32_t)i;
+			s_Data.TextureShader->SetIntArray("u_Textures", samplers.data(), Renderer2DData::MaxTextureSlots);
+		}
 #endif
 
-#ifdef FE_PLATFORM_MACOS
-		s_Data.TextureSlots.resize(Renderer2DData::MaxTextureSlots);
-		s_Data.TextureSlots[0] = s_Data.WhiteTexture;
-#else
-		s_Data.TextureSlots.emplace_back(s_Data.WhiteTexture);
-#endif
+		if (UsesSlotTable())
+		{
+			s_Data.TextureSlots.resize(Renderer2DData::MaxTextureSlots);
+			s_Data.TextureSlots[0] = s_Data.WhiteTexture;
+		}
+		else
+		{
+			s_Data.TextureSlots.emplace_back(s_Data.WhiteTexture);
+		}
 
 		s_Data.QuadVertexPositions[0] = {-0.5f, -0.5f, 0.0f, 1.0f};
 		s_Data.QuadVertexPositions[1] = { 0.5f, -0.5f, 0.0f, 1.0f};
@@ -173,13 +213,26 @@ namespace FunEngine
 
 		s_Data.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer2DData::CameraData), 0);
 #ifndef FE_PLATFORM_MACOS
-		s_Data.TexturesBuffer = StorageBuffer::Create(s_Data.MaxTextureSlots * sizeof(uint64_t), 1);
+		if (!IsVulkanRenderer())
+			s_Data.TexturesBuffer = StorageBuffer::Create(s_Data.MaxTextureSlots * sizeof(uint64_t), 1);
 #endif
 	}
 
 	void Renderer2D::Shutdown()
 	{
 		delete[] s_Data.QuadVertexBufferBase;
+		s_Data.QuadVertexBufferBase = nullptr;
+		s_Data.QuadVertexBufferPtr = nullptr;
+
+		s_Data.QuadVertexArray.reset();
+		s_Data.QuadVertexBuffer.reset();
+		s_Data.TextureShader.reset();
+		s_Data.WhiteTexture.reset();
+		s_Data.TextureSlots.clear();
+		s_Data.CameraUniformBuffer.reset();
+#ifndef FE_PLATFORM_MACOS
+		s_Data.TexturesBuffer.reset();
+#endif
 	}
 
 	void Renderer2D::BeginScene(const Camera& camera, const glm::mat4& transform)
@@ -208,8 +261,16 @@ namespace FunEngine
 
 	void Renderer2D::BeginScene(const OrthographicCamera& camera)
 	{
-		s_Data.TextureShader->Bind();
-		s_Data.TextureShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
+		if (IsVulkanRenderer())
+		{
+			s_Data.CameraBuffer.ViewProjection = camera.GetViewProjectionMatrix();
+			s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Renderer2DData::CameraData));
+		}
+		else
+		{
+			s_Data.TextureShader->Bind();
+			s_Data.TextureShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
+		}
 
 		s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
 
@@ -224,26 +285,37 @@ namespace FunEngine
 
 	void Renderer2D::Flush()
 	{
-#ifdef FE_PLATFORM_MACOS
-		for (uint32_t i = 0; i < Renderer2DData::MaxTextureSlots; i++)
+		if (IsVulkanRenderer())
 		{
-			Ref<Texture2D> tex = (i < s_Data.TextureSlotIndex && s_Data.TextureSlots[i])
-				? s_Data.TextureSlots[i] : s_Data.WhiteTexture;
-			tex->Bind(i);
+			for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
+				s_Data.TextureSlots[i]->Bind(i);
+		}
+#ifdef FE_PLATFORM_MACOS
+		else
+		{
+			for (uint32_t i = 0; i < Renderer2DData::MaxTextureSlots; i++)
+			{
+				Ref<Texture2D> tex = (i < s_Data.TextureSlotIndex && s_Data.TextureSlots[i])
+					? s_Data.TextureSlots[i] : s_Data.WhiteTexture;
+				tex->Bind(i);
+			}
 		}
 #else
-		if (s_Data.TextureHandles.size() != s_Data.TextureSlots.size())
-		{
-			s_Data.TextureHandles.clear();
-		}
-		for (uint32_t i = 0; i < s_Data.TextureSlots.size(); i++)
+		else
 		{
 			if (s_Data.TextureHandles.size() != s_Data.TextureSlots.size())
 			{
-				s_Data.TextureHandles.emplace_back(s_Data.TextureSlots[i]->GetHandle());
+				s_Data.TextureHandles.clear();
 			}
+			for (uint32_t i = 0; i < s_Data.TextureSlots.size(); i++)
+			{
+				if (s_Data.TextureHandles.size() != s_Data.TextureSlots.size())
+				{
+					s_Data.TextureHandles.emplace_back(s_Data.TextureSlots[i]->GetHandle());
+				}
+			}
+			s_Data.TexturesBuffer->SetData((const void*) s_Data.TextureHandles.data(), s_Data.TextureHandles.size() * sizeof(uint64_t), 0);
 		}
-		s_Data.TexturesBuffer->SetData((const void*) s_Data.TextureHandles.data(), s_Data.TextureHandles.size() * sizeof(uint64_t), 0);
 #endif
 
 		s_Data.TextureShader->Bind();
@@ -426,21 +498,44 @@ namespace FunEngine
 
 		float textureIndex = 0.0f;
 
-		bool textureAlreadyBound = false;
-
-		for (uint32_t i = 0; i < s_Data.TextureSlots.size() && !textureAlreadyBound; i++)
+		if (UsesSlotTable())
 		{
-			if (*s_Data.TextureSlots[i].get() == *texture.get())
+			for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++)
 			{
-				textureIndex = (float)i;
-				textureAlreadyBound = true;
+				if (*s_Data.TextureSlots[i].get() == *texture.get())
+				{
+					textureIndex = (float)i;
+					break;
+				}
+			}
+
+			if (textureIndex == 0.0f)
+			{
+				if (s_Data.TextureSlotIndex >= Renderer2DData::MaxTextureSlots)
+					FlushAndReset();
+				textureIndex = (float)s_Data.TextureSlotIndex;
+				s_Data.TextureSlots[s_Data.TextureSlotIndex] = texture;
+				s_Data.TextureSlotIndex++;
 			}
 		}
-
-		if (!textureAlreadyBound)
+		else
 		{
-			s_Data.TextureSlots.emplace_back(texture);
-			textureIndex = s_Data.TextureSlots.size() - 1;
+			bool textureAlreadyBound = false;
+
+			for (uint32_t i = 0; i < s_Data.TextureSlots.size() && !textureAlreadyBound; i++)
+			{
+				if (*s_Data.TextureSlots[i].get() == *texture.get())
+				{
+					textureIndex = (float)i;
+					textureAlreadyBound = true;
+				}
+			}
+
+			if (!textureAlreadyBound)
+			{
+				s_Data.TextureSlots.emplace_back(texture);
+				textureIndex = s_Data.TextureSlots.size() - 1;
+			}
 		}
 
 

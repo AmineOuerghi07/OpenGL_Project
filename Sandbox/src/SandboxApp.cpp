@@ -1,5 +1,6 @@
 #include <FunEngine.h>
 #include <FunEngine/Core/EntryPoint.h>
+#include <FunEngine/Renderer/RendererAPI.h>
 
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -334,10 +335,7 @@ class Sandbox : public FunEngine::Application
 	public:
 		Sandbox()
 		{
-			//
-			// PushLayer(new ExampleLayer());
 			PushLayer(new Sandbox2D());
-		
 		};
 		~Sandbox()
 		{

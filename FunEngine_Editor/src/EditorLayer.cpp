@@ -11,6 +11,8 @@
 #include "FunEngine/Utils/PlatformUtils.h"
 
 #include "FunEngine/Math/Math.h"
+#include "FunEngine/Renderer/RendererSelect.h"
+#include "FunEngine/Renderer/RendererAPI.h"
 
 #include "ImGuizmo.h"
 
@@ -280,6 +282,58 @@ namespace FunEngine
 		}
 		ImGui::Text("Hovered Entity: %s",name.c_str());
 
+		ImGui::Separator();
+		ImGui::Text("Renderer");
+		{
+			const RendererAPI::API current = RendererAPI::GetAPI();
+			const char* currentName = RendererSelect_APIName(current);
+			const bool vulkanBuilt = RendererSelect_IsVulkanCompiledIn();
+
+			ImGui::Text("Active: %s", currentName);
+			if (ImGui::BeginCombo("Backend", currentName))
+			{
+				const bool openglSelected = (current == RendererAPI::API::OpenGL);
+				if (ImGui::Selectable("OpenGL", openglSelected) && !openglSelected)
+				{
+					if (RendererSelect_RelaunchWith(RendererAPI::API::OpenGL))
+						Application::GetApplication().Close();
+					else
+					{
+						m_RendererRestartNotice = true;
+						m_RendererRestartMessage = "Saved renderer=opengl to funengine.cfg. Close and relaunch the Editor to apply.";
+					}
+				}
+				if (openglSelected)
+					ImGui::SetItemDefaultFocus();
+
+				if (!vulkanBuilt)
+					ImGui::BeginDisabled();
+				const bool vulkanSelected = (current == RendererAPI::API::Vulkan);
+				if (ImGui::Selectable("Vulkan", vulkanSelected && vulkanBuilt) && vulkanBuilt && !vulkanSelected)
+				{
+					if (RendererSelect_RelaunchWith(RendererAPI::API::Vulkan))
+						Application::GetApplication().Close();
+					else
+					{
+						m_RendererRestartNotice = true;
+						m_RendererRestartMessage = "Saved renderer=vulkan to funengine.cfg. Close and relaunch the Editor to apply.";
+					}
+				}
+				if (vulkanSelected)
+					ImGui::SetItemDefaultFocus();
+				if (!vulkanBuilt)
+				{
+					ImGui::EndDisabled();
+					ImGui::SameLine();
+					ImGui::TextDisabled("(rebuild with --with-vulkan)");
+				}
+				ImGui::EndCombo();
+			}
+			if (m_RendererRestartNotice)
+				ImGui::TextWrapped("%s", m_RendererRestartMessage.c_str());
+		}
+
+		ImGui::Separator();
 		ImGui::Text("Renderer2D Stats");
 		ImGui::Text("Draw Calls : %d", stats.DrawCalls);
 		ImGui::Text("Quads : %d", stats.QuadCount);
@@ -305,9 +359,8 @@ namespace FunEngine
 
 		//FE_CLIENT_WARN("viewport size : {0}  {1}", viewportPanelSize.x, viewportPanelSize.y);
 
-		uint32_t framebufferTexture = m_Framebuffer->GetColorAttachmentRendererID();
 
-		ImGui::Image((void*)(uint64_t)m_Framebuffer->GetColorAttachmentRendererID(), ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0,1 }, ImVec2{ 1,0 });
+		ImGui::Image(m_Framebuffer->GetColorAttachmentImGuiID(), ImVec2{ m_ViewportSize.x, m_ViewportSize.y }, ImVec2{ 0,1 }, ImVec2{ 1,0 });
 
 
 

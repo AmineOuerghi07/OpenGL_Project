@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <FunEngine.h>
 #include "Panels/SceneHierarchyPanel.h"
 #include "Panels/ContentBrowserPanel.h"
@@ -67,6 +68,9 @@ namespace FunEngine
 		// Panels
 		SceneHierarchyPanel m_SceneHierarchyPanel;
 		ContentBrowserPanel m_ContentBrowserPanel;
+
+		bool m_RendererRestartNotice = false;
+		std::string m_RendererRestartMessage;
 		
 		glm::vec4 m_SquareColor = { 0.8f, 0.0f, 0.1f, 1.0f };
 

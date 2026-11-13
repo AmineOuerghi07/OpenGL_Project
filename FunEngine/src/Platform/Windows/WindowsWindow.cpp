@@ -3,7 +3,12 @@
 #include "FunEngine/Events/ApplicationEvent.h"
 #include "FunEngine/Events/KeyEvent.h"
 #include "FunEngine/Events/MouseEvent.h"
+#include "FunEngine/Renderer/RendererAPI.h"
 #include "Platform/OpenGL/OpenGLContext.h"
+
+#ifdef FE_WITH_VULKAN
+#include "Platform/Vulkan/VulkanContext.h"
+#endif
 
 #include <glad/glad.h>
 namespace FunEngine
@@ -45,17 +50,33 @@ namespace FunEngine
 			s_GLFWInitialized = true;
 		}
 
-#ifdef FE_PLATFORM_MACOS
-		// Apple OpenGL is frozen at ~4.1 core; request that profile before create.
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+		const bool useVulkan = RendererAPI::GetAPI() == RendererAPI::API::Vulkan;
+
+#ifdef FE_WITH_VULKAN
+		if (useVulkan)
+		{
+			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+		}
+		else
 #endif
+		{
+#ifdef FE_PLATFORM_MACOS
+			// Apple OpenGL is frozen at ~4.1 core; request that profile before create.
+			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+			glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+			glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+#endif
+		}
 
 		m_Window = glfwCreateWindow((int)m_Data.Width, (int)m_Data.Height, m_Data.Title.c_str(), nullptr, nullptr);
-		
-		m_context = new OpenGLContext(m_Window);
+
+#ifdef FE_WITH_VULKAN
+		if (useVulkan)
+			m_context = new VulkanContext(m_Window);
+		else
+#endif
+			m_context = new OpenGLContext(m_Window);
 		m_context->Init();
 		
 		
@@ -162,13 +183,12 @@ namespace FunEngine
 
 	void WindowsWindow::SetVSync(bool enabled)
 	{
-		if (enabled)
+		if (RendererAPI::GetAPI() == RendererAPI::API::OpenGL)
 		{
-			glfwSwapInterval(1);
-		}
-		else
-		{
-			glfwSwapInterval(0);
+			if (enabled)
+				glfwSwapInterval(1);
+			else
+				glfwSwapInterval(0);
 		}
 		m_Data.VSync = enabled;
 	}

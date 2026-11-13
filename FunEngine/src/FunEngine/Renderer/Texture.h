@@ -19,6 +19,9 @@ namespace FunEngine
 
 		// this function is working only on OpenGL 4.6 and above and mostly on NVIDIA and AMD GPUs
 		virtual uint64_t GetHandle() const = 0;
+
+		// Value to pass as ImTextureID: GL texture id on OpenGL, VkDescriptorSet on Vulkan.
+		virtual void* GetImGuiID() const { return (void*)(uintptr_t)GetRendererID(); }
 	};
 
 	class Texture2D : public Texture

@@ -25,6 +25,7 @@ private:
 	FunEngine::Ref<FunEngine::Shader> m_Shader;
 	FunEngine::Ref<FunEngine::VertexArray> m_SquareVA;
 	FunEngine::Ref<FunEngine::Framebuffer> m_Framebuffer;
+	bool m_RenderToFramebuffer = true;
 
 
 
