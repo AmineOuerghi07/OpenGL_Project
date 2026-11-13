@@ -10,7 +10,7 @@ namespace FunEngine
 	public:
 		enum class API
 		{
-			None = 0, OpenGL = 1
+			None = 0, OpenGL = 1, Vulkan = 2
 		};
 
 	public:
@@ -22,6 +22,7 @@ namespace FunEngine
 
 		virtual void DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t indexCount = 0) = 0;
 		inline static API GetAPI() { return s_API; }
+		inline static void SetAPI(API api) { s_API = api; }
 
 	private:
 		static API s_API;

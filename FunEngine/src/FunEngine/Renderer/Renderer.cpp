@@ -12,7 +12,10 @@ namespace FunEngine
 	void Renderer::Init()
 	{
 		RenderCommand::Init();
-		Renderer2D::Init();
+		if (RendererAPI::GetAPI() == RendererAPI::API::OpenGL)
+			Renderer2D::Init();
+		else
+			FE_CORE_INFO("Vulkan: Renderer2D deferred");
 	}
 
 	void Renderer::OnWindowResize(uint32_t width, uint32_t height)

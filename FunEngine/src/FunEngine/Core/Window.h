@@ -3,6 +3,8 @@
 #include "FunEngine/Events/Event.h"
 namespace FunEngine
 {
+	class GraphicsContext;
+
 	struct WindowProps
 	{
 		std::string Title;
@@ -37,6 +39,7 @@ namespace FunEngine
 		virtual void SetVSync(bool enabled) = 0;
 		virtual bool IsVSync() const = 0;
 		virtual void* GetNativeWindow() const = 0;
+		virtual GraphicsContext* GetGraphicsContext() const { return nullptr; }
 
 		static Scope<Window> Create(const WindowProps& props = WindowProps());
 	};

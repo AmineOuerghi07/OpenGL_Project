@@ -24,6 +24,11 @@ newoption {
 	}
 }
 
+newoption {
+	trigger = "with-vulkan",
+	description = "Compile and link the Vulkan backend"
+}
+
 local function resolve_architecture()
 	if _OPTIONS["arch"] then
 		return _OPTIONS["arch"]
@@ -127,9 +132,48 @@ project "FunEngine"
 		"%{IncludeDir.stb_image}",
 		"%{IncludeDir.entt}",
 		"%{IncludeDir.yaml_cpp}",
-		"%{IncludeDir.ImGuizmo}",
-		"%{IncludeDir.VulkanSDK}"
+		"%{IncludeDir.ImGuizmo}"
 	}
+
+	filter { "options:with-vulkan", "system:windows" }
+		includedirs
+		{
+			"%{IncludeDir.VulkanSDK}"
+		}
+
+	filter { "not options:with-vulkan" }
+		removefiles
+		{
+			"%{prj.name}/src/Platform/Vulkan/**"
+		}
+
+	filter "options:with-vulkan"
+		defines { "FE_WITH_VULKAN" }
+
+	filter { "options:with-vulkan", "system:macosx" }
+		includedirs
+		{
+			"/opt/homebrew/include",
+			"/usr/local/include"
+		}
+		libdirs
+		{
+			"/opt/homebrew/lib",
+			"/usr/local/lib"
+		}
+		links
+		{
+			"vulkan",
+			"Metal.framework"
+		}
+
+	filter { "options:with-vulkan", "system:windows" }
+		links
+		{
+			"%{Library.Vulkan}"
+		}
+
+	filter {}
 
 	defines
 	{
@@ -216,7 +260,7 @@ project "FunEngine"
 		runtime "Debug"
 		symbols "on"
 
-	filter { "configurations:Debug", "system:windows" }
+	filter { "configurations:Debug", "system:windows", "options:with-vulkan" }
 		links
 		{
 			"%{Library.ShaderC_Debug}",
@@ -229,7 +273,7 @@ project "FunEngine"
 		runtime "Release"
 		optimize "on"
 
-	filter { "configurations:Release", "system:windows" }
+	filter { "configurations:Release", "system:windows", "options:with-vulkan" }
 		links
 		{
 			"%{Library.ShaderC_Release}",
@@ -242,7 +286,7 @@ project "FunEngine"
 		runtime "Release"
 		optimize "on"
 
-	filter { "configurations:Dist", "system:windows" }
+	filter { "configurations:Dist", "system:windows", "options:with-vulkan" }
 		links
 		{
 			"%{Library.ShaderC_Release}",
@@ -308,6 +352,27 @@ project "FunEngine_Editor"
 			"CoreVideo.framework",
 			"AppKit.framework",
 			"QuartzCore.framework"
+		}
+
+	filter "options:with-vulkan"
+		defines { "FE_WITH_VULKAN" }
+
+	filter { "options:with-vulkan", "system:macosx" }
+		libdirs
+		{
+			"/opt/homebrew/lib",
+			"/usr/local/lib"
+		}
+		links
+		{
+			"vulkan",
+			"Metal.framework"
+		}
+
+	filter { "options:with-vulkan", "system:windows" }
+		links
+		{
+			"%{Library.Vulkan}"
 		}
 
 	filter "configurations:Debug"
@@ -382,6 +447,27 @@ project "Sandbox"
 			"CoreVideo.framework",
 			"AppKit.framework",
 			"QuartzCore.framework"
+		}
+
+	filter "options:with-vulkan"
+		defines { "FE_WITH_VULKAN" }
+
+	filter { "options:with-vulkan", "system:macosx" }
+		libdirs
+		{
+			"/opt/homebrew/lib",
+			"/usr/local/lib"
+		}
+		links
+		{
+			"vulkan",
+			"Metal.framework"
+		}
+
+	filter { "options:with-vulkan", "system:windows" }
+		links
+		{
+			"%{Library.Vulkan}"
 		}
 
 	filter "configurations:Debug"

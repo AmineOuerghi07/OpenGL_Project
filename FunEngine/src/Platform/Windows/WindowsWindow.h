@@ -28,6 +28,7 @@ namespace FunEngine
 		bool IsVSync() const override;
 
 		virtual inline void* GetNativeWindow() const override { return m_Window; }
+		virtual GraphicsContext* GetGraphicsContext() const override { return m_context; }
 
 	private:
 		virtual void Init(const WindowProps& windowProps);

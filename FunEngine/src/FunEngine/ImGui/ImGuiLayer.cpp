@@ -14,8 +14,17 @@
 
 
 #include "ImGuizmo.h"
+#include "FunEngine/Renderer/RendererAPI.h"
 
 namespace FunEngine {
+
+	namespace
+	{
+		static bool UseImGuiForCurrentRenderer()
+		{
+			return RendererAPI::GetAPI() == RendererAPI::API::OpenGL;
+		}
+	}
 
 	
 	ImGuiLayer::ImGuiLayer() :Layer("ImGuiLayer") {
@@ -28,7 +37,12 @@ namespace FunEngine {
 	}
 
 	void ImGuiLayer::OnAttach() {
-		
+		if (!UseImGuiForCurrentRenderer())
+		{
+			FE_CORE_INFO("ImGui deferred for Vulkan (Phase 5)");
+			return;
+		}
+
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
@@ -87,6 +101,9 @@ namespace FunEngine {
 
 	void ImGuiLayer::Begin()
 	{
+		if (!UseImGuiForCurrentRenderer())
+			return;
+
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
@@ -95,6 +112,9 @@ namespace FunEngine {
 
 	void ImGuiLayer::End()
 	{
+		if (!UseImGuiForCurrentRenderer())
+			return;
+
 		ImGuiIO& io = ImGui::GetIO();
 		Application& app = Application::GetApplication();
 		io.DisplaySize = ImVec2((float) app.GetWindow().GetWidth(), (float) app.GetWindow().GetHeight());
@@ -116,6 +136,9 @@ namespace FunEngine {
 	
 
 	void ImGuiLayer::OnDetach() {
+		if (!UseImGuiForCurrentRenderer())
+			return;
+
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
