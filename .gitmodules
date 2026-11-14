@@ -1,20 +1,20 @@
 
 [submodule "FunEngine/vendor/imgui"]
 	path = FunEngine/vendor/imgui
-	url = https://github.com/youssefAbidUp/imgui.git
+	url = https://github.com/AmineOuerghi07/imgui.git
 
 [submodule "FunEngine/vendor/glm"]
 	path = FunEngine/vendor/glm
 	url = https://github.com/g-truc/glm.git
 [submodule "FunEngine/vendor/GLFW"]
 	path = FunEngine/vendor/GLFW
-	url = https://github.com/youssefAbidUp/glfw.git
+	url = https://github.com/AmineOuerghi07/glfw.git
 [submodule "FunEngine/vendor/spdlog"]
 	path = FunEngine/vendor/spdlog
 	url = https://github.com/gabime/spdlog.git
 [submodule "FunEngine/vendor/yaml-cpp"]
 	path = FunEngine/vendor/yaml-cpp
-	url = https://github.com/youssefAbidUp/yaml-cpp.git
+	url = https://github.com/AmineOuerghi07/yaml-cpp.git
 [submodule "FunEngine/vendor/ImGuizmo"]
 	path = FunEngine/vendor/ImGuizmo
-	url = https://github.com/youssefAbidUp/ImGuizmo.git
+	url = https://github.com/AmineOuerghi07/ImGuizmo.git
